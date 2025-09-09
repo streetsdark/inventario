@@ -28,14 +28,14 @@ cp .env.example .env
 
 ### Variables .env
 
-Para que el proyecto funcione correctamente debe definir la variable de entorno REACT_APP_FIREBASE_CONFIG en la cual hay que añadir la configuración de tu proyecto de firebase que puede encontrar en la [consola](https://console.firebase.google.com/) de su proyecto.
+Para que el proyecto funcione correctamente debe definir la variable de entorno VITE_FIREBASE_CONFIG en la cual hay que añadir la configuración de tu proyecto de firebase que puede encontrar en la [consola](https://console.firebase.google.com/) de su proyecto.
 
 ## Ejecutando la aplicación
 
 Una vez completado lo mencionado anteriormente, puede ejecutar la aplicación con:
 
 ```bash
-npm run start
+npm run dev
 ```
 
 Para visualizar la aplicacion dirijase a [localhost:3000](http://localhost:3000).
