@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { FcDatabase, FcCalculator, FcInspection } from "react-icons/fc";
 import firebase from "firebase";
@@ -22,6 +23,8 @@ const Dashboard = ({ mode, setMode }) => {
     'rgba(153, 102, 255, 1)',
     'rgba(255, 159, 64, 1)',
   ];
+
+  ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
   useEffect(() => {
       async function getData() {
