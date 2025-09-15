@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { FcDatabase, FcCalculator, FcInspection } from "react-icons/fc";
-import firebase from "firebase";
-import "firebase/firestore";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 import Sidebar from '../components/Sidebar'
 import "../css/dashboard.css";

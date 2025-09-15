@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { FcLock } from "react-icons/fc";
 import { FaUser, FaSync } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import firebase from "firebase";
-import "firebase/auth";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 import useUser from "../customHooks/useUser";
 import Modal from "./Modal";

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BsImages, BsCheck, BsX } from "react-icons/bs";
-import firebase from "firebase";
-import "firebase/firestore";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 import "../css/formProduct.css";
 import Modal from "./Modal";

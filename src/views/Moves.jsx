@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BsSearch, BsImages, BsCheck, BsX } from "react-icons/bs";
-import firebase from "firebase";
-import "firebase/firestore";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 import Sidebar from '../components/Sidebar'
 import ProfileCard from "../components/ProfileCard";

@@ -4,8 +4,8 @@ import { MdEmail } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 //Librerias de firebase
-import firebase from "firebase";
-import "firebase/auth";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 import '../css/login.css';
 import Modal from './Modal';

@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import App from './App.jsx'
 
 const { VITE_FIREBASE_CONFIG } = import.meta.env

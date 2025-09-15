@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { BsImages, BsX } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import firebase from "firebase";
-import "firebase/auth";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 import Sidebar from '../components/Sidebar';
 import Modal from "../components/Modal";

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { BsCheck, BsX } from "react-icons/bs";
 
-import firebase from "firebase";
-import "firebase/auth";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 import "../css/modal.css";
 
