@@ -32,9 +32,6 @@ importers:
       react-switch:
         specifier: 7.1.0
         version: 7.1.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      web-vitals:
-        specifier: 1.1.2
-        version: 1.1.2
     devDependencies:
       '@eslint/js':
         specifier: 9.33.0
@@ -1241,9 +1238,6 @@ packages:
       yaml:
         optional: true
 
-  web-vitals@1.1.2:
-    resolution: {integrity: sha512-PFMKIY+bRSXlMxVAQ+m2aw9c/ioUYfDgrYot0YUa+/xa0sakubWhSDyxAKwzymvXVdF4CZI71g06W+mqhzu6ig==}
-
   web-vitals@4.2.4:
     resolution: {integrity: sha512-r4DIlprAGwJ7YM11VZp4R884m0Vmgr6EAKe3P+kO0PPj3Unqyvv59rczf6UiGcb9Z8QxZVcqKNwv/g0WNdWwsw==}
 
@@ -2429,8 +2423,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.5.0
       fsevents: 2.3.3
-
-  web-vitals@1.1.2: {}
 
   web-vitals@4.2.4: {}
 
