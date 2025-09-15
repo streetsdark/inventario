@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BsImages, BsX } from "react-icons/bs";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import firebase from "firebase";
 import "firebase/auth";
 
@@ -10,7 +10,7 @@ import '../css/profile.css';
 
 const Profile = ({ mode, setMode }) => {
 
-    const history = useHistory();
+    const history = useNavigate();
     const [modalConfig, setModalConfig] = useState({show: false, text: '', type: '', showButton: true});
     const [user, setUser] = useState({});
 
@@ -28,7 +28,7 @@ const Profile = ({ mode, setMode }) => {
                 showButton: false
             });
             setTimeout(() => {
-                history.push("/");
+                history("/");
                 history.go();
             }, 1500);
         })

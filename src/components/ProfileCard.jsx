@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FcLock } from "react-icons/fc";
 import { FaUser, FaSync } from "react-icons/fa";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import firebase from "firebase";
 import "firebase/auth";
 
@@ -13,7 +13,7 @@ import "../css/profileCard.css"
 const ProfileCard = () => {
 
     const { user } = useUser();
-    const history = useHistory();
+    const history = useNavigate();
     const [modalConfig, setModalConfig] = useState({show: false, text: '', type: '', showButton: true})
     const [showPassword, setShowPassword] = useState(false);
 
@@ -26,7 +26,7 @@ const ProfileCard = () => {
                 showButton: false
             });
             setTimeout(() => {
-                history.push("/");
+                history("/");
                 history.go();
             }, 1500);
         })
@@ -42,7 +42,7 @@ const ProfileCard = () => {
                 </div>
                 <div className="menu">
                     <ul>
-                        <li onClick={() => history.push("/profile")}>
+                        <li onClick={() => history("/profile")}>
                             <FaUser size={22} />
                             <h4>Mi Perfil</h4>
                         </li>

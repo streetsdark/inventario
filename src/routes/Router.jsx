@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import useUser from '../customHooks/useUser';
 
@@ -19,28 +19,26 @@ export default function App() {
 
     return (
       <div className={mode ? 'dark' : 'light'}>
-        <Router>
+        <BrowserRouter>
           {
             user
             ? (
-              <Switch>
-                <Route path="/dashboard" exact><Dashboard mode={mode} setMode={setMode}/></Route>
-                <Route path="/products" exact><Products mode={mode} setMode={setMode}/></Route>
-                <Route path="/moves" exact><Moves mode={mode} setMode={setMode}/></Route>
-                <Route path="/profile" exact><Profile mode={mode} setMode={setMode}/></Route>
-                <Route><Error /></Route>
-              </Switch>
+              <Routes>
+                <Route path="/dashboard" element={<Dashboard mode={mode} setMode={setMode}/>} />
+                <Route path="/products" element={<Products mode={mode} setMode={setMode}/>} />
+                <Route path="/moves" element={<Moves mode={mode} setMode={setMode}/>} />
+                <Route path="/profile" element={<Profile mode={mode} setMode={setMode}/>} />
+              </Routes>
             )
             : (
-              <Switch>
-                <Route path="/login" exact><Login mode={mode} setMode={setMode}/></Route>
-                <Route path="/pricing" exact><Pricing mode={mode} setMode={setMode}/></Route>
-                <Route path="/" exact><Home mode={mode} setMode={setMode}/></Route>
-                <Route><Error/></Route>
-              </Switch>
+              <Routes>
+                <Route path="/login" element={<Login mode={mode} setMode={setMode}/>} />
+                <Route path="/pricing" element={<Pricing mode={mode} setMode={setMode}/>} />
+                <Route path="/" element={<Home mode={mode} setMode={setMode}/>} />
+              </Routes>
             )
           }
-        </Router>
+        </BrowserRouter>
       </div>
     );
   }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FcGoogle } from "react-icons/fc";
 import { MdEmail } from "react-icons/md";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 //Librerias de firebase
 import firebase from "firebase";
@@ -12,7 +12,7 @@ import Modal from './Modal';
 
 const FormLogin = () => {
 
-    const history = useHistory();
+    const history = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(true);
@@ -24,7 +24,7 @@ const FormLogin = () => {
         if (email && password) {
             firebase.auth().signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    history.push('/dashboard');
+                    history('/dashboard');
                 })
                 .catch((error) => {
                     if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found'){
@@ -50,7 +50,7 @@ const FormLogin = () => {
         if (email && password) {
             await firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    history.push('/dashboard');
+                    history('/dashboard');
                 })
                 .catch((error) => {
                     if (error.code === 'auth/invalid-email'){
@@ -76,7 +76,7 @@ const FormLogin = () => {
         var provider = new firebase.auth.GoogleAuthProvider();
 
         await firebase.auth().signInWithPopup(provider)
-            .then((result) => { history.push('/dashboard'); }).catch((error) => { console.log(error); })
+            .then((result) => { history('/dashboard'); }).catch((error) => { console.log(error); })
     }
 
     const forgotPass = (e) => {
