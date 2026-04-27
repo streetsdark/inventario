@@ -13,7 +13,7 @@ const Navbar = ({ page, mode, setMode }) => {
         <nav>
             <Link to="/" className="logoContainer">
                 <img src={logo} alt="My Inventory"/>
-                <h2>My Inventory</h2>    
+                <h2>Mi Inventario</h2>    
             </Link>
             <ul>
                 <li><Link to="/" className={page==='home'? 'active' : 'link'}>Home</Link></li>

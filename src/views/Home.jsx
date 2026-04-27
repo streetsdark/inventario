@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 
 import Footer from '../components/Footer';
 import '../css/home.css';
-import imgBack from '../assets/img/back.png';
+import imgBack from '../assets/img/hierros.png';
 import { Link } from 'react-router-dom';
 
 const Home = ({ mode, setMode }) => {
