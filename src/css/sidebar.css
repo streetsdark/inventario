@@ -1,70 +1,128 @@
-.sidebar {
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 10rem;
-    height: 100vh;
-    background-color: var(--background-secondary);
-    border-right: 1px solid var(--border-color);
-    transition: background-color 0.3s ease;
+/* 🍔 Botón Hamburguesa */
+.hamburger-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 2001;
+  background: var(--contrast);
+  border: none;
+  color: var(--text-inverse);
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.sidebar > .logoContainer, .sidebar > .itemContainer,
-.sidebar > .itemContainerA{
-    border-radius: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    cursor: pointer;
-    margin-top: 1rem;
+.hamburger-btn:hover {
+  background: var(--text-inverse);
+  color: var(--contrast);
+  transform: scale(1.1);
+}
+
+/* 👁️ Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1500;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 📌 Sidebar - Menú Principal */
+.sidebar {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 220px;
+  height: 100vh;
+  background-color: var(--background-secondary);
+  border-right: 1px solid var(--border-color);
+  transition: left 0.3s ease;
+  left: -220px;
+  top: 0;
+  z-index: 2000;
+}
+
+.sidebar > .logoContainer,
+.sidebar > .itemContainer,
+.sidebar > .itemContainerA {
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  margin-top: 1rem;
 }
 
 .sidebar .logo {
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    background-color: var(--contrast);
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px -2px 0px inset,
-                rgba(0, 0, 0, 0.4) 0px 1px 1px;
-    padding: 5px;
-    margin: 5px
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  background-color: var(--contrast);
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px -2px 0px inset,
+    rgba(0, 0, 0, 0.4) 0px 1px 1px;
+  padding: 5px;
+  margin: 5px;
 }
 
-.sidebar > .itemContainer, .sidebar > .itemContainerA {
-    text-decoration: none;
-    color: var(--text-secondary);
-    width: 80%;
-    padding: 5px;
-    transition: all ease-in .2s;
+.sidebar > .itemContainer,
+.sidebar > .itemContainerA {
+  text-decoration: none;
+  color: var(--text-secondary);
+  width: 80%;
+  padding: 5px;
+  transition: all ease-in 0.2s;
 }
 
 .sidebar > .itemContainerA {
-    background-color: var(--contrast);
-    color: var(--text-inverse);
+  background-color: var(--contrast);
+  color: var(--text-inverse);
 }
 
 .sidebar > .switch {
-    margin-top: 1.5rem;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  margin-top: 1.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar p {
-    margin: 0 0 0 5px;
-    font-weight: 700;
-    font-size: 14px;
+  margin: 0 0 0 5px;
+  font-weight: 700;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
 }
 
 .sidebar > .itemContainer:hover {
-    background-color: var(--background-tertiary);
-    color: var(--text-primary);
-    transform: translateY(-2px);
+  background-color: var(--background-tertiary);
+  color: var(--text-primary);
+  transform: translateY(-2px);
 }
 
 .sidebar > .itemContainerA:hover {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
+}
+
+/* 📱 Estado abierto (completamente expandido) */
+.sidebar.open {
+  left: 0;
 }

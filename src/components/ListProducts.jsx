@@ -5,7 +5,7 @@ import useProducts from "../hooks/useProducts";
 import "../css/listProduct.css";
 import Modal from "./Modal";
 
-const ListProducts = ({ query, setEditProduct }) => {
+const ListProducts = ({ query, setEditProduct, isSuperUser = false }) => {
 
     const { products, loading, removeProduct } = useProducts(query);
     const [modalConfig, setModalConfig] = useState({show: false, text: '', type: '', showButton: true, handleClick: null})
@@ -62,14 +62,17 @@ const ListProducts = ({ query, setEditProduct }) => {
                                 </div>
                             )}
                             <h3>{p.description}</h3>
+                            <p><b>Ubicación: </b>{p.location}</p>
                             <p><b>Código: </b>{p.sku}</p>
                             <p><b>Stock actual: </b>{p.stock} {p.product_Unit}</p>
                             <p><b>Marca: </b>{p.brand}</p>
                             <p><b>Pendiente: </b>{p.pending}</p>
-                            <div className="containerBtnAction">
-                                <BsPencil title="Editar" className="btnAction" size={24} style={{ color: 'var(--text)' }} onClick={() => editProduct(p.id)}/>
-                                <BsTrash title="Eliminar" className="btnAction" size={24} style={{ color: 'var(--text)' }} onClick={() => deleteProduct(p.id, p.description)}/>
-                            </div>
+                            {isSuperUser && (
+                                <div className="containerBtnAction">
+                                    <BsPencil title="Editar" className="btnAction" size={24} style={{ color: 'var(--text)' }} onClick={() => editProduct(p.id)}/>
+                                    <BsTrash title="Eliminar" className="btnAction" size={24} style={{ color: 'var(--text)' }} onClick={() => deleteProduct(p.id, p.description)}/>
+                                </div>
+                            )}
                         </div>
                     )
                 })

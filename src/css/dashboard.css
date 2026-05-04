@@ -14,7 +14,12 @@
   background: var(--background);
   color: var(--text-primary);
   overflow-y: auto;
-  transition: all 0.3s ease;
+  transition: margin-left 0.3s ease;
+}
+
+/*ESTO ES PARA HACER UNA ANIMACIÓN DE ENTRADA */
+.sidebar.open ~ .content {
+  margin-left: 220px;
 }
 
 .content > div:first-child {
@@ -109,6 +114,295 @@
   letter-spacing: 0.3px;
 }
 
+.card p {
+  margin: 0.45rem 0 0 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.pending-card-button {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pending-card-button.active {
+  border-color: var(--contrast);
+  box-shadow: 0 30px 60px rgba(96, 165, 250, 0.2),
+              0 20px 40px rgba(0, 0, 0, 0.2),
+              inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+
+.pending-form-panel {
+  margin: -1rem 0 3rem 0;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.pending-form-copy h2 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.2rem;
+}
+
+.pending-form-copy p {
+  margin: 0 0 1rem 0;
+  color: var(--text-secondary);
+}
+
+.pending-form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.pending-form-grid input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--background);
+  color: var(--text-primary);
+}
+
+.pending-form-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.pending-preview-card {
+  margin-top: 1.25rem;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 18px;
+  background: var(--background);
+  border: 1px solid var(--border-color);
+}
+
+.pending-preview-image img,
+.pending-preview-empty {
+  width: 100%;
+  min-height: 140px;
+  border-radius: 14px;
+}
+
+.pending-preview-image img {
+  object-fit: cover;
+  display: block;
+}
+
+.pending-preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+}
+
+.pending-preview-copy h3 {
+  margin: 0 0 0.6rem 0;
+  font-size: 1.05rem;
+}
+
+.pending-preview-copy p {
+  margin: 0.35rem 0;
+  color: var(--text-secondary);
+}
+
+.pending-primary-btn,
+.pending-secondary-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pending-primary-btn {
+  background: var(--contrast);
+  color: #fff;
+}
+
+.pending-chart-card {
+  cursor: pointer;
+}
+
+.pending-chart-card.active {
+  border-color: var(--contrast);
+  box-shadow: 0 30px 60px rgba(96, 165, 250, 0.15),
+              inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.pending-chart-hint {
+  margin: -0.5rem 0 1rem 0;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.pending-list-panel {
+  margin: -1rem 0 3rem 0;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.pending-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pending-list-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.pending-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.pending-list-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  border-radius: 16px;
+  background: var(--background);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.pending-list-item.active {
+  border-color: var(--contrast);
+  box-shadow: 0 12px 30px rgba(96, 165, 250, 0.15);
+}
+
+.pending-list-media img,
+.pending-list-empty-image {
+  width: 112px;
+  height: 112px;
+  border-radius: 14px;
+}
+
+.pending-list-media img {
+  object-fit: cover;
+  display: block;
+}
+
+.pending-list-empty-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+}
+
+.pending-list-info {
+  flex: 1;
+}
+
+.pending-list-item h3 {
+  margin: 0 0 0.6rem 0;
+  font-size: 1rem;
+}
+
+.pending-list-item p,
+.pending-list-empty {
+  margin: 0.35rem 0;
+  color: var(--text-secondary);
+}
+
+.pending-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(7, 14, 26, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.pending-detail-modal {
+  width: min(980px, 100%);
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 1.75rem;
+  align-items: center;
+  padding: 2rem;
+  border-radius: 26px;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+.pending-detail-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.15rem;
+  background: #d9534f;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.pending-detail-image img,
+.pending-detail-empty {
+  width: 100%;
+  min-height: 320px;
+  border-radius: 20px;
+}
+
+.pending-detail-image img {
+  object-fit: cover;
+  display: block;
+}
+
+.pending-detail-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+}
+
+.pending-detail-copy h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.pending-detail-copy p {
+  margin: 0.65rem 0;
+  color: var(--text-secondary);
+  font-size: 1.15rem;
+  line-height: 1.5;
+}
+
+.pending-secondary-btn {
+  background: #d9534f;
+  color: #fff;
+}
+
 /* CHART CARD */
 .card-chart {
   padding: 2rem;
@@ -181,6 +475,32 @@
 }
 
 @media (max-width: 900px) {
+  .pending-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pending-preview-card {
+    grid-template-columns: 1fr;
+  }
+
+  .pending-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pending-list-item {
+    flex-direction: column;
+  }
+
+  .pending-detail-modal {
+    grid-template-columns: 1fr;
+    padding-top: 4rem;
+  }
+
+  .pending-form-actions {
+    flex-direction: column;
+  }
+
   .container-chart {
     flex-direction: column;
     gap: 1.5rem;

@@ -30,6 +30,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
         product_Unit: '-',
         stock: 0,
         pending: 0,
+        location: '',
         img_b64: ''
     });
 
@@ -112,6 +113,8 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
                 cost: Number(product.cost),
                 stock: Number(product.stock),
                 pending: Number(product.pending),
+                totalIn: Number(product.totalIn || 0),
+                totalOut: Number(product.totalOut || 0),
             };
 
             if (!editProduct.status) {
@@ -256,6 +259,11 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
                     <div className="form-group">
                         <label>Marca:</label>
                         <input type="text" name="brand" value={product.brand} onChange={handleChange} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Ubicación en almacén:</label>
+                        <input type="text" name="location" value={product.location} onChange={handleChange} required placeholder="Ej: Pasillo A, Estante 3" />
                     </div>
 
                     <div className="form-group">

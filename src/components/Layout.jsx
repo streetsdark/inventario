@@ -22,7 +22,7 @@ export default function Layout({ children }) {
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar page="dashboard" mode={mode} setMode={setMode} />
-      <main style={{ flex: 1, marginLeft: "10rem", width: "100%" }}>
+      <main style={{ flex: 1, width: "100%" }}>
         {children}
       </main>
     </div>

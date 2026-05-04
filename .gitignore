@@ -1,3 +1,18 @@
+# 🔐 VARIABLES DE ENTORNO - NUNCA SUBIR ESTAS
+# Contienen API keys, tokens y credenciales
+.env
+.env.local
+env.example
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# 🔒 Archivos de configuración con credenciales
+firebase-config.json
+secrets.json
+.credentials
+
 # Logs
 logs
 *.log
@@ -7,6 +22,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
 dist
 dist-ssr
@@ -22,11 +38,17 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-# misc
-.DS_Store
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+
+# Hosting
 .vercel
+.netlify
+
+# 🔐 Archivos de backup con datos sensibles
+*.bak
+*.backup
+*.old
+
+# 🔒 Carpetas de almacenamiento local con datos
+local_storage/
+data/
+temp_uploads/

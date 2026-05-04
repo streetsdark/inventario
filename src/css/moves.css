@@ -3,9 +3,114 @@
     margin: 0;
 }
 
+.moves-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 2rem;
+}
+
+.export-actions {
+    display: flex;
+    gap: .75rem;
+    flex-wrap: wrap;
+}
+
+.export-summary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    border: none;
+    border-radius: .8rem;
+    background: #1f4e78;
+    color: #fff;
+    padding: .8rem 1rem;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 6px 16px;
+}
+
 .container-move {
     display: flex;
     justify-content: flex-start;
+}
+
+.output-preview-card {
+    margin: 0 2rem 2rem 2rem;
+}
+
+.output-preview-header {
+    padding: 1.25rem 1.5rem 0 1.5rem;
+}
+
+.output-preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+}
+
+.output-preview-filter {
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+}
+
+.output-preview-filter input {
+    width: 100%;
+    padding: .85rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background-color: var(--bacground);
+    color: var(--bacneg);
+}
+
+.output-preview-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem;
+    border-radius: 14px;
+    background-color: var(--bacdash);
+    color: var(--bacneg);
+    border: 1px solid var(--border);
+}
+
+.output-preview-item h3,
+.output-preview-item p {
+    margin: 0.2rem 0;
+}
+
+.output-preview-main {
+    flex: 1;
+}
+
+.output-preview-side {
+    display: flex;
+    align-items: center;
+}
+
+.output-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.output-status-badge.is-pending {
+    background-color: #f4d03f;
+    color: #5d4600;
+}
+
+.output-status-badge.is-delivered {
+    background-color: #58d68d;
+    color: #135a2f;
 }
 
 .container-move > .container-item {
@@ -113,4 +218,14 @@
     box-shadow: rgba(0, 0, 0, 0.3) 0px -3px 0px inset, 
                 rgba(0, 0, 0, 0.4) 0px 2px 1px;
     transition: all ease-in .2s;
+}
+
+@media (max-width: 900px) {
+    .output-preview-item {
+        flex-direction: column;
+    }
+
+    .output-preview-side {
+        width: 100%;
+    }
 }

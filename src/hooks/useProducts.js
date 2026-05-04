@@ -18,25 +18,32 @@ export default function useProducts(search) {
     const q = fbQuery(collection(db, "products"));
 
     // 🔥 REALTIME (esto es PRO)
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+    const unsubscribe = onSnapshot(
+  q,
+  (snapshot) => {
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
-      if (search) {
-        setProducts(
-          data.filter(p =>
-            p.description?.toLowerCase().includes(search.toLowerCase()) ||
-            p.sku?.toLowerCase().includes(search.toLowerCase())
-          )
-        );
-      } else {
-        setProducts(data);
-      }
+    if (search) {
+      setProducts(
+        data.filter((p) =>
+          p.description?.toLowerCase().includes(search.toLowerCase()) ||
+          p.sku?.toLowerCase().includes(search.toLowerCase())
+        )
+      );
+    } else {
+      setProducts(data);
+    }
 
-      setLoading(false);
-    });
+    setLoading(false);
+  },
+  (error) => {
+    console.error("useProducts error:", error);
+    setLoading(false);
+  }
+);
 
     return () => unsubscribe();
   }, [search]);

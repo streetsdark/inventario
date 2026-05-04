@@ -4,10 +4,12 @@ import { BsSearch, BsPlusCircle } from "react-icons/bs";
 import ProfileCard from "../components/ProfileCard";
 import ListProducts from "../components/ListProducts";
 import FormProduct from "../components/FormProduct";
+import useRole from "../hooks/useRole";
 import "../css/products.css"
 
 const Products = () => {
 
+    const { isSuperUser } = useRole();
     const [query, setQuery] = useState("");
     const [newProduct, setNewProduct] = useState(false);
     const [editProduct, setEditProduct] = useState({status: false, id: 0});
@@ -25,16 +27,18 @@ const Products = () => {
                         onChange={(e) => e.target.value.length >= 3 ? setQuery(e.target.value) : setQuery("")}
                     />
                 </div>
-                <button className="add-product" onClick={() => setNewProduct(!newProduct)}>
-                    <BsPlusCircle size={22} style={{ marginRight: 5 }}/>
-                    <b>Añadir producto</b>
-                </button>
+                {isSuperUser && (
+                    <button className="add-product" onClick={() => setNewProduct(!newProduct)}>
+                        <BsPlusCircle size={22} style={{ marginRight: 5 }}/>
+                        <b>Añadir producto</b>
+                    </button>
+                )}
             </div>) : null }
 
             {
                 newProduct || editProduct.status
                 ? <FormProduct setNewProduct={setNewProduct} editProduct={editProduct} setEditProduct={setEditProduct} setQuery={setQuery}/>
-                : <ListProducts query={query} setEditProduct={setEditProduct}/>
+                : <ListProducts query={query} setEditProduct={setEditProduct} isSuperUser={isSuperUser}/>
             }
         </div>
     )
