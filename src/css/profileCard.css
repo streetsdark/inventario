@@ -9,53 +9,61 @@
     padding: 5px 15px;
     margin: 15px;
     border-radius: 2rem;
-    background-color: var(--bacground);
-    box-shadow: 0px 0px 15px var(--border);
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .profileContainer > .imgProfile {
     border-radius: 50%;
     width: 60px;
     height: 60px;
+    object-fit: cover;
 }
 
 .data {
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: var(--bacneg);
+    color: var(--text-primary);
 }
 
-.data > h4, .data > h5 {
+.data > h4,
+.data > h5 {
     margin: 0;
     padding: 0;
+    color: var(--text-primary);
 }
 
 .profileContainer > .menu {
     content: '';
     width: 0;
     height: 0;
-    margin-left: .5rem;
+    margin-left: 0.5rem;
     margin-top: 1rem;
-    border: 10px solid var(--bacneg);
+    border: 10px solid var(--text-primary);
     border-right-color: transparent;
     border-bottom-color: transparent;
     border-left-color: transparent;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .menu > ul {
     display: none;
     border-radius: 10px;
-    background-color: var(--bacground);
-    box-shadow: 0px 0px 15px var(--border);
+    background-color: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
     position: absolute;
     width: fit-content;
     top: 2rem;
     right: 1rem;
     padding: 10px;
-    transition: all ease-in .2s;
+    transition: all ease-in 0.2s;
+    z-index: 100;
 }
 
 .menu > ul > li {
@@ -65,20 +73,37 @@
     align-items: center;
     list-style: none;
     border-radius: 10px;
-    transition: all ease-in .2s;
-    color: var(--bacneg);
+    transition: all ease-in 0.2s;
+    color: var(--text-primary);
 }
 
-.menu > ul > li > h4{
-    margin: 0 0 0 .5rem;
+.menu > ul > li > h4 {
+    margin: 0 0 0 0.5rem;
     padding: 0;
+    color: var(--text-primary);
 }
 
 .menu > ul > li:hover {
     background-color: var(--contrast);
-    color: var(--text);
+    color: var(--text-inverse);
 }
 
 .menu:hover > ul {
     display: block;
+}
+
+@media (max-width: 768px) {
+    .profileContainer {
+        padding: 5px 10px;
+    }
+
+    .profileContainer > .imgProfile {
+        width: 50px;
+        height: 50px;
+    }
+
+    .data > h4,
+    .data > h5 {
+        font-size: 0.9rem;
+    }
 }

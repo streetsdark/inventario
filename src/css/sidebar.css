@@ -4,9 +4,10 @@
     flex-direction: column;
     align-items: center;
     width: 10rem;
-    height: 100vh;  
-    background-color: var(--bacground);
-    border-right: 1px solid var(--border);
+    height: 100vh;
+    background-color: var(--background-secondary);
+    border-right: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
 }
 
 .sidebar > .logoContainer, .sidebar > .itemContainer,
@@ -23,9 +24,9 @@
     width: 40px;
     height: 40px;
     cursor: pointer;
-    background-color: var(--logo);
+    background-color: var(--contrast);
     border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px -2px 0px inset, 
+    box-shadow: rgba(0, 0, 0, 0.3) 0px -2px 0px inset,
                 rgba(0, 0, 0, 0.4) 0px 1px 1px;
     padding: 5px;
     margin: 5px
@@ -33,7 +34,7 @@
 
 .sidebar > .itemContainer, .sidebar > .itemContainerA {
     text-decoration: none;
-    color: var(--bacneg);
+    color: var(--text-secondary);
     width: 80%;
     padding: 5px;
     transition: all ease-in .2s;
@@ -41,7 +42,7 @@
 
 .sidebar > .itemContainerA {
     background-color: var(--contrast);
-    color: var(--text);
+    color: var(--text-inverse);
 }
 
 .sidebar > .switch {
@@ -59,8 +60,8 @@
 }
 
 .sidebar > .itemContainer:hover {
-    background-color: var(--contrast);
-    color: var(--text);
+    background-color: var(--background-tertiary);
+    color: var(--text-primary);
     transform: translateY(-2px);
 }
 

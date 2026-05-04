@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
-import useUser from "../customHooks/useUser";
+import useUser from "../hooks/useAuth";
 import Modal from "./Modal";
 import Password from './Password';
 import "../css/profileCard.css"

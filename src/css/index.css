@@ -1,36 +1,64 @@
 .dark {
-  --bacground: #2A333D;
-  --bacneg: white;
-  --text: rgb(45, 45, 45);
-  --logo: rgba(255, 255, 255, 0.9);
+  --background: #1a1f2e;
+  --background-secondary: #252d3d;
+  --background-tertiary: #36414e;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b8c1;
+  --text-tertiary: #8a9199;
+  --text-inverse: #1a1f2e;
 
-  --contrast: white;
-  --bacdash: #36414E;
-  --border: transparent;
+  --border-color: #3d4556;
+  --logo: rgba(255, 255, 255, 0.9);
+  --contrast: #60a5fa;
+  --contrast-hover: #3b82f6;
+
+  /* Legacy names for compatibility */
+  --bacground: #1a1f2e;
+  --bacneg: #ffffff;
+  --text: #ffffff;
+  --bacdash: #36414e;
+  --border: #3d4556;
 }
 
 .light {
-  --bacground: white;
-  --bacneg: rgb(45, 45, 45);
-  --text: white;
-  --logo: rgba(0, 0, 0, 0.1);
+  --background: #ffffff;
+  --background-secondary: #f8f9fa;
+  --background-tertiary: #e7ecf1;
+  --text-primary: #1a1f2e;
+  --text-secondary: #555555;
+  --text-tertiary: #888888;
+  --text-inverse: #ffffff;
 
-  --contrast: dodgerblue;
-  --bacdash: #e7ecf1;
-  --border: #ced4dd;
+  --border-color: #d0d7de;
+  --logo: rgba(0, 0, 0, 0.1);
+  --contrast: #3b82f6;
+  --contrast-hover: #2563eb;
+
+  /* Legacy names for compatibility */
+  --bacground: #ffffff;
+  --bacneg: #1a1f2e;
+  --text: #ffffff;
+  --bacdash: #f8f9fa;
+  --border: #d0d7de;
 }
 
-body{
+body {
   margin: 0;
   padding: 0;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+  background-color: var(--background-secondary);
+  padding: 2px 6px;
+  border-radius: 3px;
 }
 
 /* Estilos generales para el proyecto */
@@ -38,21 +66,93 @@ code {
   margin: 0;
   padding: 0;
   width: 100%;
-  background-color: var(--bacdash);
+  background-color: var(--background);
+  color: var(--text-primary);
 }
 
 section {
   margin: auto;
   max-width: 1200px;
-  color: var(--bacneg);
+  color: var(--text-primary);
 }
 
 .containerLogged {
   display: flex;
-  background-color: var(--bacdash);
+  background-color: var(--background);
+  color: var(--text-primary);
 }
 
 .containerLogged > .content {
   margin-left: 10rem;
   width: 100%;
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+/* Estilos para inputs y formularios */
+input,
+select,
+textarea {
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--contrast);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Estilos para botones */
+button {
+  background-color: var(--contrast);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--contrast-hover);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
 }

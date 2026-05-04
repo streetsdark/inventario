@@ -1,35 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { BsImages, BsCheck, BsX } from "react-icons/bs";
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
+
+// ✅ Firebase moderno
+import { db } from "../firebase/config";
+import { collection, addDoc, getDoc, doc, setDoc } from "firebase/firestore";
 
 import "../css/formProduct.css";
 import Modal from "./Modal";
 
 const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) => {
 
-    const [modalConfig, setModalConfig] = useState({show: false, text: '', type: '', showButton: true})
-    const [ product, setProduct ] = useState({
+    const [modalConfig, setModalConfig] = useState({
+        show: false,
+        text: '',
+        type: '',
+    showButton: true
+    });
+
+    const [product, setProduct] = useState({
         sku: '',
         description: '',
         cost: 0,
         brand: '',
-        width: {
-            size: 0,
-            unit: '-'
-        },
-        height: {
-            size: 0,
-            unit: '-'
-        },
-        weight: {
-            size: 0,
-            unit: '-'
-        },
-        thickness: {
-            size: 0,
-            unit: '-'
-        },
+        width: { size: 0, unit: '-' },
+        height: { size: 0, unit: '-' },
+        weight: { size: 0, unit: '-' },
+        thickness: { size: 0, unit: '-' },
         color: '',
         product_Unit: '-',
         stock: 0,
@@ -37,32 +33,38 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
         img_b64: ''
     });
 
+    // 🔍 Obtener producto para editar
     useEffect(() => {
         async function getData() {
-            const db = firebase.firestore();
+            try {
+                const docRef = doc(db, "products", editProduct.id);
+                const docSnap = await getDoc(docRef);
 
-            await db.collection("products").doc(`${editProduct.id}`).get().then((doc) => {
-                if (doc.exists) {
-                    setProduct(doc.data());
-                }else{
-                    console.log("No se encontro el item seleccionado");
+                if (docSnap.exists()) {
+                    setProduct(docSnap.data());
+                } else {
+                    console.log("No se encontró el item seleccionado");
                 }
-            }).catch((error) => {
-                console.log(`Lo siento ha ocurrdio un error. ${error}`);
-            })
+            } catch (error) {
+                console.log(`Error: ${error}`);
+            }
         }
 
-        if (editProduct.status) getData();
-            
+        if (editProduct?.status && editProduct?.id) {
+            getData();
+        }
+
     }, [editProduct]);
 
-    const handleSubmit = (e) => {
+    // 💾 Guardar / actualizar
+    /*const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const db = firebase.firestore();
+        try {
+            if (!editProduct.status) {
+                // ➕ Crear
+                await addDoc(collection(db, "products"), product);
 
-        if (!editProduct.status) {
-            db.collection('products').add(product).then((docRef) => {
                 setModalConfig({
                     show: true,
                     text: 'El producto ha sido registrado exitosamente.',
@@ -74,16 +76,11 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
                     setNewProduct(false);
                     setQuery("");
                 }, 2000);
-            }).catch((error) => {
-                setModalConfig({
-                    show: true,
-                    text: `Lo siento ha ocurrido un error. ${error}`,
-                    type: 'error',
-                    showButton: true
-                });
-            });
-        } else {
-            db.collection("products").doc(editProduct.id).set(product).then(() => {
+
+            } else {
+                // ✏️ Actualizar
+                await setDoc(doc(db, "products", editProduct.id), product);
+
                 setModalConfig({
                     show: true,
                     text: 'El producto ha sido actualizado exitosamente.',
@@ -92,79 +89,140 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
                 });
 
                 setTimeout(() => {
-                    setEditProduct({status: false, id: 0});
+                    setEditProduct({ status: false, id: null });
                     setQuery("");
                 }, 2000);
-            }).catch((error) => {
-                setModalConfig({
-                    show: true,
-                    text: `Lo siento ha ocurrido un error. ${error}`,
-                    type: 'error',
-                    showButton: true
-                });
-            });
-        }        
-    }
+            }
 
-    const handleChange = (e) => {
+        } catch (error) {
+            setModalConfig({
+                show: true,
+                text: `Error: ${error.message}`,
+                type: 'error',
+                showButton: true
+            });
+        }*/
+
+            const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (e.target.name === 'height' || e.target.name === 'weight'
-         || e.target.name === 'thickness' ||e.target.name === 'width') {
-            if (Number(e.target.value) >= 0) {
-                setProduct({ ...product, [e.target.name]: { ...product[e.target.name] , size: Number(e.target.value) }});
-            }else{
-                setProduct({ ...product, [e.target.name]: { ...product[e.target.name] , unit: e.target.value }});
+        try {
+            const cleanProduct = {
+                ...product,
+                cost: Number(product.cost),
+                stock: Number(product.stock),
+                pending: Number(product.pending),
+            };
+
+            if (!editProduct.status) {
+                await addDoc(collection(db, "products"), cleanProduct);
+            } else {
+                await setDoc(doc(db, "products", editProduct.id), cleanProduct);
+            }
+
+            setModalConfig({
+                show: true,
+                text: 'Guardado correctamente',
+                type: 'success',
+                showButton: false
+            });
+
+            setTimeout(() => {
+                setNewProduct(false);
+                setEditProduct({ status: false, id: null });
+                setQuery("");
+            }, 1500);
+
+        } catch (error) {
+            console.error(error);
+
+            setModalConfig({
+                show: true,
+                text: error.message,
+                type: 'error',
+                showButton: true
+            });
+        }
+    
+    }
+
+    
+
+    // 🧠 Manejo de inputs
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        if (['height', 'weight', 'thickness', 'width'].includes(name)) {
+            if (!isNaN(value) && value !== '') {
+                setProduct({
+                    ...product,
+                    [name]: { ...product[name], size: Number(value) }
+                });
+            } else {
+                setProduct({
+                    ...product,
+                    [name]: { ...product[name], unit: value }
+                });
             }
         } else {
-            setProduct({ ...product, [e.target.name]: e.target.value});
+            setProduct({
+                ...product,
+                [name]: value
+            });
         }
+    };
 
-    }
-
+    // 🖼️ Imagen base64
     const handleImage = (e) => {
-        e.preventDefault();
+        const file = e.target.files[0];
+        if (!file) return;
 
-        var file = e.target.files[0];
-        var reader = new FileReader();
-        reader.onloadend = function() {
-            setProduct({ ...product, img_b64: `${reader.result}`});
-        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setProduct({
+                ...product,
+                img_b64: reader.result
+            });
+        };
 
         reader.readAsDataURL(file);
-    }
+    };
 
+    // ❌ Cancelar
     const handleCancel = (e) => {
         e.preventDefault();
-
         setNewProduct(false);
-        setEditProduct({status: false, id: 0});
+        setEditProduct({ status: false, id: null });
         setQuery("");
-    }
+    };
 
     return (
         <form className="containerFormProducts" onSubmit={handleSubmit}>
 
             <div className="container-column">
                 <div className="column">
+
                     <div className="img-container">
-                        { product.img_b64 ? <img src={product.img_b64} alt="product"/> : <BsImages size={60}/> }            
-                        <input type="file" accept="image/*" onChange={handleImage}/>
-                    </div>
-                    
-                    <div className="form-group">
-                        <label htmlFor="">Código: </label>
-                        <input type="text" name="sku" value={product.sku} onChange={handleChange} required/>
+                        {product.img_b64
+                            ? <img src={product.img_b64} alt="product" />
+                            : <BsImages size={60} />
+                        }
+                        <input type="file" accept="image/*" onChange={handleImage} />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="">Descripcion: </label>
-                        <input type="text" name="description" value={product.description} onChange={handleChange} required/>    
+                        <label>Código:</label>
+                        <input type="text" name="sku" value={product.sku} onChange={handleChange} required />
                     </div>
 
                     <div className="form-group">
-                    <label htmlFor="">Unidad de medida: </label>
-                        <select style={{flex: 1}} name="product_Unit" value={product.product_Unit} onChange={handleChange} required>
+                        <label>Descripción:</label>
+                        <input type="text" name="description" value={product.description} onChange={handleChange} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Unidad de medida:</label>
+                        <select name="product_Unit" value={product.product_Unit} onChange={handleChange} required>
                             <option value="-">-</option>
                             <option value="mm">mm</option>
                             <option value="cm">cm</option>
@@ -177,91 +235,81 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="">Costo: </label>
-                        <input type="number" name="cost" value={product.cost} onChange={handleChange} required/>
+                        <label>Costo:</label>
+                        <input type="number" name="cost" value={product.cost} onChange={handleChange} required />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="">Stock actual: </label>
-                        <input type="number" name="stock" value={product.stock} onChange={handleChange} required disabled/>
+                        <label>Stock actual:</label>
+                        <input type="number" name="stock" value={product.stock} disabled />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="">Pendiente: </label>
-                        <input type="number" name="pending" value={product.pending} onChange={handleChange} required disabled/>
+                        <label>Pendiente:</label>
+                        <input type="number" name="pending" value={product.pending} disabled />
                     </div>
+
                 </div>
 
                 <div className="column">
+
                     <div className="form-group">
-                        <label htmlFor="">Marca: </label>
-                        <input type="text" name="brand" value={product.brand} onChange={handleChange} required/>
+                        <label>Marca:</label>
+                        <input type="text" name="brand" value={product.brand} onChange={handleChange} required />
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="">Color: </label>
-                        <input type="text" name="color" value={product.color} onChange={handleChange} required/>
+                        <label>Color:</label>
+                        <input type="text" name="color" value={product.color} onChange={handleChange} required />
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="">Alto: </label>
-                        <input type="number" name="height" value={product.height.size} onChange={handleChange} required/>
-                        <select name="height" value={product.height.unit} onChange={handleChange}>
-                            <option value="-">-</option>
-                            <option value="mm">mm</option>
-                            <option value="cm">cm</option>
-                            <option value="m">m</option>
-                        </select>
-                    </div>
+                    {["height", "width", "thickness", "weight"].map((field) => (
+                        <div className="form-group" key={field}>
+                            <label>{field}:</label>
+                            <input
+                                type="number"
+                                name={field}
+                                value={product[field].size}
+                                onChange={handleChange}
+                                required
+                            />
+                            <select
+                                name={field}
+                                value={product[field].unit}
+                                onChange={handleChange}
+                            >
+                                <option value="-">-</option>
+                                <option value="mm">mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m">m</option>
+                                {field === "weight" && (
+                                    <>
+                                        <option value="g">g</option>
+                                        <option value="KG">KG</option>
+                                        <option value="Ton">Ton</option>
+                                    </>
+                                )}
+                            </select>
+                        </div>
+                    ))}
 
-                    <div className="form-group">
-                        <label htmlFor="">Ancho: </label>
-                        <input type="number" name="width" value={product.width.size} onChange={handleChange} required/>
-                        <select name="width" value={product.width.unit} onChange={handleChange}>
-                            <option value="-">-</option>
-                            <option value="mm">mm</option>
-                            <option value="cm">cm</option>
-                            <option value="m">m</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="">Grosor: </label>
-                        <input type="number" name="thickness" value={product.thickness.size} onChange={handleChange} required/>
-                        <select name="thickness" value={product.thickness.unit} onChange={handleChange}>
-                            <option value="-">-</option>
-                            <option value="mm">mm</option>
-                            <option value="cm">cm</option>
-                            <option value="m">m</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="">Peso: </label>
-                        <input type="number" name="weight" value={product.weight.size} onChange={handleChange} required/>
-                        <select name="weight" value={product.weight.unit} onChange={handleChange}>
-                            <option value="-">-</option>
-                            <option value="g">g</option>
-                            <option value="KG">KG</option>
-                            <option value="Ton">Ton</option>
-                        </select> 
-                    </div>
                 </div>
-            </div>            
+            </div>
 
-            <div className="container-button">                
-                <button onClick={handleCancel} style={{backgroundColor: 'red'}}>
-                    <BsX size={22} style={{ marginRight: 5}} color="#FFFFFF"/>
-                    <b>Cancelar</b>
+            <div className="container-button">
+                <button type="button" onClick={handleCancel} style={{ backgroundColor: 'red' }}>
+                    <BsX size={22} color="#fff" /> Cancelar
                 </button>
+
                 <button>
-                    <BsCheck size={22} style={{ marginRight: 5 }}/>
-                    { editProduct.status ? <b>Actualizar datos</b> : <b>Crear producto</b> }
+                    <BsCheck size={22} />
+                    {editProduct.status ? "Actualizar datos" : "Crear producto"}
                 </button>
             </div>
-            <Modal modalConfig={modalConfig} setModalConfig={setModalConfig}/>
-        </form>
-    )
-}
 
-export default FormProduct
+            <Modal modalConfig={modalConfig} setModalConfig={setModalConfig} />
+        </form>
+    );
+};
+
+export default FormProduct;

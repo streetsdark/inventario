@@ -4,11 +4,10 @@ import { useNavigate } from "react-router-dom";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
-import Sidebar from '../components/Sidebar';
 import Modal from "../components/Modal";
 import '../css/profile.css';
 
-const Profile = ({ mode, setMode }) => {
+const Profile = () => {
 
     const history = useNavigate();
     const [modalConfig, setModalConfig] = useState({show: false, text: '', type: '', showButton: true});
@@ -18,7 +17,7 @@ const Profile = ({ mode, setMode }) => {
         const user = firebase.auth().currentUser;
         setUser(user);
     }, []);
-    
+
     const signOut = () => {
         firebase.auth().signOut().then(() => {
             setModalConfig({
@@ -47,7 +46,7 @@ const Profile = ({ mode, setMode }) => {
 
     const updatePerfil = () => {
         const cUser = firebase.auth().currentUser;
-        
+
         cUser.updateProfile({
             displayName: user.displayName,
             photoURL: user.photoURL
@@ -83,59 +82,55 @@ const Profile = ({ mode, setMode }) => {
     }
 
     return (
-        <div className="containerLogged">
-            <Sidebar mode={mode} setMode={setMode}/>
-            <div className="content">
-                <div className="user-data">
-                    
-                    <div className="img-container">
-                        { user?.photoURL ? <img src={user?.photoURL} alt="product"/> : <BsImages size={60}/> }        
-                        <input type="file" accept="image/*" onChange={handleImage}/>
-                    </div>
-                    
-                    <div className="form-group">
-                        <label htmlFor="">Nombre: </label>
-                        <input type="text" name="displayName" value={user?.displayName} onChange={handleChange}/>
-                        <span onClick={ updatePerfil }>Actualizar nombre e imagen</span>
-                    </div>
+        <div className="content">
+            <div className="user-data">
+                <div className="img-container">
+                    { user?.photoURL ? <img src={user?.photoURL} alt="product"/> : <BsImages size={60}/> }
+                    <input type="file" accept="image/*" onChange={handleImage}/>
+                </div>
 
-                        <div className="form-group">
-                            <label htmlFor="">Correo Electrónico: </label>
-                            <input type="text" name="email" value={user?.email} onChange={handleChange}/>
-                            
-                            {user?.emailVerified ? null : <span onClick={ validateEmail }>Validar correo electrónico</span>}
-                        </div>
+                <div className="form-group">
+                    <label htmlFor="">Nombre: </label>
+                    <input type="text" name="displayName" value={user?.displayName} onChange={handleChange}/>
+                    <span onClick={ updatePerfil }>Actualizar nombre e imagen</span>
+                </div>
 
-                        <div className="form-group">
-                            <label htmlFor="">¿Correo verificado?: </label>
-                            <select style={{flex: 1}} name="emailVerified" value={user?.emailVerified ? 'Si' : 'No'} disabled>
-                                <option value="-">-</option>
-                                <option value="Si">Si</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
+                <div className="form-group">
+                    <label htmlFor="">Correo Electrónico: </label>
+                    <input type="text" name="email" value={user?.email} onChange={handleChange}/>
 
-                        <div className="form-group">
-                            <label htmlFor="">Telefóno: </label>
-                            <input type="text" name="phoneNumber" value={user?.phoneNumber ? user.phoneNumber : '-'} disabled/>
-                        </div>
+                    {user?.emailVerified ? null : <span onClick={ validateEmail }>Validar correo electrónico</span>}
+                </div>
 
-                        <div className="form-group">
-                            <label htmlFor="">Fecha de registro: </label>
-                            <input type="text" name="creationTime" value={user?.metadata?.creationTime} disabled/>
-                        </div>
+                <div className="form-group">
+                    <label htmlFor="">¿Correo verificado?: </label>
+                    <select style={{flex: 1}} name="emailVerified" value={user?.emailVerified ? 'Si' : 'No'} disabled>
+                        <option value="-">-</option>
+                        <option value="Si">Si</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
 
-                        <div className="form-group">
-                            <label htmlFor="">Ultimo inicio de sesión: </label>
-                            <input type="text" name="lastSignInTime" value={user?.metadata?.lastSignInTime} disabled/>
-                        </div>
-                        
-                        <div className="container-button">
-                            <button onClick={signOut} style={{backgroundColor: 'red'}}>
-                                <BsX size={22} style={{ marginRight: 5}} color="#FFFFFF"/>
-                                Cerrar sesión
-                            </button>
-                        </div>
+                <div className="form-group">
+                    <label htmlFor="">Telefóno: </label>
+                    <input type="text" name="phoneNumber" value={user?.phoneNumber ? user.phoneNumber : '-'} disabled/>
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="">Fecha de registro: </label>
+                    <input type="text" name="creationTime" value={user?.metadata?.creationTime} disabled/>
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="">Ultimo inicio de sesión: </label>
+                    <input type="text" name="lastSignInTime" value={user?.metadata?.lastSignInTime} disabled/>
+                </div>
+
+                <div className="container-button">
+                    <button onClick={signOut} style={{backgroundColor: 'red'}}>
+                        <BsX size={22} style={{ marginRight: 5}} color="#FFFFFF"/>
+                        Cerrar sesión
+                    </button>
                 </div>
             </div>
             <Modal modalConfig={modalConfig} setModalConfig={setModalConfig}/>

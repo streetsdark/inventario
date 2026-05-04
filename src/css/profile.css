@@ -2,12 +2,14 @@
     width: 95%;
     max-width: 50rem;
     margin: 2rem auto;
-    border-radius: .5rem;
-    border: 1px solid var(--border);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: var(--bacground);
+    background-color: var(--background-secondary);
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .user-data > .img-container {
@@ -16,31 +18,121 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-bottom: 1rem;
 }
 
-.user-data > .img-container > img, .user-data > .img-container > svg {
+.user-data > .img-container > img,
+.user-data > .img-container > svg {
     width: 10rem;
-    height: auto;
+    height: 10rem;
+    object-fit: cover;
     padding: 1px;
     border-radius: 50%;
-    box-shadow: 0 0 15px var(--border);
+    box-shadow: 0 0 15px var(--border-color);
+    background-color: var(--background);
+    color: var(--text-secondary);
+}
+
+.user-data > .img-container > input[type="file"] {
+    margin-top: 1rem;
+    cursor: pointer;
 }
 
 .user-data > .form-group {
     width: 95%;
-    margin:5px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-data > .form-group > label {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.user-data > .form-group > input,
+.user-data > .form-group > select {
+    background-color: var(--background);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.user-data > .form-group > input:focus,
+.user-data > .form-group > select:focus {
+    outline: none;
+    border-color: var(--contrast);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.user-data > .form-group > input:disabled,
+.user-data > .form-group > select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: var(--background-tertiary);
 }
 
 .user-data > .form-group > span {
-    color: dodgerblue;
+    color: var(--contrast);
     cursor: pointer;
-    margin: 0;
+    margin: 8px 0;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.user-data > .form-group > span:hover {
+    color: var(--contrast-hover);
+    text-decoration: underline;
 }
 
 .user-data > .container-button {
     width: 100%;
-    margin: .5rem;
+    margin: 1rem 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 1rem;
+}
+
+.user-data > .container-button > button {
+    background-color: var(--contrast);
+    color: var(--text-inverse);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-data > .container-button > button:hover {
+    background-color: var(--contrast-hover);
+    transform: translateY(-2px);
+}
+
+.user-data > .container-button > button:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .user-data {
+        width: 100%;
+        margin: 1rem;
+        padding: 1rem;
+    }
+
+    .user-data > .img-container > img,
+    .user-data > .img-container > svg {
+        width: 8rem;
+        height: 8rem;
+    }
 }

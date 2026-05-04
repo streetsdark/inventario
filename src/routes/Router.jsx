@@ -1,44 +1,79 @@
-import { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+// /router/AppRouter.jsx
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import useUser from '../customHooks/useUser';
+import useAuth from "../hooks/useAuth";
+import PrivateRoute from "../components/PrivateRoute";
+import Layout from "../components/Layout";
+import Loader from "../components/Loader";
 
-import Home from '../views/Home';
-import Pricing from '../views/Pricing';
-import Login from '../views/Login';
-import Dashboard from '../views/Dashboard';
-import Products from '../views/Products';
-import Moves from '../views/Moves';
-import Profile from '../views/Profile';
-import Error from '../views/E404';
+import Home from "../views/Home";
+import Login from "../views/Login";
+import Pricing from "../views/Pricing";
+import Dashboard from "../views/Dashboard";
+import Products from "../views/Products";
+import Moves from "../views/Moves";
+import Profile from "../views/Profile";
+import Error from "../views/E404";
 
-export default function App() {
+export default function AppRouter() {
+  const { user, loading } = useAuth();
 
-  const { user } = useUser();
-  const [mode, setMode] = useState(false);
+  if (loading) return <Loader />;
 
-    return (
-      <div className={mode ? 'dark' : 'light'}>
-        <BrowserRouter>
-          {
-            user
-            ? (
-              <Routes>
-                <Route path="/dashboard" element={<Dashboard mode={mode} setMode={setMode}/>} />
-                <Route path="/products" element={<Products mode={mode} setMode={setMode}/>} />
-                <Route path="/moves" element={<Moves mode={mode} setMode={setMode}/>} />
-                <Route path="/profile" element={<Profile mode={mode} setMode={setMode}/>} />
-              </Routes>
-            )
-            : (
-              <Routes>
-                <Route path="/login" element={<Login mode={mode} setMode={setMode}/>} />
-                <Route path="/pricing" element={<Pricing mode={mode} setMode={setMode}/>} />
-                <Route path="/" element={<Home mode={mode} setMode={setMode}/>} />
-              </Routes>
-            )
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        {/* 🌐 Públicas */}
+        <Route path="/" element={<Home />} />
+        <Route path="/pricing" element={<Pricing />} />
+
+        <Route 
+          path="/login" 
+          element={user ? <Navigate to="/dashboard" /> : <Login />} 
+        />
+
+        {/* 🔒 Privadas con layout */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute user={user} loading={loading}>
+              <Layout><Dashboard /></Layout>
+            </PrivateRoute>
           }
-        </BrowserRouter>
-      </div>
-    );
-  }
+        />
+
+        <Route
+          path="/products"
+          element={
+            <PrivateRoute user={user} loading={loading}>
+              <Layout><Products /></Layout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/moves"
+          element={
+            <PrivateRoute user={user} loading={loading}>
+              <Layout><Moves /></Layout>
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute user={user} loading={loading}>
+              <Layout><Profile /></Layout>
+            </PrivateRoute>
+          }
+        />
+
+        {/* 🚫 404 */}
+        <Route path="*" element={<Error />} />
+
+      </Routes>
+    </BrowserRouter>
+  );
+}
