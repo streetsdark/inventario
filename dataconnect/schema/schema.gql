@@ -1,0 +1,41 @@
+type User @table {
+  displayName: String!
+  createdAt: Timestamp!
+  email: String
+  photoUrl: String
+}
+
+type Club @table {
+  user: User!
+  name: String!
+  type: String!
+  brand: String!
+  model: String!
+  createdAt: Timestamp!
+  loft: Float
+  lie: Float
+  shaftFlex: String
+  gripType: String
+  notes: String
+  imageUrl: String
+}
+
+type GolfRound @table {
+  user: User!
+  date: Date!
+  courseName: String!
+  score: Int!
+  createdAt: Timestamp!
+  notes: String
+}
+
+type ClubObservation @table {
+  user: User!
+  club: Club!
+  golfRound: GolfRound!
+  observationType: String!
+  createdAt: Timestamp!
+  notes: String
+  distance: Float
+  outcome: String
+}

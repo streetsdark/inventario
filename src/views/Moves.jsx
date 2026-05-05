@@ -43,6 +43,7 @@ const Moves = () => {
     const [recipientUser, setRecipientUser] = useState('');
     const [outputStatus, setOutputStatus] = useState('entregado');
     const [outputUserFilter, setOutputUserFilter] = useState('');
+    const [selectedReturnMove, setSelectedReturnMove] = useState(null);
     
     //const { products, loading } = useProducts(query);
     //const { moves, loading: loadingMoves } = useMoves();
@@ -67,6 +68,7 @@ const Moves = () => {
         setMoveDate(getTodayDate());
         setRecipientUser('');
         setOutputStatus('entregado');
+        setSelectedReturnMove(null);
     };
 
     const handleSubmit = async (e) => {
@@ -133,6 +135,9 @@ const Moves = () => {
                 const savedProductId = editProduct.id;
                 const savedProductDescription = editProduct.description;
                 let currentPending = 0;
+                
+                // Referencia al movimiento de devolución si existe
+                const returnMoveRef = selectedReturnMove ? doc(db, "moves", selectedReturnMove) : null;
 
                 await runTransaction(db, async (transaction) => {
                     const productSnapshot = await transaction.get(productRef);
@@ -174,6 +179,15 @@ const Moves = () => {
                         deliveryStatus: typeIn ? '' : outputStatus,
                         createdAt: serverTimestamp(),
                     });
+                    
+                    // Si es una devolución, actualizar el movimiento original a "devuelto"
+                    if (returnMoveRef) {
+                        transaction.update(returnMoveRef, {
+                            deliveryStatus: 'devuelto',
+                            returnDate: moveDate,
+                            returnQuantity: parsedQuantity,
+                        });
+                    }
                 });
 
                 if (typeIn && currentPending > 0) {
@@ -214,6 +228,22 @@ const Moves = () => {
                         showButton: true,
                         handleClick: handleRemovePending,
                     });
+                    return;
+                }
+
+                // Si fue una devolución registrada desde el preview
+                if (selectedReturnMove && typeIn) {
+                    setModalConfig({
+                        show: true,
+                        text: `✓ Devolución registrada correctamente.\n\nEl producto '${editProduct.description}' cambió de estado a "DEVUELTO" y el stock se incrementó en ${parsedQuantity} ${editProduct.product_Unit || 'unidades'}.`,
+                        type: 'success',
+                        showButton: false
+                    });
+
+                    setTimeout(() => {
+                        setModalConfig({show: false, text: '', type: '', showButton: true, handleClick: null});
+                        resetMovementForm();
+                    }, 2500);
                     return;
                 }
 
@@ -300,6 +330,34 @@ const Moves = () => {
         setMoveDate(getTodayDate());
         setRecipientUser('');
         setOutputStatus('entregado');
+        setSelectedReturnMove(null);
+    };
+
+    const handleSelectReturnMove = (move) => {
+        // Si está pendiente por devolver, permite seleccionarlo
+        if (move.deliveryStatus === 'pendiente por devolver') {
+            setSelectedReturnMove(move.id === selectedReturnMove ? null : move.id);
+            
+            // Si lo selecciona, llena el formulario como entrada
+            if (move.id !== selectedReturnMove) {
+                const matchedProduct = products.find(p => p.id === move.productId);
+                if (matchedProduct) {
+                    setEditProduct(matchedProduct);
+                } else {
+                    // Si no encuentra el producto en los actuales, crea uno temporal
+                    setEditProduct({
+                        id: move.productId,
+                        sku: move.sku,
+                        description: move.description,
+                        stock: 0,
+                        product_Unit: move.unit
+                    });
+                }
+                setTypeIn(true); // Siempre es entrada (devolución)
+                setQuantity(0); // Cantidad a devolver (debe ingresar el usuario)
+                setMoveDate(getTodayDate());
+            }
+        }
     };
 
     return (
@@ -334,6 +392,23 @@ const Moves = () => {
                    <div className="container-item">
                     <h2>Generar nuevo movimiento</h2>
                     <p>Por favor selecciona el producto del listado derecho al que deseas generar el movimiento de stock.</p>
+                    
+                    {selectedReturnMove && (
+                        <div style={{
+                            backgroundColor: '#f4d03f',
+                            color: '#5d4600',
+                            padding: '12px 16px',
+                            borderRadius: '8px',
+                            marginBottom: '1rem',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                        }}>
+                            ✓ Registrando devolución - Ingresa la cantidad devuelta
+                        </div>
+                    )}
+
                     <form className="form-move" onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label htmlFor="">Código</label>
@@ -470,6 +545,10 @@ const Moves = () => {
                         <h2>Previsualizacion de salidas</h2>
                         <p>
                             Consulta aqui las salidas registradas por usuario con fecha, material, destinatario y estado.
+                            <br/>
+                            <b style={{color: '#f4d03f'}}>✓ Click en items "Pendiente por devolver"</b> para registrar rápidamente su devolución.
+                            <br/>
+                            <b style={{color: '#6c63ff', fontSize: '0.95rem'}}>• Estados: Pendiente (Amarillo) | Entregado (Verde) | Devuelto (Azul)</b>
                         </p>
                     </div>
                 </div>
@@ -488,7 +567,19 @@ const Moves = () => {
                     {loadingMoves ? <p>Cargando salidas...</p> : null}
                     {!loadingMoves && filteredOutputMoves.length ? (
                         filteredOutputMoves.map((move) => (
-                            <div key={move.id} className="output-preview-item">
+                            <div 
+                                key={move.id} 
+                                className={`output-preview-item ${move.deliveryStatus === 'pendiente por devolver' ? 'is-selectable' : ''} ${selectedReturnMove === move.id ? 'is-selected' : ''}`}
+                                onClick={() => {
+                                    if (move.deliveryStatus === 'pendiente por devolver') {
+                                        handleSelectReturnMove(move);
+                                    }
+                                }}
+                                style={{ 
+                                    cursor: move.deliveryStatus === 'pendiente por devolver' ? 'pointer' : 'default',
+                                    opacity: move.deliveryStatus === 'pendiente por devolver' ? 1 : 0.7
+                                }}
+                            >
                                 <div className="output-preview-main">
                                     <h3>{move.description || 'Material sin nombre'}</h3>
                                     <p><b>Codigo:</b> {move.sku || '-'}</p>
@@ -497,7 +588,7 @@ const Moves = () => {
                                     <p><b>Entregado a:</b> {move.recipientUser || '-'}</p>
                                 </div>
                                 <div className="output-preview-side">
-                                    <span className={`output-status-badge ${move.deliveryStatus === 'pendiente por devolver' ? 'is-pending' : 'is-delivered'}`}>
+                                    <span className={`output-status-badge ${move.deliveryStatus === 'pendiente por devolver' ? 'is-pending' : move.deliveryStatus === 'devuelto' ? 'is-returned' : 'is-delivered'}`}>
                                         {move.deliveryStatus || 'entregado'}
                                     </span>
                                 </div>

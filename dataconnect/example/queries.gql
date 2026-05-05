@@ -1,0 +1,63 @@
+query ListAllClubsByUser @auth(level: USER) {
+  clubs(where: { userId: { eq_expr: "auth.uid" } }) {
+    id
+    name
+    brand
+    model
+    type
+    loft
+    lie
+    shaftFlex
+    gripType
+    notes
+    imageUrl
+    createdAt
+  }
+}
+
+mutation AddClubToInventory($name: String!, $brand: String!, $model: String!, $type: String!, $loft: Float, $lie: Float, $shaftFlex: String, $gripType: String, $notes: String, $imageUrl: String) @auth(level: USER) {
+  club_insert(
+    data: {
+      userId_expr: "auth.uid"
+      name: $name
+      brand: $brand
+      model: $model
+      type: $type
+      loft: $loft
+      lie: $lie
+      shaftFlex: $shaftFlex
+      gripType: $gripType
+      notes: $notes
+      imageUrl: $imageUrl
+      createdAt_expr: "request.time"
+    }
+  ) {
+    id
+  }
+}
+
+query GetGolfRoundsByUser @auth(level: USER) {
+  golfRounds(where: { userId: { eq_expr: "auth.uid" } }, orderBy: [{ date: DESC }]) {
+    id
+    date
+    courseName
+    score
+    notes
+    createdAt
+  }
+}
+
+mutation LogGolfRound($date: Date!, $courseName: String!, $score: Int!, $notes: String) @auth(level: USER) {
+  golfRound_insert(
+    data: {
+      userId_expr: "auth.uid"
+      date: $date
+      courseName: $courseName
+      score: $score
+      notes: $notes
+      createdAt_expr: "request.time"
+    }
+  ) {
+    id
+  }
+}

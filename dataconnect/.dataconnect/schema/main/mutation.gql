@@ -1,0 +1,450 @@
+extend type Mutation {
+  """
+  ✨ Insert a single `Club` into the table and return its key. Columns not specified in `data` will receive defaults (e.g. `null`).
+  """
+  club_insert(
+    """
+    Data object to insert into the table.
+    """
+    data: Club_Data!
+  ): Club_KeyOutput! @fdc_generated(from: "Club", purpose: INSERT_SINGLE)
+  """
+  ✨ Insert a single `ClubObservation` into the table and return its key. Columns not specified in `data` will receive defaults (e.g. `null`).
+  """
+  clubObservation_insert(
+    """
+    Data object to insert into the table.
+    """
+    data: ClubObservation_Data!
+  ): ClubObservation_KeyOutput! @fdc_generated(from: "ClubObservation", purpose: INSERT_SINGLE)
+  """
+  ✨ Insert a single `GolfRound` into the table and return its key. Columns not specified in `data` will receive defaults (e.g. `null`).
+  """
+  golfRound_insert(
+    """
+    Data object to insert into the table.
+    """
+    data: GolfRound_Data!
+  ): GolfRound_KeyOutput! @fdc_generated(from: "GolfRound", purpose: INSERT_SINGLE)
+  """
+  ✨ Insert a single `User` into the table and return its key. Columns not specified in `data` will receive defaults (e.g. `null`).
+  """
+  user_insert(
+    """
+    Data object to insert into the table.
+    """
+    data: User_Data!
+  ): User_KeyOutput! @fdc_generated(from: "User", purpose: INSERT_SINGLE)
+  """
+  ✨ Insert `Club` objects into the table and return their keys. Columns not specified in `data` will receive defaults (e.g. `null`).
+  """
+  club_insertMany(
+    """
+    List of data objects to insert into the table.
+    """
+    data: [Club_Data!]!
+  ): [Club_KeyOutput!]! @fdc_generated(from: "Club", purpose: INSERT_MULTIPLE)
+  """
+  ✨ Insert `ClubObservation` objects into the table and return their keys. Columns not specified in `data` will receive defaults (e.g. `null`).
+  """
+  clubObservation_insertMany(
+    """
+    List of data objects to insert into the table.
+    """
+    data: [ClubObservation_Data!]!
+  ): [ClubObservation_KeyOutput!]! @fdc_generated(from: "ClubObservation", purpose: INSERT_MULTIPLE)
+  """
+  ✨ Insert `GolfRound` objects into the table and return their keys. Columns not specified in `data` will receive defaults (e.g. `null`).
+  """
+  golfRound_insertMany(
+    """
+    List of data objects to insert into the table.
+    """
+    data: [GolfRound_Data!]!
+  ): [GolfRound_KeyOutput!]! @fdc_generated(from: "GolfRound", purpose: INSERT_MULTIPLE)
+  """
+  ✨ Insert `User` objects into the table and return their keys. Columns not specified in `data` will receive defaults (e.g. `null`).
+  """
+  user_insertMany(
+    """
+    List of data objects to insert into the table.
+    """
+    data: [User_Data!]!
+  ): [User_KeyOutput!]! @fdc_generated(from: "User", purpose: INSERT_MULTIPLE)
+  """
+  ✨ Insert or update a single `Club` into the table, based on the primary key. Returns the key of the newly inserted or existing updated `Club`.
+  """
+  club_upsert(
+    """
+    Data object to insert or update if it already exists.
+    """
+    data: Club_Data!
+  ): Club_KeyOutput! @fdc_generated(from: "Club", purpose: UPSERT_SINGLE)
+  """
+  ✨ Insert or update a single `ClubObservation` into the table, based on the primary key. Returns the key of the newly inserted or existing updated `ClubObservation`.
+  """
+  clubObservation_upsert(
+    """
+    Data object to insert or update if it already exists.
+    """
+    data: ClubObservation_Data!
+  ): ClubObservation_KeyOutput! @fdc_generated(from: "ClubObservation", purpose: UPSERT_SINGLE)
+  """
+  ✨ Insert or update a single `GolfRound` into the table, based on the primary key. Returns the key of the newly inserted or existing updated `GolfRound`.
+  """
+  golfRound_upsert(
+    """
+    Data object to insert or update if it already exists.
+    """
+    data: GolfRound_Data!
+  ): GolfRound_KeyOutput! @fdc_generated(from: "GolfRound", purpose: UPSERT_SINGLE)
+  """
+  ✨ Insert or update a single `User` into the table, based on the primary key. Returns the key of the newly inserted or existing updated `User`.
+  """
+  user_upsert(
+    """
+    Data object to insert or update if it already exists.
+    """
+    data: User_Data!
+  ): User_KeyOutput! @fdc_generated(from: "User", purpose: UPSERT_SINGLE)
+  """
+  ✨ Insert or update `Club` objects into the table, based on the primary key. Returns the key of the newly inserted or existing updated `Club`.
+  """
+  club_upsertMany(
+    """
+    List of data objects to insert or update if it already exists.
+    """
+    data: [Club_Data!]!
+  ): [Club_KeyOutput!]! @fdc_generated(from: "Club", purpose: UPSERT_MULTIPLE)
+  """
+  ✨ Insert or update `ClubObservation` objects into the table, based on the primary key. Returns the key of the newly inserted or existing updated `ClubObservation`.
+  """
+  clubObservation_upsertMany(
+    """
+    List of data objects to insert or update if it already exists.
+    """
+    data: [ClubObservation_Data!]!
+  ): [ClubObservation_KeyOutput!]! @fdc_generated(from: "ClubObservation", purpose: UPSERT_MULTIPLE)
+  """
+  ✨ Insert or update `GolfRound` objects into the table, based on the primary key. Returns the key of the newly inserted or existing updated `GolfRound`.
+  """
+  golfRound_upsertMany(
+    """
+    List of data objects to insert or update if it already exists.
+    """
+    data: [GolfRound_Data!]!
+  ): [GolfRound_KeyOutput!]! @fdc_generated(from: "GolfRound", purpose: UPSERT_MULTIPLE)
+  """
+  ✨ Insert or update `User` objects into the table, based on the primary key. Returns the key of the newly inserted or existing updated `User`.
+  """
+  user_upsertMany(
+    """
+    List of data objects to insert or update if it already exists.
+    """
+    data: [User_Data!]!
+  ): [User_KeyOutput!]! @fdc_generated(from: "User", purpose: UPSERT_MULTIPLE)
+  """
+  ✨ Update a single `Club` based on `id`, `key` or `first`, setting columns specified in `data`. Returns the key of the updated `Club` or `null` if not found.
+  """
+  club_update(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: Club_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: Club_FirstRow
+
+    """
+    Data object containing fields to be updated.
+    """
+    data: Club_Data!
+  ): Club_KeyOutput @fdc_generated(from: "Club", purpose: UPDATE_SINGLE)
+  """
+  ✨ Update a single `ClubObservation` based on `id`, `key` or `first`, setting columns specified in `data`. Returns the key of the updated `ClubObservation` or `null` if not found.
+  """
+  clubObservation_update(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: ClubObservation_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: ClubObservation_FirstRow
+
+    """
+    Data object containing fields to be updated.
+    """
+    data: ClubObservation_Data!
+  ): ClubObservation_KeyOutput @fdc_generated(from: "ClubObservation", purpose: UPDATE_SINGLE)
+  """
+  ✨ Update a single `GolfRound` based on `id`, `key` or `first`, setting columns specified in `data`. Returns the key of the updated `GolfRound` or `null` if not found.
+  """
+  golfRound_update(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: GolfRound_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: GolfRound_FirstRow
+
+    """
+    Data object containing fields to be updated.
+    """
+    data: GolfRound_Data!
+  ): GolfRound_KeyOutput @fdc_generated(from: "GolfRound", purpose: UPDATE_SINGLE)
+  """
+  ✨ Update a single `User` based on `id`, `key` or `first`, setting columns specified in `data`. Returns the key of the updated `User` or `null` if not found.
+  """
+  user_update(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: User_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: User_FirstRow
+
+    """
+    Data object containing fields to be updated.
+    """
+    data: User_Data!
+  ): User_KeyOutput @fdc_generated(from: "User", purpose: UPDATE_SINGLE)
+  """
+  ✨ Update `Club` objects matching `where` conditions (or `all`, if true) according to `data`. Returns the number of rows updated.
+  """
+  club_updateMany(
+    """
+    Filter condition to specify which rows to update.
+    """
+    where: Club_Filter
+
+    """
+    Set to true to update all rows.
+    """
+    all: Boolean = false
+
+    """
+    Data object containing fields to update.
+    """
+    data: Club_Data!
+  ): Int! @fdc_generated(from: "Club", purpose: UPDATE_MULTIPLE)
+  """
+  ✨ Update `ClubObservation` objects matching `where` conditions (or `all`, if true) according to `data`. Returns the number of rows updated.
+  """
+  clubObservation_updateMany(
+    """
+    Filter condition to specify which rows to update.
+    """
+    where: ClubObservation_Filter
+
+    """
+    Set to true to update all rows.
+    """
+    all: Boolean = false
+
+    """
+    Data object containing fields to update.
+    """
+    data: ClubObservation_Data!
+  ): Int! @fdc_generated(from: "ClubObservation", purpose: UPDATE_MULTIPLE)
+  """
+  ✨ Update `GolfRound` objects matching `where` conditions (or `all`, if true) according to `data`. Returns the number of rows updated.
+  """
+  golfRound_updateMany(
+    """
+    Filter condition to specify which rows to update.
+    """
+    where: GolfRound_Filter
+
+    """
+    Set to true to update all rows.
+    """
+    all: Boolean = false
+
+    """
+    Data object containing fields to update.
+    """
+    data: GolfRound_Data!
+  ): Int! @fdc_generated(from: "GolfRound", purpose: UPDATE_MULTIPLE)
+  """
+  ✨ Update `User` objects matching `where` conditions (or `all`, if true) according to `data`. Returns the number of rows updated.
+  """
+  user_updateMany(
+    """
+    Filter condition to specify which rows to update.
+    """
+    where: User_Filter
+
+    """
+    Set to true to update all rows.
+    """
+    all: Boolean = false
+
+    """
+    Data object containing fields to update.
+    """
+    data: User_Data!
+  ): Int! @fdc_generated(from: "User", purpose: UPDATE_MULTIPLE)
+  """
+  ✨ Delete a single `Club` based on `id`, `key` or `first` and return its key (or `null` if not found).
+  """
+  club_delete(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: Club_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: Club_FirstRow
+  ): Club_KeyOutput @fdc_generated(from: "Club", purpose: DELETE_SINGLE)
+  """
+  ✨ Delete a single `ClubObservation` based on `id`, `key` or `first` and return its key (or `null` if not found).
+  """
+  clubObservation_delete(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: ClubObservation_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: ClubObservation_FirstRow
+  ): ClubObservation_KeyOutput @fdc_generated(from: "ClubObservation", purpose: DELETE_SINGLE)
+  """
+  ✨ Delete a single `GolfRound` based on `id`, `key` or `first` and return its key (or `null` if not found).
+  """
+  golfRound_delete(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: GolfRound_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: GolfRound_FirstRow
+  ): GolfRound_KeyOutput @fdc_generated(from: "GolfRound", purpose: DELETE_SINGLE)
+  """
+  ✨ Delete a single `User` based on `id`, `key` or `first` and return its key (or `null` if not found).
+  """
+  user_delete(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: User_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: User_FirstRow
+  ): User_KeyOutput @fdc_generated(from: "User", purpose: DELETE_SINGLE)
+  """
+  ✨ Delete `Club` objects matching `where` conditions (or `all`, if true). Returns the number of rows deleted.
+  """
+  club_deleteMany(
+    """
+    Filter condition to specify which rows to delete.
+    """
+    where: Club_Filter
+
+    """
+    Set to true to delete all rows.
+    """
+    all: Boolean = false
+  ): Int! @fdc_generated(from: "Club", purpose: DELETE_MULTIPLE)
+  """
+  ✨ Delete `ClubObservation` objects matching `where` conditions (or `all`, if true). Returns the number of rows deleted.
+  """
+  clubObservation_deleteMany(
+    """
+    Filter condition to specify which rows to delete.
+    """
+    where: ClubObservation_Filter
+
+    """
+    Set to true to delete all rows.
+    """
+    all: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation", purpose: DELETE_MULTIPLE)
+  """
+  ✨ Delete `GolfRound` objects matching `where` conditions (or `all`, if true). Returns the number of rows deleted.
+  """
+  golfRound_deleteMany(
+    """
+    Filter condition to specify which rows to delete.
+    """
+    where: GolfRound_Filter
+
+    """
+    Set to true to delete all rows.
+    """
+    all: Boolean = false
+  ): Int! @fdc_generated(from: "GolfRound", purpose: DELETE_MULTIPLE)
+  """
+  ✨ Delete `User` objects matching `where` conditions (or `all`, if true). Returns the number of rows deleted.
+  """
+  user_deleteMany(
+    """
+    Filter condition to specify which rows to delete.
+    """
+    where: User_Filter
+
+    """
+    Set to true to delete all rows.
+    """
+    all: Boolean = false
+  ): Int! @fdc_generated(from: "User", purpose: DELETE_MULTIPLE)
+}

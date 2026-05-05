@@ -542,4 +542,26 @@
   .card-chart h2 {
     font-size: 1.1rem;
   }
+
+  /* HIDE CHARTS ON VERY SMALL SCREENS */
+ @media (max-width: 900px) {
+  .sidebar.open ~ .content {
+    margin-left: 0;
+  }
+
+  .container-chart {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .container-chart > div {
+    width: 100% !important;
+    margin-right: 0 !important;
+  }
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
 }

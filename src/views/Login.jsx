@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import FormLogin from '../components/FormLogin';
-import Footer from '../components/Footer';
+//import Footer from '../components/Footer';
 
 const Login = ({ mode, setMode }) => {
 
@@ -11,7 +11,7 @@ const Login = ({ mode, setMode }) => {
 
             <FormLogin />
 
-            <Footer />
+           {/* <Footer /> */}
         </div>
     )
 }

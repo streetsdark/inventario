@@ -17,7 +17,7 @@ const Navbar = ({ page, mode, setMode }) => {
             </Link>
             <ul>
                 <li><Link to="/" className={page==='home'? 'active' : 'link'}>Home</Link></li>
-                <li><Link to="/pricing" className={page==='price'? 'active' : 'link'}>Precios</Link></li>
+                {/* <li><Link to="/pricing" className={page==='price'? 'active' : 'link'}>Precios</Link></li> */}
                 <li><Link to="/login" className={page==='login'? 'active' : 'link'}>Iniciar Sesión</Link></li>
                 <li>
                     <div className="switch">

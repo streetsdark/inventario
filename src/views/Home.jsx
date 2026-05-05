@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 
-import Footer from '../components/Footer';
+//import Footer from '../components/Footer';
 import '../css/home.css';
 import imgBack from '../assets/img/hierros.png';
 import { Link } from 'react-router-dom';
@@ -15,13 +15,13 @@ const Home = ({ mode, setMode }) => {
                 <div className="leftContainer">
                     <h1>El inventario que lo cambia todo...</h1>
                     <Link to="/login">
-                        <button>Comenzar ahora!!</button>
+                        <button type='button'>Comenzar ahora!!</button>
                     </Link>
                 </div>
                 <img src={imgBack} alt=""/>
             </section>
             
-            <Footer />
+            {/* <Footer /> */}
         </div>
     )
 }

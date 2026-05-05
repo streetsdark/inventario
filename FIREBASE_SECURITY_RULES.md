@@ -18,35 +18,63 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // 🔓 Función auxiliar: Verificar si es super usuario
     function isSuperUser() {
       return request.auth.token.email == "mdavidcha@gmail.com";
     }
     
-    // 🔓 Función auxiliar: Verificar autenticación
     function isAuthenticated() {
       return request.auth != null;
     }
     
-    // 📦 COLECCIÓN: products
     match /products/{product_id} {
-      // ✅ Leer: Todos los autenticados
       allow read: if isAuthenticated();
-      
-      // ✏️ Escribir (crear/editar/eliminar): Solo super usuario
       allow write: if isAuthenticated() && isSuperUser();
     }
     
-    // 🔄 COLECCIÓN: moves
     match /moves/{move_id} {
-      // ✅ Leer: Todos los autenticados
       allow read: if isAuthenticated();
-      
-      // ✏️ Escribir: Solo super usuario
       allow write: if isAuthenticated() && isSuperUser();
     }
     
-    // 👤 COLECCIÓN: users (si la creas)
+    match /notifications/{notification_id} {
+      allow read: if isAuthenticated() && isSuperUser();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && isSuperUser();
+    }
+    
+    match /productRequests/{request_id} {
+      allow read: if isAuthenticated() && 
+                     (isSuperUser() || request.auth.uid == resource.data.userId);
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && isSuperUser();
+      allow delete: if isAuthenticated() && isSuperUser();
+    }
+    
+    match /users/{user_id} {
+      allow read: if isAuthenticated() && (request.auth.uid == user_id || isSuperUser());
+      allow write: if isAuthenticated() && (request.auth.uid == user_id || isSuperUser());
+    }
+    
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+    
+    // � COLECCIÓN: notifications
+    match /notifications/{notification_id} {
+      // ✅ Leer: Solo super usuario
+      allow read: if isAuthenticated() && isSuperUser();
+      
+      // ✏️ Crear: Todos los autenticados (cualquier usuario puede crear solicitudes)
+      allow create: if isAuthenticated();
+      
+      // ❌ Editar/Eliminar: Solo super usuario
+      allow update, delete: if isAuthenticated() && isSuperUser();
+    }
+    
+    // �👤 COLECCIÓN: users (si la creas)
     match /users/{user_id} {
       // ✅ Leer: Solo el usuario propietario o super usuario
       allow read: if isAuthenticated() && 
@@ -57,7 +85,24 @@ service cloud.firestore {
                       (request.auth.uid == user_id || isSuperUser());
     }
     
-    // 🚫 Denegar todo por defecto (no lo cambies)
+    // � COLECCIÓN: productRequests (Solicitudes de productos)
+    match /productRequests/{request_id} {
+      // ✅ Leer: Super usuario puede ver todas, usuarios ven las suyas
+      allow read: if isAuthenticated() && 
+                     (isSuperUser() || request.auth.uid == resource.data.userId);
+      
+      // ✏️ Crear: Todos los autenticados pueden solicitar
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid;
+      
+      // ❌ Editar: Solo super usuario (cambiar estado de solicitud)
+      allow update: if isAuthenticated() && isSuperUser();
+      
+      // ❌ Eliminar: Solo super usuario
+      allow delete: if isAuthenticated() && isSuperUser();
+    }
+    
+    // �🚫 Denegar todo por defecto (no lo cambies)
     match /{document=**} {
       allow read, write: if false;
     }
@@ -107,6 +152,33 @@ service cloud.firestore {
     match /moves/{move_id} {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated() && isSuperUser();
+    }
+    
+    match /notifications/{notification_id} {
+      // Leer: Solo super usuario
+      allow read: if isAuthenticated() && isSuperUser();
+      
+      // Crear: Todos los autenticados
+      allow create: if isAuthenticated();
+      
+      // Editar/Eliminar: Solo super usuario
+      allow update, delete: if isAuthenticated() && isSuperUser();
+    }
+    
+    match /productRequests/{request_id} {
+      // Leer: Super usuario puede ver todas, usuarios ven las suyas
+      allow read: if isAuthenticated() && 
+                     (isSuperUser() || request.auth.uid == resource.data.userId);
+      
+      // Crear: Todos los autenticados pueden solicitar
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid;
+      
+      // Editar: Solo super usuario
+      allow update: if isAuthenticated() && isSuperUser();
+      
+      // Eliminar: Solo super usuario
+      allow delete: if isAuthenticated() && isSuperUser();
     }
     
     match /{document=**} {

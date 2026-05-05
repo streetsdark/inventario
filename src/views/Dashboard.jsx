@@ -22,6 +22,7 @@ import {
 } from "firebase/firestore";
 
 import Modal from "../components/Modal";
+import ProductRequestsCard from "../components/ProductRequestsCard";
 import { auth, db } from "../firebase/config";
 import useRole from "../hooks/useRole";
 import "../css/dashboard.css";
@@ -614,6 +615,7 @@ const Dashboard = () => {
           </div>
         </div>
       ) : null}
+      {isSuperUser && <ProductRequestsCard />}
       <Modal modalConfig={modalConfig} setModalConfig={setModalConfig} />
     </div>
   );

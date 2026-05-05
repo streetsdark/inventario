@@ -75,6 +75,20 @@
     background-color: var(--bacdash);
     color: var(--bacneg);
     border: 1px solid var(--border);
+    transition: all ease-in 0.2s;
+}
+
+.output-preview-item.is-selectable:hover {
+    background-color: var(--bacground);
+    border-color: #4a90e2;
+    box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+}
+
+.output-preview-item.is-selected {
+    background-color: var(--bacground);
+    border: 2px solid #4a90e2;
+    box-shadow: 0 0 12px rgba(74, 144, 226, 0.5);
+    border-radius: 14px;
 }
 
 .output-preview-item h3,
@@ -111,6 +125,11 @@
 .output-status-badge.is-delivered {
     background-color: #58d68d;
     color: #135a2f;
+}
+
+.output-status-badge.is-returned {
+    background-color: #6c63ff;
+    color: #ffffff;
 }
 
 .container-move > .container-item {

@@ -1,0 +1,676 @@
+extend type Club {
+  """
+  ✨ List `ClubObservation` objects in a one-to-many relationship (where `ClubObservation`.`club` is this object).
+  """
+  clubObservations_on_club(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: ClubObservation_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [ClubObservation_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: ClubObservation_Having
+  ): [ClubObservation!]! @fdc_generated(from: "ClubObservation.club", purpose: QUERY_MULTIPLE_ONE_TO_MANY)
+  """
+  Implicit metadata field that cannot be written. It provides extra information about query results.
+  """
+  _metadata: _Metadata @fdc_generated(from: "Club", purpose: METADATA_FIELD)
+  """
+  ✨ Count the number of rows in the `Club` table.
+  """
+  _count: Int! @fdc_generated(from: "Club.", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `brand` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  brand_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.brand", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `createdAt` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  createdAt_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.createdAt", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `gripType` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  gripType_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.gripType", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `id` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  id_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.id", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `imageUrl` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  imageUrl_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.imageUrl", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `lie` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  lie_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.lie", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `loft` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  loft_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.loft", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `model` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  model_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.model", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `name` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  name_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.name", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `notes` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  notes_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.notes", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `shaftFlex` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  shaftFlex_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.shaftFlex", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `type` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  type_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.type", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `Club` table where the `userId` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  userId_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "Club.userId", purpose: QUERY_COUNT)
+  """
+  ✨ Sum the `lie` field in the `Club` table.
+  """
+  lie_sum(
+    """
+    Set to true to sum the distinct values.
+    """
+    distinct: Boolean = false
+  ): Float @fdc_generated(from: "Club.lie", purpose: QUERY_SUM)
+  """
+  ✨ Sum the `loft` field in the `Club` table.
+  """
+  loft_sum(
+    """
+    Set to true to sum the distinct values.
+    """
+    distinct: Boolean = false
+  ): Float @fdc_generated(from: "Club.loft", purpose: QUERY_SUM)
+  """
+  ✨ Average the `lie` field in the `Club` table.
+  """
+  lie_avg(
+    """
+    Set to true to average the distinct values.
+    """
+    distinct: Boolean = false
+  ): Float @fdc_generated(from: "Club.lie", purpose: QUERY_AVG)
+  """
+  ✨ Average the `loft` field in the `Club` table.
+  """
+  loft_avg(
+    """
+    Set to true to average the distinct values.
+    """
+    distinct: Boolean = false
+  ): Float @fdc_generated(from: "Club.loft", purpose: QUERY_AVG)
+  """
+  ✨ Minimum of the `createdAt` field in the `Club` table.
+  """
+  createdAt_min: Timestamp @fdc_generated(from: "Club.createdAt", purpose: QUERY_MIN)
+  """
+  ✨ Minimum of the `lie` field in the `Club` table.
+  """
+  lie_min: Float @fdc_generated(from: "Club.lie", purpose: QUERY_MIN)
+  """
+  ✨ Minimum of the `loft` field in the `Club` table.
+  """
+  loft_min: Float @fdc_generated(from: "Club.loft", purpose: QUERY_MIN)
+  """
+  ✨ Maximum of the `createdAt` field in the `Club` table.
+  """
+  createdAt_max: Timestamp @fdc_generated(from: "Club.createdAt", purpose: QUERY_MAX)
+  """
+  ✨ Maximum of the `lie` field in the `Club` table.
+  """
+  lie_max: Float @fdc_generated(from: "Club.lie", purpose: QUERY_MAX)
+  """
+  ✨ Maximum of the `loft` field in the `Club` table.
+  """
+  loft_max: Float @fdc_generated(from: "Club.loft", purpose: QUERY_MAX)
+  """
+  A generated field that is used for caching results in SDKs.
+  """
+  _id: ID! @fdc_generated(from: "Club.id", purpose: ENTITY_ID)
+}
+extend type ClubObservation {
+  """
+  Implicit metadata field that cannot be written. It provides extra information about query results.
+  """
+  _metadata: _Metadata @fdc_generated(from: "ClubObservation", purpose: METADATA_FIELD)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table.
+  """
+  _count: Int! @fdc_generated(from: "ClubObservation.", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table where the `clubId` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  clubId_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation.clubId", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table where the `createdAt` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  createdAt_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation.createdAt", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table where the `distance` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  distance_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation.distance", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table where the `golfRoundId` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  golfRoundId_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation.golfRoundId", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table where the `id` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  id_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation.id", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table where the `notes` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  notes_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation.notes", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table where the `observationType` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  observationType_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation.observationType", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table where the `outcome` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  outcome_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation.outcome", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `ClubObservation` table where the `userId` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  userId_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "ClubObservation.userId", purpose: QUERY_COUNT)
+  """
+  ✨ Sum the `distance` field in the `ClubObservation` table.
+  """
+  distance_sum(
+    """
+    Set to true to sum the distinct values.
+    """
+    distinct: Boolean = false
+  ): Float @fdc_generated(from: "ClubObservation.distance", purpose: QUERY_SUM)
+  """
+  ✨ Average the `distance` field in the `ClubObservation` table.
+  """
+  distance_avg(
+    """
+    Set to true to average the distinct values.
+    """
+    distinct: Boolean = false
+  ): Float @fdc_generated(from: "ClubObservation.distance", purpose: QUERY_AVG)
+  """
+  ✨ Minimum of the `createdAt` field in the `ClubObservation` table.
+  """
+  createdAt_min: Timestamp @fdc_generated(from: "ClubObservation.createdAt", purpose: QUERY_MIN)
+  """
+  ✨ Minimum of the `distance` field in the `ClubObservation` table.
+  """
+  distance_min: Float @fdc_generated(from: "ClubObservation.distance", purpose: QUERY_MIN)
+  """
+  ✨ Maximum of the `createdAt` field in the `ClubObservation` table.
+  """
+  createdAt_max: Timestamp @fdc_generated(from: "ClubObservation.createdAt", purpose: QUERY_MAX)
+  """
+  ✨ Maximum of the `distance` field in the `ClubObservation` table.
+  """
+  distance_max: Float @fdc_generated(from: "ClubObservation.distance", purpose: QUERY_MAX)
+  """
+  A generated field that is used for caching results in SDKs.
+  """
+  _id: ID! @fdc_generated(from: "ClubObservation.id", purpose: ENTITY_ID)
+}
+extend type GolfRound {
+  """
+  ✨ List `ClubObservation` objects in a one-to-many relationship (where `ClubObservation`.`golfRound` is this object).
+  """
+  clubObservations_on_golfRound(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: ClubObservation_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [ClubObservation_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: ClubObservation_Having
+  ): [ClubObservation!]! @fdc_generated(from: "ClubObservation.golfRound", purpose: QUERY_MULTIPLE_ONE_TO_MANY)
+  """
+  Implicit metadata field that cannot be written. It provides extra information about query results.
+  """
+  _metadata: _Metadata @fdc_generated(from: "GolfRound", purpose: METADATA_FIELD)
+  """
+  ✨ Count the number of rows in the `GolfRound` table.
+  """
+  _count: Int! @fdc_generated(from: "GolfRound.", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `GolfRound` table where the `courseName` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  courseName_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "GolfRound.courseName", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `GolfRound` table where the `createdAt` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  createdAt_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "GolfRound.createdAt", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `GolfRound` table where the `date` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  date_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "GolfRound.date", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `GolfRound` table where the `id` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  id_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "GolfRound.id", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `GolfRound` table where the `notes` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  notes_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "GolfRound.notes", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `GolfRound` table where the `score` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  score_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "GolfRound.score", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `GolfRound` table where the `userId` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  userId_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "GolfRound.userId", purpose: QUERY_COUNT)
+  """
+  ✨ Sum the `score` field in the `GolfRound` table.
+  """
+  score_sum(
+    """
+    Set to true to sum the distinct values.
+    """
+    distinct: Boolean = false
+  ): Int @fdc_generated(from: "GolfRound.score", purpose: QUERY_SUM)
+  """
+  ✨ Average the `score` field in the `GolfRound` table.
+  """
+  score_avg(
+    """
+    Set to true to average the distinct values.
+    """
+    distinct: Boolean = false
+  ): Float @fdc_generated(from: "GolfRound.score", purpose: QUERY_AVG)
+  """
+  ✨ Minimum of the `createdAt` field in the `GolfRound` table.
+  """
+  createdAt_min: Timestamp @fdc_generated(from: "GolfRound.createdAt", purpose: QUERY_MIN)
+  """
+  ✨ Minimum of the `date` field in the `GolfRound` table.
+  """
+  date_min: Date @fdc_generated(from: "GolfRound.date", purpose: QUERY_MIN)
+  """
+  ✨ Minimum of the `score` field in the `GolfRound` table.
+  """
+  score_min: Int @fdc_generated(from: "GolfRound.score", purpose: QUERY_MIN)
+  """
+  ✨ Maximum of the `createdAt` field in the `GolfRound` table.
+  """
+  createdAt_max: Timestamp @fdc_generated(from: "GolfRound.createdAt", purpose: QUERY_MAX)
+  """
+  ✨ Maximum of the `date` field in the `GolfRound` table.
+  """
+  date_max: Date @fdc_generated(from: "GolfRound.date", purpose: QUERY_MAX)
+  """
+  ✨ Maximum of the `score` field in the `GolfRound` table.
+  """
+  score_max: Int @fdc_generated(from: "GolfRound.score", purpose: QUERY_MAX)
+  """
+  A generated field that is used for caching results in SDKs.
+  """
+  _id: ID! @fdc_generated(from: "GolfRound.id", purpose: ENTITY_ID)
+}
+extend type User {
+  """
+  ✨ List `Club` objects in a one-to-many relationship (where `Club`.`user` is this object).
+  """
+  clubs_on_user(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: Club_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [Club_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: Club_Having
+  ): [Club!]! @fdc_generated(from: "Club.user", purpose: QUERY_MULTIPLE_ONE_TO_MANY)
+  """
+  ✨ List `ClubObservation` objects in a one-to-many relationship (where `ClubObservation`.`user` is this object).
+  """
+  clubObservations_on_user(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: ClubObservation_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [ClubObservation_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: ClubObservation_Having
+  ): [ClubObservation!]! @fdc_generated(from: "ClubObservation.user", purpose: QUERY_MULTIPLE_ONE_TO_MANY)
+  """
+  ✨ List `GolfRound` objects in a one-to-many relationship (where `GolfRound`.`user` is this object).
+  """
+  golfRounds_on_user(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: GolfRound_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [GolfRound_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+
+    """
+    Set to true to return distinct results.
+    """
+    distinct: Boolean = false
+
+    """
+    Filter condition to apply to the groups of aggregate queries.
+    """
+    having: GolfRound_Having
+  ): [GolfRound!]! @fdc_generated(from: "GolfRound.user", purpose: QUERY_MULTIPLE_ONE_TO_MANY)
+  """
+  Implicit metadata field that cannot be written. It provides extra information about query results.
+  """
+  _metadata: _Metadata @fdc_generated(from: "User", purpose: METADATA_FIELD)
+  """
+  ✨ Count the number of rows in the `User` table.
+  """
+  _count: Int! @fdc_generated(from: "User.", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `User` table where the `createdAt` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  createdAt_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "User.createdAt", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `User` table where the `displayName` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  displayName_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "User.displayName", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `User` table where the `email` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  email_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "User.email", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `User` table where the `id` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  id_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "User.id", purpose: QUERY_COUNT)
+  """
+  ✨ Count the number of rows in the `User` table where the `photoUrl` field is non-null. Pass the `distinct` argument to instead count the number of distinct values.
+  """
+  photoUrl_count(
+    """
+    Set to true to count the number of distinct values.
+    """
+    distinct: Boolean = false
+  ): Int! @fdc_generated(from: "User.photoUrl", purpose: QUERY_COUNT)
+  """
+  ✨ Minimum of the `createdAt` field in the `User` table.
+  """
+  createdAt_min: Timestamp @fdc_generated(from: "User.createdAt", purpose: QUERY_MIN)
+  """
+  ✨ Maximum of the `createdAt` field in the `User` table.
+  """
+  createdAt_max: Timestamp @fdc_generated(from: "User.createdAt", purpose: QUERY_MAX)
+  """
+  A generated field that is used for caching results in SDKs.
+  """
+  _id: ID! @fdc_generated(from: "User.id", purpose: ENTITY_ID)
+}

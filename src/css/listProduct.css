@@ -65,3 +65,41 @@
 .containerBtnAction > .btnAction:hover {
     transform: scale(1.03);
 }
+
+/* Estilos para usuario normal - botón de solicitar */
+.cardProduct.card-clickable {
+    cursor: pointer;
+    transition: all ease-in 0.2s;
+}
+
+.cardProduct.card-clickable:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px var(--border);
+}
+
+.btnRequestProduct {
+    width: calc(100% - 20px);
+    margin: 10px;
+    padding: 10px;
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all ease-in 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+.btnRequestProduct:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+}
+
+.btnRequestProduct:active {
+    transform: scale(0.98);
+}
