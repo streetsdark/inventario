@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { BsXCircle } from "react-icons/bs";
+import { BsXCircle, BsImages } from "react-icons/bs";
 import useProductRequests from "../hooks/useProductRequests";
-import { useRateLimitedAction, formatResetTime } from "../hooks/useRateLimitedAction";
+import { useRateLimitedAction } from "../hooks/useRateLimitedAction";
 import "../css/requestProductModal.css";
 
 const RequestProductModal = ({ product, isOpen, onClose, onSuccess }) => {
@@ -10,8 +10,8 @@ const RequestProductModal = ({ product, isOpen, onClose, onSuccess }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const { createRequest } = useProductRequests();
-  
-  // Rate limiting: máximo 10 solicitudes por minuto
+  const productImage = product?.imageUrl || product?.img_b64 || "";
+
   const { checkRateLimit, isBlocked, remaining } = useRateLimitedAction(
     "product-request",
     10,
@@ -19,7 +19,7 @@ const RequestProductModal = ({ product, isOpen, onClose, onSuccess }) => {
   );
 
   const handleQuantityChange = (e) => {
-    const value = parseInt(e.target.value) || 1;
+    const value = parseInt(e.target.value, 10) || 1;
     setQuantity(Math.max(1, value));
   };
 
@@ -37,22 +37,20 @@ const RequestProductModal = ({ product, isOpen, onClose, onSuccess }) => {
     setLoading(true);
 
     try {
-      // Verificar rate limit
       const rateLimitCheck = checkRateLimit();
       if (!rateLimitCheck.allowed) {
         throw new Error(
-          `Has alcanzado el límite de solicitudes. Intenta nuevamente en unos momentos.`
+          "Has alcanzado el limite de solicitudes. Intenta nuevamente en unos momentos."
         );
       }
 
       if (!quantity || quantity < 1) {
-        throw new Error("Ingresa una cantidad válida");
+        throw new Error("Ingresa una cantidad valida");
       }
 
       await createRequest(product, quantity);
       setSuccess(true);
 
-      // Reset form after 2 seconds
       setTimeout(() => {
         setSuccess(false);
         setQuantity(1);
@@ -81,61 +79,64 @@ const RequestProductModal = ({ product, isOpen, onClose, onSuccess }) => {
         <div className="request-modal-content">
           {success ? (
             <div className="request-success">
-              <div className="success-icon">✓</div>
-              <h2>¡Solicitud enviada!</h2>
+              <div className="success-icon">OK</div>
+              <h2>Solicitud enviada</h2>
               <p>
                 Tu solicitud de {quantity} unidades de{" "}
-                <strong>{product.description}</strong> ha sido registrada
+                <strong>{product.description}</strong> ha sido registrada.
               </p>
               <p className="success-message">
-                El administrador revisará tu solicitud pronto
+                El administrador revisara tu solicitud pronto.
               </p>
             </div>
           ) : (
             <>
               <h2>Solicitar Producto</h2>
 
-              <div className="request-product-preview">
-                {product.img_b64 ? (
-                  <img src={product.img_b64} alt={product.description} />
-                ) : (
-                  <div className="request-preview-empty">📦</div>
-                )}
-              </div>
+              <div className="request-product-hero">
+                <div className="request-product-preview">
+                  {productImage ? (
+                    <img src={productImage} alt={product.description} />
+                  ) : (
+                    <div className="request-preview-empty">
+                      <BsImages size={48} />
+                    </div>
+                  )}
+                </div>
 
-              <div className="request-product-details">
-                <h3>{product.description}</h3>
-                <p className="detail-item">
-                  <span className="label">Código:</span>
-                  <span className="value">{product.sku}</span>
-                </p>
-                <p className="detail-item">
-                  <span className="label">Stock disponible:</span>
-                  <span className="value">
-                    {product.stock} {product.product_Unit}
-                  </span>
-                </p>
-                <p className="detail-item">
-                  <span className="label">Marca:</span>
-                  <span className="value">{product.brand}</span>
-                </p>
-
-                 <p className="detail-item">
-                  <span className="label">Ubicacion:</span>
-                  <span className="value">{product.location}</span>
-                </p>
+                <div className="request-product-details">
+                  <h3>{product.description}</h3>
+                  <p className="detail-item">
+                    <span className="label">Codigo</span>
+                    <span className="value">{product.sku}</span>
+                  </p>
+                  <p className="detail-item">
+                    <span className="label">Stock disponible</span>
+                    <span className="value">
+                      {product.stock} {product.product_Unit}
+                    </span>
+                  </p>
+                  <p className="detail-item">
+                    <span className="label">Marca</span>
+                    <span className="value">{product.brand}</span>
+                  </p>
+                  <p className="detail-item">
+                    <span className="label">Ubicacion</span>
+                    <span className="value">{product.location}</span>
+                  </p>
+                </div>
               </div>
 
               <form onSubmit={handleSubmit} className="request-form">
                 <div className="form-group">
-                  <label htmlFor="quantity">Cantidad a solicitar:</label>
+                  <label htmlFor="quantity">Cantidad a solicitar</label>
                   <div className="quantity-input-group">
                     <button
                       type="button"
                       className="qty-btn"
                       onClick={handleDecrement}
                     >
-                      −
+                      -
                     </button>
                     <input
                       id="quantity"
@@ -154,7 +155,7 @@ const RequestProductModal = ({ product, isOpen, onClose, onSuccess }) => {
                     </button>
                   </div>
                   <p className="hint-text">
-                    Máximo sugerido: {Math.min(10, product.stock)}
+                    Maximo sugerido: {Math.min(10, product.stock)}
                   </p>
                 </div>
 
@@ -162,7 +163,7 @@ const RequestProductModal = ({ product, isOpen, onClose, onSuccess }) => {
 
                 {isBlocked && (
                   <div className="rate-limit-warning">
-                    ⏱️ Límite de solicitudes alcanzado. Puedes hacer{" "}
+                    Limite de solicitudes alcanzado. Puedes hacer{" "}
                     <strong>{remaining}</strong> solicitudes por minuto.
                   </div>
                 )}

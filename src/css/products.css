@@ -1,69 +1,105 @@
 .content > h1 {
-    margin-left: 50px;
-    margin-top: 50px;
-    color: var(--text-primary);
+  margin: 0 0 1.75rem;
+  color: var(--text-primary);
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .actionSection {
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.8rem;
 }
 
 .actionSection > .searchContainer {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    width: 35%;
-    padding: 5px 15px;
-    border-radius: 15px;
-    background-color: var(--background-secondary);
-    box-shadow: 0px 0px 10px var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: min(430px, 100%);
+  padding: 0.85rem 1rem;
+  border-radius: 20px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
+}
+
+.stockFilterGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.stockFilterBtn {
+  min-height: 46px;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.44);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+}
+
+.stockFilterBtn:hover {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.stockFilterBtn.active {
+  background: linear-gradient(135deg, var(--contrast), var(--contrast-hover));
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: 0 12px 24px rgba(117, 73, 41, 0.14);
 }
 
 .searchContainer > input {
-    width: 95%;
-    border: none;
-    font-size: large;
-    font-weight: 300;
-    margin-left: 5px;
-    border-bottom: 1px solid var(--border-color);
-    background-color: transparent;
-    color: var(--text-primary);
+  width: 100%;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: var(--text-primary);
+  box-shadow: none;
 }
 
 .searchContainer > input::placeholder {
-    color: var(--text-tertiary);
+  color: var(--text-tertiary);
 }
 
 .searchContainer > svg {
-    background-color: var(--background-tertiary);
-    padding: 5px;
-    margin-left: -5px;
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px -2px 0px inset,
-                rgba(0, 0, 0, 0.4) 0px 1px 1px;
-    color: var(--text-secondary);
+  flex-shrink: 0;
+  color: var(--contrast);
 }
 
 .actionSection > .add-product {
-    background-color: #22c55e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: large;
-    padding: 8px 20px;
-    border: none;
-    border-radius: 10px;
-    color: white;
-    cursor: pointer;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px -3px 0px inset,
-                rgba(0, 0, 0, 0.4) 0px 2px 1px;
-    transition: all ease-in .2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 52px;
+  padding: 0.85rem 1.3rem;
+  border-radius: 16px;
 }
 
-.actionSection > .add-product:hover {
-    transform: translateY(-2px);
-    background-color: #16a34a;
+@media (max-width: 768px) {
+  .actionSection {
+    align-items: stretch;
+  }
+
+  .actionSection > .searchContainer,
+  .actionSection > .add-product,
+  .stockFilterGroup {
+    width: 100%;
+  }
+
+  .stockFilterGroup {
+    justify-content: stretch;
+  }
+
+  .stockFilterBtn {
+    flex: 1 1 calc(50% - 0.6rem);
+    justify-content: center;
+  }
 }

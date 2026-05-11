@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { BsImages, BsCheck, BsX } from "react-icons/bs";
 
+// CON ESTO SUBO LAS IMAGENES A CLAUDINARY, ES IMPORTANTE PARA HACER SUBIDAS DE IMAGENES A LA APP
+import { uploadImage } from "../lib/cloudinary"
+
+//otra importacion para las imagenes
+
 // ✅ Firebase moderno
 import { db } from "../firebase/config";
 import { collection, addDoc, getDoc, doc, setDoc } from "firebase/firestore";
@@ -31,7 +36,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
         stock: 0,
         pending: 0,
         location: '',
-        img_b64: ''
+        imageUrl: ''
     });
 
     // 🔍 Obtener producto para editar
@@ -110,6 +115,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
         try {
             const cleanProduct = {
                 ...product,
+                imageUrl: product.imageUrl || "",
                 cost: Number(product.cost),
                 stock: Number(product.stock),
                 pending: Number(product.pending),
@@ -175,21 +181,31 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
         }
     };
 
-    // 🖼️ Imagen base64
-    const handleImage = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    // 🖼️ Imagen CLOUDINARY muy importante para hacer subidads de imagen a la app
+const handleImage = async (e) => {
+    const file = e.target.files[0];
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setProduct({
-                ...product,
-                img_b64: reader.result
-            });
-        };
+    if (!file) return;
 
-        reader.readAsDataURL(file);
-    };
+    try {
+        const url = await uploadImage(file);
+
+       setProduct(prev => ({
+    ...prev,
+    imageUrl: url
+}));
+
+    } catch (error) {
+        console.error("Error subiendo imagen:", error);
+
+        setModalConfig({
+            show: true,
+            text: "Error subiendo imagen",
+            type: "error",
+            showButton: true
+        });
+    }
+};
 
     // ❌ Cancelar
     const handleCancel = (e) => {
@@ -206,12 +222,20 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
                 <div className="column">
 
                     <div className="img-container">
-                        {product.img_b64
-                            ? <img src={product.img_b64} alt="product" />
-                            : <BsImages size={60} />
-                        }
-                        <input type="file" accept="image/*" onChange={handleImage} />
-                    </div>
+
+    {product.imageUrl ? (
+        <img src={product.imageUrl} alt="product" />
+    ) : (
+        <BsImages size={60} />
+    )}
+
+    <input
+        type="file"
+        accept="image/*"
+        onChange={handleImage}
+    />
+
+</div>
 
                     <div className="form-group">
                         <label>Código:</label>

@@ -11,6 +11,7 @@ const Products = () => {
 
     const { isSuperUser } = useRole();
     const [query, setQuery] = useState("");
+    const [stockFilter, setStockFilter] = useState("all");
     const [newProduct, setNewProduct] = useState(false);
     const [editProduct, setEditProduct] = useState({status: false, id: 0});
 
@@ -27,6 +28,36 @@ const Products = () => {
                         onChange={(e) => e.target.value.length >= 3 ? setQuery(e.target.value) : setQuery("")}
                     />
                 </div>
+                <div className="stockFilterGroup">
+                    <button
+                        type="button"
+                        className={`stockFilterBtn ${stockFilter === "all" ? "active" : ""}`}
+                        onClick={() => setStockFilter("all")}
+                    >
+                        Todos
+                    </button>
+                    <button
+                        type="button"
+                        className={`stockFilterBtn ${stockFilter === "high" ? "active" : ""}`}
+                        onClick={() => setStockFilter("high")}
+                    >
+                        Stock alto
+                    </button>
+                    <button
+                        type="button"
+                        className={`stockFilterBtn ${stockFilter === "low" ? "active" : ""}`}
+                        onClick={() => setStockFilter("low")}
+                    >
+                        Stock bajo
+                    </button>
+                    <button
+                        type="button"
+                        className={`stockFilterBtn ${stockFilter === "out" ? "active" : ""}`}
+                        onClick={() => setStockFilter("out")}
+                    >
+                        Sin stock
+                    </button>
+                </div>
                 {isSuperUser && (
                     <button className="add-product" onClick={() => setNewProduct(!newProduct)}>
                         <BsPlusCircle size={22} style={{ marginRight: 5 }}/>
@@ -38,7 +69,7 @@ const Products = () => {
             {
                 newProduct || editProduct.status
                 ? <FormProduct setNewProduct={setNewProduct} editProduct={editProduct} setEditProduct={setEditProduct} setQuery={setQuery}/>
-                : <ListProducts query={query} setEditProduct={setEditProduct} isSuperUser={isSuperUser}/>
+                : <ListProducts query={query} stockFilter={stockFilter} setEditProduct={setEditProduct} isSuperUser={isSuperUser}/>
             }
         </div>
     )

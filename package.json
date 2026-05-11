@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cloudinary/react": "^1.14.4",
+    "@cloudinary/url-gen": "^1.22.0",
+    "@edgestore/react": "^0.7.0",
     "chart.js": "4.5.0",
     "firebase": "^12.12.1",
     "react": "19.1.1",
@@ -17,10 +20,12 @@
     "react-dom": "19.1.1",
     "react-icons": "4.2.0",
     "react-router-dom": "^7.14.2",
-    "react-switch": "7.1.0"
+    "react-switch": "7.1.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "9.33.0",
+    "@tailwindcss/vite": "^4.2.4",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@vitejs/plugin-react-swc": "4.0.0",
@@ -28,6 +33,7 @@
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-react-refresh": "0.4.20",
     "globals": "16.3.0",
+    "tailwindcss": "^4.2.4",
     "vite": "^7.3.2"
   }
 }

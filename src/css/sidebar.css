@@ -1,38 +1,31 @@
-/* 🍔 Botón Hamburguesa */
 .hamburger-btn {
   position: fixed;
   top: 20px;
   left: 20px;
   z-index: 2001;
-  background: var(--contrast);
-  border: none;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--contrast), var(--contrast-hover));
   color: var(--text-inverse);
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 28px rgba(117, 73, 41, 0.22);
 }
 
 .hamburger-btn:hover {
-  background: var(--text-inverse);
-  color: var(--contrast);
-  transform: scale(1.1);
+  transform: translateY(-2px);
 }
 
-/* 👁️ Overlay */
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(39, 28, 22, 0.42);
+  backdrop-filter: blur(4px);
   z-index: 1500;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.25s ease;
 }
 
 @keyframes fadeIn {
@@ -44,85 +37,120 @@
   }
 }
 
-/* 📌 Sidebar - Menú Principal */
 .sidebar {
   position: fixed;
+  top: 0;
+  left: -260px;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 220px;
+  align-items: stretch;
+  width: 250px;
   height: 100vh;
-  background-color: var(--background-secondary);
+  padding: 1rem 0.9rem 1.4rem;
+  background: rgba(255, 250, 244, 0.92);
+  backdrop-filter: blur(18px);
   border-right: 1px solid var(--border-color);
-  transition: left 0.3s ease;
-  left: -220px;
-  top: 0;
-  z-index: 2000;
+  box-shadow: 0 24px 54px rgba(88, 61, 40, 0.14);
+  transition: left 0.28s ease;
+}
+
+.dark .sidebar {
+  background: rgba(35, 27, 23, 0.94);
 }
 
 .sidebar > .logoContainer,
 .sidebar > .itemContainer,
 .sidebar > .itemContainerA {
-  border-radius: 10px;
+  border-radius: 18px;
   display: flex;
-  flex-direction: row;
   align-items: center;
+  gap: 0.85rem;
   cursor: pointer;
-  margin-top: 1rem;
+  margin-top: 0.85rem;
+}
+
+.sidebar .logoContainer {
+  justify-content: center;
+  margin-top: 4.5rem;
+  margin-bottom: 0.3rem;
 }
 
 .sidebar .logo {
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  background-color: var(--contrast);
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.3) 0px -2px 0px inset,
-    rgba(0, 0, 0, 0.4) 0px 1px 1px;
-  padding: 5px;
-  margin: 5px;
+  width: 58px;
+  height: 58px;
+  background: var(--logo);
+  border-radius: 18px;
+  padding: 0.75rem;
+  box-shadow: var(--shadow-soft);
 }
 
 .sidebar > .itemContainer,
 .sidebar > .itemContainerA {
   text-decoration: none;
   color: var(--text-secondary);
-  width: 80%;
-  padding: 5px;
-  transition: all ease-in 0.2s;
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.sidebar > .itemContainer {
+  background: transparent;
 }
 
 .sidebar > .itemContainerA {
-  background-color: var(--contrast);
+  background: linear-gradient(135deg, var(--contrast), var(--contrast-hover));
   color: var(--text-inverse);
+  box-shadow: 0 14px 24px rgba(117, 73, 41, 0.16);
 }
 
 .sidebar > .switch {
-  margin-top: 1.5rem;
+  margin: 1rem 0 0.35rem;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.55rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 18px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
 }
 
 .sidebar p {
-  margin: 0 0 0 5px;
+  margin: 0;
   font-weight: 700;
-  font-size: 14px;
-  transition: opacity 0.2s ease;
+  font-size: 0.95rem;
+  color: inherit;
+}
+
+.sidebar > .itemContainer:hover,
+.sidebar > .itemContainerA:hover {
+  transform: translateX(2px);
 }
 
 .sidebar > .itemContainer:hover {
-  background-color: var(--background-tertiary);
+  background: var(--surface-elevated);
   color: var(--text-primary);
-  transform: translateY(-2px);
+  border-color: var(--border-color);
 }
 
-.sidebar > .itemContainerA:hover {
-  transform: translateY(-2px);
-}
-
-/* 📱 Estado abierto (completamente expandido) */
 .sidebar.open {
   left: 0;
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    width: 230px;
+    left: -230px;
+  }
+
+  .hamburger-btn {
+    width: 50px;
+    height: 50px;
+    top: 14px;
+    left: 14px;
+  }
 }

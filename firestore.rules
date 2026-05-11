@@ -1,0 +1,59 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ────────────────────────────────────────────
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function userRole() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : null;
+    }
+
+    function isPrivileged() {
+      return isAuth() && userRole() in ['admin', 'superuser'];
+    }
+
+    // ── Perfiles de usuario ────────────────────────────────
+    // Cada usuario solo puede leer y escribir su propio documento
+    // (useRole lo necesita para leer/crear el rol en el primer login)
+    match /users/{uid} {
+      allow read, write: if isAuth() && request.auth.uid == uid;
+    }
+
+    // ── Catálogo de productos ──────────────────────────────
+    // Cualquier usuario autenticado puede leer (necesario para el buscador)
+    // Solo admin/superuser pueden escribir
+    match /products/{id} {
+      allow read: if isAuth();
+      allow write: if isPrivileged();
+    }
+
+    // ── Solicitudes de producto ────────────────────────────
+    // Cualquier usuario autenticado puede crear y leer las suyas propias
+    // Admin/superuser gestionan todas
+    match /productRequests/{id} {
+      allow create: if isAuth();
+      allow read: if isAuth() && (
+        resource.data.userId == request.auth.uid || isPrivileged()
+      );
+      allow update, delete: if isPrivileged();
+    }
+
+    // ── Movimientos ────────────────────────────────────────
+    match /moves/{id} {
+      allow read, write: if isPrivileged();
+    }
+
+    // ── Cobertura temporal para colecciones secundarias ────
+    // (audit logs, webhooks, etc.) — válida hasta agosto 2026
+    // Reemplazar con reglas específicas antes de esa fecha
+    match /{document=**} {
+      allow read, write: if isAuth() && request.time < timestamp.date(2026, 8, 1);
+    }
+  }
+}

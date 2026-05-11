@@ -1,35 +1,30 @@
 .containerLogged {
   display: flex;
   min-height: 100vh;
-  background: var(--background);
+  background: transparent;
   color: var(--text-primary);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* CONTENT */
 .content {
+  position: relative;
   flex: 1;
-  padding: 2.5rem;
-  background: var(--background);
+  padding: 6rem 2rem 2.5rem;
   color: var(--text-primary);
   overflow-y: auto;
-  transition: margin-left 0.3s ease;
 }
 
-/*ESTO ES PARA HACER UNA ANIMACIÓN DE ENTRADA */
 .sidebar.open ~ .content {
-  margin-left: 220px;
+  margin-left: 250px;
 }
 
 .content > div:first-child {
-  animation: slideDown 0.6s ease-out;
+  animation: slideDown 0.45s ease-out;
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-16px);
   }
   to {
     opacity: 1;
@@ -38,86 +33,75 @@
 }
 
 .content h1 {
-  font-size: 2.2rem;
-  font-weight: 700;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-weight: 800;
   color: var(--text-primary);
-  margin: 0 0 0.5rem 0;
-  letter-spacing: -0.5px;
+  margin: 0 0 0.55rem;
+  letter-spacing: -0.04em;
 }
 
 .content > div:first-child p {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: var(--text-secondary);
-  margin: 0;
+  margin: 0 0 1.2rem;
 }
 
-/* CARDS TOP */
 .container-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-bottom: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
 }
 
-/* CARD */
 .card {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 2rem;
-  border-radius: 20px;
-  background: var(--background-secondary);
-  backdrop-filter: blur(20px);
+  gap: 1rem;
+  padding: 1.4rem;
+  border-radius: 24px;
+  background: var(--surface-elevated);
   border: 1px solid var(--border-color);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1),
-              inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
   position: relative;
   overflow: hidden;
 }
 
-.card::before {
-  content: '';
+.card::after {
+  content: "";
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left 0.6s ease;
+  inset: auto -10% -45% auto;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(181, 106, 59, 0.08);
 }
 
-.card:hover::before {
-  left: 100%;
-}
-
-.card:hover {
-  transform: translateY(-8px);
-  border-color: var(--contrast);
-  box-shadow: 0 30px 60px rgba(96, 165, 250, 0.2),
-              0 20px 40px rgba(0, 0, 0, 0.2),
-              inset 0 1px 1px rgba(255, 255, 255, 0.15);
+.card:hover,
+.card-chart:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+  border-color: var(--border-strong);
 }
 
 .card h1 {
-  font-size: 2.2rem;
+  font-size: 2rem;
   margin: 0;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--contrast);
 }
 
 .card h3 {
   font-size: 0.95rem;
   color: var(--text-secondary);
-  margin: 0.3rem 0 0 0;
-  font-weight: 500;
-  letter-spacing: 0.3px;
+  margin: 0.2rem 0 0;
+  font-weight: 700;
 }
 
 .card p {
-  margin: 0.45rem 0 0 0;
+  margin: 0.35rem 0 0;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .pending-card-button {
@@ -126,29 +110,41 @@
   cursor: pointer;
 }
 
-.pending-card-button.active {
+.pending-card-button.active,
+.pending-chart-card.active {
   border-color: var(--contrast);
-  box-shadow: 0 30px 60px rgba(96, 165, 250, 0.2),
-              0 20px 40px rgba(0, 0, 0, 0.2),
-              inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  box-shadow: var(--shadow-card);
 }
 
-.pending-form-panel {
-  margin: -1rem 0 3rem 0;
-  padding: 1.5rem;
-  border-radius: 20px;
-  background: var(--background-secondary);
+.pending-form-panel,
+.pending-list-panel,
+.card-chart {
+  padding: 1.4rem;
+  border-radius: 24px;
+  background: var(--surface-elevated);
   border: 1px solid var(--border-color);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-soft);
 }
 
-.pending-form-copy h2 {
-  margin: 0 0 0.35rem 0;
+.pending-form-panel,
+.pending-list-panel {
+  margin: -0.5rem 0 2rem;
+}
+
+.pending-form-copy h2,
+.pending-list-header h2,
+.card-chart h2 {
+  margin: 0 0 0.45rem;
   font-size: 1.2rem;
+  color: var(--text-primary);
 }
 
-.pending-form-copy p {
-  margin: 0 0 1rem 0;
+.pending-form-copy p,
+.pending-chart-hint,
+.pending-list-empty,
+.pending-list-item p,
+.pending-preview-copy p,
+.pending-detail-copy p {
   color: var(--text-secondary);
 }
 
@@ -160,12 +156,7 @@
 }
 
 .pending-form-grid input {
-  width: 100%;
-  padding: 0.9rem 1rem;
-  border-radius: 14px;
-  border: 1px solid var(--border-color);
-  background: var(--background);
-  color: var(--text-primary);
+  min-height: 48px;
 }
 
 .pending-form-actions {
@@ -174,84 +165,69 @@
 }
 
 .pending-preview-card {
-  margin-top: 1.25rem;
+  margin-top: 1.15rem;
   display: grid;
   grid-template-columns: 160px 1fr;
   gap: 1rem;
   align-items: center;
   padding: 1rem;
-  border-radius: 18px;
-  background: var(--background);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.36);
   border: 1px solid var(--border-color);
 }
 
 .pending-preview-image img,
 .pending-preview-empty {
   width: 100%;
-  min-height: 140px;
-  border-radius: 14px;
+  min-height: 148px;
+  border-radius: 16px;
 }
 
 .pending-preview-image img {
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+  background: rgba(255, 255, 255, 0.7);
 }
 
-.pending-preview-empty {
+.pending-preview-empty,
+.pending-list-empty-image,
+.pending-detail-empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--background-secondary);
-  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.45);
+  color: var(--text-tertiary);
 }
 
 .pending-preview-copy h3 {
-  margin: 0 0 0.6rem 0;
-  font-size: 1.05rem;
-}
-
-.pending-preview-copy p {
-  margin: 0.35rem 0;
-  color: var(--text-secondary);
+  margin: 0 0 0.55rem;
+  font-size: 1.02rem;
 }
 
 .pending-primary-btn,
 .pending-secondary-btn {
-  border: none;
   border-radius: 14px;
-  padding: 0.9rem 1rem;
-  cursor: pointer;
-  font-weight: 600;
+  padding: 0.85rem 1rem;
 }
 
 .pending-primary-btn {
-  background: var(--contrast);
-  color: #fff;
+  background: linear-gradient(135deg, var(--contrast), var(--contrast-hover));
+  color: var(--text-inverse);
+}
+
+.pending-secondary-btn {
+  background: rgba(199, 104, 85, 0.12);
+  color: var(--danger);
+  border: 1px solid rgba(199, 104, 85, 0.18);
 }
 
 .pending-chart-card {
   cursor: pointer;
 }
 
-.pending-chart-card.active {
-  border-color: var(--contrast);
-  box-shadow: 0 30px 60px rgba(96, 165, 250, 0.15),
-              inset 0 1px 1px rgba(255, 255, 255, 0.08);
-}
-
 .pending-chart-hint {
-  margin: -0.5rem 0 1rem 0;
-  color: var(--text-secondary);
+  margin: -0.1rem 0 1rem;
   font-size: 0.92rem;
-}
-
-.pending-list-panel {
-  margin: -1rem 0 3rem 0;
-  padding: 1.5rem;
-  border-radius: 20px;
-  background: var(--background-secondary);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .pending-list-header {
@@ -262,14 +238,9 @@
   margin-bottom: 1rem;
 }
 
-.pending-list-header h2 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
 .pending-list-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1rem;
 }
 
@@ -280,35 +251,33 @@
   width: 100%;
   text-align: left;
   padding: 1rem;
-  border-radius: 16px;
-  background: var(--background);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.34);
   border: 1px solid var(--border-color);
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.pending-list-item:hover {
+  transform: translateY(-2px);
 }
 
 .pending-list-item.active {
   border-color: var(--contrast);
-  box-shadow: 0 12px 30px rgba(96, 165, 250, 0.15);
+  box-shadow: 0 16px 30px rgba(117, 73, 41, 0.12);
 }
 
 .pending-list-media img,
 .pending-list-empty-image {
   width: 112px;
   height: 112px;
-  border-radius: 14px;
+  border-radius: 16px;
 }
 
 .pending-list-media img {
-  object-fit: cover;
+  object-fit: contain;
   display: block;
-}
-
-.pending-list-empty-image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--background-secondary);
-  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .pending-list-info {
@@ -316,14 +285,8 @@
 }
 
 .pending-list-item h3 {
-  margin: 0 0 0.6rem 0;
+  margin: 0 0 0.55rem;
   font-size: 1rem;
-}
-
-.pending-list-item p,
-.pending-list-empty {
-  margin: 0.35rem 0;
-  color: var(--text-secondary);
 }
 
 .pending-detail-overlay {
@@ -333,22 +296,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  background: rgba(7, 14, 26, 0.72);
+  padding: 1.2rem;
+  background: rgba(39, 28, 22, 0.52);
   backdrop-filter: blur(6px);
 }
 
 .pending-detail-modal {
-  width: min(980px, 100%);
+  width: min(920px, 100%);
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 1.75rem;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
   align-items: center;
-  padding: 2rem;
-  border-radius: 26px;
-  background: var(--background-secondary);
+  padding: 1.6rem;
+  border-radius: 28px;
+  background: var(--surface-elevated);
   border: 1px solid var(--border-color);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-card);
   position: relative;
 }
 
@@ -356,134 +319,73 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  border: none;
+  border: 1px solid rgba(199, 104, 85, 0.18);
   border-radius: 999px;
-  padding: 0.75rem 1.15rem;
-  background: #d9534f;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
+  padding: 0.7rem 1rem;
+  background: rgba(199, 104, 85, 0.14);
+  color: var(--danger);
+  font-weight: 800;
 }
 
 .pending-detail-image img,
 .pending-detail-empty {
   width: 100%;
-  min-height: 320px;
-  border-radius: 20px;
+  min-height: 310px;
+  border-radius: 22px;
 }
 
 .pending-detail-image img {
-  object-fit: cover;
+  object-fit: contain;
   display: block;
-}
-
-.pending-detail-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--background-secondary);
-  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .pending-detail-copy h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1.5rem;
+  margin: 0 0 0.8rem;
+  font-size: 1.45rem;
+  color: var(--text-primary);
 }
 
 .pending-detail-copy p {
-  margin: 0.65rem 0;
-  color: var(--text-secondary);
-  font-size: 1.15rem;
-  line-height: 1.5;
+  margin: 0.55rem 0;
+  font-size: 1.03rem;
+  line-height: 1.55;
 }
 
-.pending-secondary-btn {
-  background: #d9534f;
-  color: #fff;
-}
-
-/* CHART CARD */
 .card-chart {
-  padding: 2rem;
-  border-radius: 20px;
-  background: var(--background-secondary);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1),
-              inset 0 1px 1px rgba(255, 255, 255, 0.05);
-  transition: all 0.4s ease;
-  animation: fadeInUp 0.6s ease-out forwards;
-  opacity: 0;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
-.card-chart:nth-child(1) { animation-delay: 0.1s; }
-.card-chart:nth-child(2) { animation-delay: 0.2s; }
-.card-chart:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.card-chart:hover {
-  border-color: var(--contrast);
-  box-shadow: 0 30px 60px rgba(96, 165, 250, 0.15),
-              inset 0 1px 1px rgba(255, 255, 255, 0.08);
-  transform: translateY(-4px);
-}
-
-.card-chart h2 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin: 0 0 1.5rem 0;
-  color: var(--text-primary);
-  letter-spacing: -0.3px;
-}
-
-/* CHART CONTAINER */
 .container-chart {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  min-height: 350px;
+  gap: 1.6rem;
+  min-height: 320px;
 }
 
 .container-chart > div {
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
 }
 
-.container-chart > div:hover {
-  filter: brightness(1.1);
-}
-
-/* RESPONSIVE */
-@media (max-width: 1200px) {
+@media (max-width: 1100px) {
   .content {
-    padding: 2rem;
+    padding: 2rem 1.4rem 2rem;
   }
 
-  .container-cards {
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
+  .sidebar.open ~ .content {
+    margin-left: 0;
   }
 }
 
 @media (max-width: 900px) {
-  .pending-list-header {
+  .pending-list-header,
+  .pending-form-actions {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .pending-preview-card {
-    grid-template-columns: 1fr;
-  }
-
+  .pending-preview-card,
+  .pending-detail-modal,
   .pending-form-grid {
     grid-template-columns: 1fr;
   }
@@ -493,75 +395,38 @@
   }
 
   .pending-detail-modal {
-    grid-template-columns: 1fr;
     padding-top: 4rem;
-  }
-
-  .pending-form-actions {
-    flex-direction: column;
   }
 
   .container-chart {
     flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .card {
-    padding: 1.5rem;
     gap: 1rem;
-  }
-
-  .content h1 {
-    font-size: 1.8rem;
   }
 }
 
 @media (max-width: 640px) {
   .content {
-    padding: 1.5rem;
+    padding: 1.25rem 1rem 1.5rem;
   }
 
   .container-cards {
     grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-bottom: 2rem;
   }
 
-  .card {
-    padding: 1.25rem;
+  .card,
+  .card-chart,
+  .pending-form-panel,
+  .pending-list-panel {
+    padding: 1.15rem;
+    border-radius: 20px;
   }
 
   .card h1 {
     font-size: 1.8rem;
-  }
-
-  .card-chart {
-    padding: 1.5rem;
-  }
-
-  .card-chart h2 {
-    font-size: 1.1rem;
-  }
-
-  /* HIDE CHARTS ON VERY SMALL SCREENS */
- @media (max-width: 900px) {
-  .sidebar.open ~ .content {
-    margin-left: 0;
-  }
-
-  .container-chart {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .container-chart > div {
-    width: 100% !important;
-    margin-right: 0 !important;
   }
 }
 
 html,
 body {
   overflow-x: hidden;
-}
 }

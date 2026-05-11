@@ -1,62 +1,92 @@
 .loginSection {
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  min-height: calc(100vh - 90px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem 3rem;
 }
 
 .cardLogin {
-    width: auto;
-    min-width: 350px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0px 0px 10px var(--border);
-    margin: 20px;
-    padding: 10px;
-    border-radius: 10px;
-    background-color: var(--bacground);
+  width: min(460px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 auto;
+  padding: 2.25rem 2rem;
+  border-radius: 28px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(16px);
+}
+
+.cardLogin h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cardLogin h3,
+.cardLogin h4 {
+  margin: 0.15rem 0;
+  color: var(--text-secondary);
+  text-align: center;
+  font-weight: 600;
 }
 
 .cardLogin input {
-    width: 85%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    font-weight: 300;
-    text-align: center;
-    font-size: 1rem;
-}
-
-.cardLogin input:focus {
-    box-shadow: 0px 0px 15px var(--border);
+  width: 100%;
+  margin-bottom: 0;
+  text-align: left;
+  font-size: 1rem;
 }
 
 .cardLogin button {
-    width: 85%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    font-weight: 300;
-    font-size: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all ease-in .2s;
+  width: 100%;
+  min-height: 52px;
+  font-size: 0.98rem;
+  justify-content: center;
+  gap: 0.65rem;
 }
 
-.cardLogin button:hover {
-    box-shadow: 0px 0px 15px var(--border);
+.cardLogin button[type="button"] {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+}
+
+.cardLogin button[type="button"]:hover {
+  background: var(--background-tertiary);
 }
 
 .cardLogin svg {
-    margin-right: 10px;
+  margin-right: 0;
 }
 
 .cardLogin span {
-    color: dodgerblue;
-    cursor: pointer;
+  color: var(--contrast);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.cardLogin span:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .loginSection {
+    padding: 1.25rem 0.8rem 2rem;
+  }
+
+  .cardLogin {
+    padding: 1.6rem 1.15rem;
+    border-radius: 22px;
+  }
+
+  .cardLogin h1 {
+    font-size: 1.7rem;
+  }
 }

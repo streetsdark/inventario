@@ -1,138 +1,95 @@
 .user-data {
-    width: 95%;
-    max-width: 50rem;
-    margin: 2rem auto;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: var(--background-secondary);
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: min(760px, 100%);
+  margin: 1.5rem auto 2rem;
+  border-radius: 28px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--surface-elevated);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
 }
 
 .user-data > .img-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .user-data > .img-container > img,
 .user-data > .img-container > svg {
-    width: 10rem;
-    height: 10rem;
-    object-fit: cover;
-    padding: 1px;
-    border-radius: 50%;
-    box-shadow: 0 0 15px var(--border-color);
-    background-color: var(--background);
-    color: var(--text-secondary);
+  width: 10.5rem;
+  height: 10.5rem;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 6px solid rgba(255, 255, 255, 0.45);
+  box-shadow: var(--shadow-soft);
+  background: var(--background-secondary);
+  color: var(--text-secondary);
 }
 
 .user-data > .img-container > input[type="file"] {
-    margin-top: 1rem;
-    cursor: pointer;
+  margin-top: 1rem;
+  cursor: pointer;
 }
 
 .user-data > .form-group {
-    width: 95%;
-    margin: 10px;
-    display: flex;
-    flex-direction: column;
+  width: 100%;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .user-data > .form-group > label {
-    color: var(--text-primary);
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.user-data > .form-group > input,
-.user-data > .form-group > select {
-    background-color: var(--background);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-}
-
-.user-data > .form-group > input:focus,
-.user-data > .form-group > select:focus {
-    outline: none;
-    border-color: var(--contrast);
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-}
-
-.user-data > .form-group > input:disabled,
-.user-data > .form-group > select:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background-color: var(--background-tertiary);
+  color: var(--text-secondary);
+  font-weight: 800;
+  margin-bottom: 0.45rem;
+  font-size: 0.92rem;
 }
 
 .user-data > .form-group > span {
-    color: var(--contrast);
-    cursor: pointer;
-    margin: 8px 0;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    text-decoration: none;
+  color: var(--contrast);
+  cursor: pointer;
+  margin: 0.35rem 0;
+  font-weight: 700;
 }
 
 .user-data > .form-group > span:hover {
-    color: var(--contrast-hover);
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .user-data > .container-button {
-    width: 100%;
-    margin: 1rem 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
+  width: 100%;
+  margin: 0.5rem 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.85rem;
 }
 
 .user-data > .container-button > button {
-    background-color: var(--contrast);
-    color: var(--text-inverse);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.user-data > .container-button > button:hover {
-    background-color: var(--contrast-hover);
-    transform: translateY(-2px);
-}
-
-.user-data > .container-button > button:active {
-    transform: translateY(0);
+  min-width: 180px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 @media (max-width: 768px) {
-    .user-data {
-        width: 100%;
-        margin: 1rem;
-        padding: 1rem;
-    }
+  .user-data {
+    padding: 1.2rem;
+    border-radius: 22px;
+  }
 
-    .user-data > .img-container > img,
-    .user-data > .img-container > svg {
-        width: 8rem;
-        height: 8rem;
-    }
+  .user-data > .container-button {
+    flex-direction: column;
+  }
+
+  .user-data > .container-button > button {
+    width: 100%;
+  }
 }

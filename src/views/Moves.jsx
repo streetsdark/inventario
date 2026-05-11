@@ -521,7 +521,7 @@ const Moves = () => {
                         (products.map((p)=> {
                             return <div key={p.id} className="product-item" onClick={ () => handleSelectProduct(p)} style={ p.stock <= 0 ? {backgroundColor:'#EC7063'} : null}>
                                 <div>
-                                    {p.img_b64 ? <img src={p.img_b64} alt="Products"/> : <div className="emptyImg"><BsImages size={60}/></div>}
+                                    {p.imageUrl || p.img_b64 ? <img src={p.imageUrl || p.img_b64} alt="Products"/> : <div className="emptyImg"><BsImages size={60}/></div>}
                                 </div>
                                 <div style={{ marginLeft: '10px', }}>
                                     <h3>{p.description}</h3>

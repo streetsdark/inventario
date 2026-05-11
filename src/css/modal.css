@@ -1,102 +1,94 @@
 .modalContainer {
-    background-color: rgba(0, 0, 0, 0.5);
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 1000;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(39, 28, 22, 0.46);
+  backdrop-filter: blur(6px);
 }
 
 .modalBody {
-    background-color: var(--background-secondary);
-    border-radius: 20px;
-    border: 1px solid var(--border-color);
-    margin-top: 4rem;
-    padding: 1rem 2rem;
-    max-width: 40%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: view 0.8s;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  width: min(520px, 100%);
+  padding: 1.6rem 1.5rem;
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-elevated);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: modalView 0.35s ease;
+  box-shadow: var(--shadow-card);
 }
 
 .modalBody h2 {
-    text-align: center;
-    margin: 15px 0;
-    color: var(--text-primary);
+  text-align: center;
+  margin: 1rem 0 0.6rem;
+  color: var(--text-primary);
+  font-size: 1.15rem;
+  line-height: 1.5;
 }
 
 .modalBody > form > .msj-error {
-    color: #ef4444;
-    font-weight: bold;
-    font-size: 18px;
-    margin: 5px 0;
+  color: var(--danger);
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0.35rem 0;
 }
 
 .modalBody > form > .msj-success {
-    color: #22c55e;
-    font-weight: bold;
-    font-size: 18px;
-    margin: 5px 0;
+  color: var(--success);
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0.35rem 0;
 }
 
 .modalBody > form > .msj-info {
-    color: var(--contrast);
-    font-weight: bold;
-    font-size: 18px;
-    margin: 5px 0;
+  color: var(--contrast);
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0.35rem 0;
 }
 
 .modalBody > form > .container-button,
 .modalBody > .container-button {
-    display: flex;
-    justify-content: center;
-    margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 1rem;
 }
 
 .modalBody button {
-    background-color: var(--contrast);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 8px 20px;
-    margin: 0 15px;
-    font-size: large;
-    border: none;
-    border-radius: 10px;
-    color: var(--text-inverse);
-    cursor: pointer;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px -3px 0px inset,
-                rgba(0, 0, 0, 0.4) 0px 2px 1px;
-    transition: all ease-in 0.2s;
+  min-width: 140px;
+  margin: 0;
 }
 
-.container-button > button:hover,
-.modalBody > button:hover {
-    transform: translateY(-1px);
-    background-color: var(--contrast-hover);
-}
-
-@keyframes view {
-    0% {
-        opacity: 0;
-        transform: translateY(-80px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@keyframes modalView {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @media (max-width: 768px) {
-    .modalBody {
-        max-width: 90%;
-        margin-top: 2rem;
-        padding: 1rem;
-    }
+  .modalBody {
+    padding: 1.2rem 1rem;
+    border-radius: 20px;
+  }
+
+  .modalBody > form > .container-button,
+  .modalBody > .container-button {
+    flex-direction: column;
+  }
+
+  .modalBody button {
+    width: 100%;
+  }
 }

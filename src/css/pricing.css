@@ -1,7 +1,31 @@
 .priceContainer {
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  min-height: calc(100vh - 88px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem 3rem;
+  text-align: center;
+}
+
+.priceContainer::before {
+  content: "Planes y precios";
+  display: block;
+  margin-bottom: 1rem;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.priceContainer::after {
+  content: "Esta vista puede crecer con paquetes empresariales, control por roles y reportes premium.";
+  display: block;
+  max-width: 680px;
+  padding: 1.8rem;
+  border-radius: 24px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+  color: var(--text-secondary);
+  line-height: 1.8;
 }

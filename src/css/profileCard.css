@@ -1,109 +1,119 @@
 .profileContainer {
-    position: absolute;
-    right: 0;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    width: min-content;
-    height: min-content;
-    padding: 5px 15px;
-    margin: 15px;
-    border-radius: 2rem;
-    background-color: var(--background-secondary);
-    border: 1px solid var(--border-color);
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
+  position: absolute;
+  top: 1.25rem;
+  right: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.8rem;
+  width: max-content;
+  padding: 0.7rem 0.9rem;
+  border-radius: 999px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 10;
+}
+
+.profileContainer:hover {
+  transform: translateY(-1px);
 }
 
 .profileContainer > .imgProfile {
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  background: var(--background-secondary);
 }
 
 .data {
-    margin-left: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: var(--text-primary);
 }
 
 .data > h4,
 .data > h5 {
-    margin: 0;
-    padding: 0;
-    color: var(--text-primary);
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.data > h4 {
+  font-size: 0.95rem;
+}
+
+.data > h5 {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
 }
 
 .profileContainer > .menu {
-    content: '';
-    width: 0;
-    height: 0;
-    margin-left: 0.5rem;
-    margin-top: 1rem;
-    border: 10px solid var(--text-primary);
-    border-right-color: transparent;
-    border-bottom-color: transparent;
-    border-left-color: transparent;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  position: relative;
+  width: 0;
+  height: 0;
+  margin-top: 0.8rem;
+  border: 9px solid var(--text-secondary);
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profileContainer > .menu.open {
+  border-top-color: var(--contrast);
 }
 
 .menu > ul {
-    display: none;
-    border-radius: 10px;
-    background-color: var(--background-secondary);
-    border: 1px solid var(--border-color);
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-    position: absolute;
-    width: fit-content;
-    top: 2rem;
-    right: 1rem;
-    padding: 10px;
-    transition: all ease-in 0.2s;
-    z-index: 100;
+  display: none;
+  border-radius: 18px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-card);
+  position: absolute;
+  width: fit-content;
+  top: 4.5rem;
+  right: 0.4rem;
+  padding: 0.6rem;
+  z-index: 100;
+}
+
+.menu.open > ul {
+  display: block;
 }
 
 .menu > ul > li {
-    margin: 5px 0 0 0;
-    padding: 5px 10px;
-    display: flex;
-    align-items: center;
-    list-style: none;
-    border-radius: 10px;
-    transition: all ease-in 0.2s;
-    color: var(--text-primary);
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  align-items: center;
+  list-style: none;
+  border-radius: 14px;
+  transition: background 0.2s ease, color 0.2s ease;
+  color: var(--text-primary);
 }
 
 .menu > ul > li > h4 {
-    margin: 0 0 0 0.5rem;
-    padding: 0;
-    color: var(--text-primary);
+  margin: 0 0 0 0.5rem;
+  color: inherit;
 }
 
 .menu > ul > li:hover {
-    background-color: var(--contrast);
-    color: var(--text-inverse);
-}
-
-.menu:hover > ul {
-    display: block;
+  background: var(--contrast-soft);
+  color: var(--contrast);
 }
 
 @media (max-width: 768px) {
-    .profileContainer {
-        padding: 5px 10px;
-    }
+  .profileContainer {
+    position: static;
+    margin: 0 0 1.5rem auto;
+  }
 
-    .profileContainer > .imgProfile {
-        width: 50px;
-        height: 50px;
-    }
-
-    .data > h4,
-    .data > h5 {
-        font-size: 0.9rem;
-    }
+  .profileContainer > .imgProfile {
+    width: 48px;
+    height: 48px;
+  }
 }

@@ -21,10 +21,15 @@ export default function useProducts(search) {
     const unsubscribe = onSnapshot(
   q,
   (snapshot) => {
-    const data = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    const data = snapshot.docs.map((doc) => {
+      const product = doc.data();
+
+      return {
+        id: doc.id,
+        ...product,
+        imageUrl: product.imageUrl || product.img_b64 || "",
+      };
+    });
 
     if (search) {
       setProducts(

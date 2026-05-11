@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FcLock } from "react-icons/fc";
 import { FaUser, FaSync } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ import "../css/profileCard.css";
 const ProfileCard = () => {
   const { user } = useUser();
   const navigate = useNavigate();
+  const menuRef = useRef(null);
   const [modalConfig, setModalConfig] = useState({
     show: false,
     text: '',
@@ -20,6 +21,23 @@ const ProfileCard = () => {
     showButton: true,
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const handleSignOut = async () => {
     try {
@@ -32,6 +50,7 @@ const ProfileCard = () => {
       });
 
       setTimeout(() => {
+        setIsMenuOpen(false);
         navigate("/");
         navigate(0);
       }, 1500);
@@ -56,14 +75,24 @@ const ProfileCard = () => {
           <h4>{user?.displayName}</h4>
           <h5>{user?.email}</h5>
         </div>
-        <div className="menu">
+        <div
+          ref={menuRef}
+          className={`menu ${isMenuOpen ? "open" : ""}`}
+          onClick={() => setIsMenuOpen((prev) => !prev)}
+        >
           <ul>
-            <li onClick={() => navigate("/profile")}>
+            <li onClick={() => {
+              setIsMenuOpen(false);
+              navigate("/profile");
+            }}>
               <FaUser size={22} />
               <h4>Mi Perfil</h4>
             </li>
             {isPasswordProvider ? (
-              <li onClick={() => setShowPassword(true)}>
+              <li onClick={() => {
+                setIsMenuOpen(false);
+                setShowPassword(true);
+              }}>
                 <FaSync size={20} />
                 <h4>Cambiar contrasena</h4>
               </li>

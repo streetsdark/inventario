@@ -1,0 +1,437 @@
+/* ============================================================
+   PORTAL DE SOLICITUDES
+   ============================================================ */
+
+/* ── Root ────────────────────────────────────────────────── */
+.sol-root {
+  min-height: 100vh;
+  background: var(--page-gradient);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.sol-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: 64px;
+  background: var(--surface-elevated);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.sol-brand {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: var(--contrast);
+}
+
+.sol-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sol-username {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.sol-signout {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.4rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: none;
+  cursor: pointer;
+  min-height: unset;
+  transition: color 0.2s, border-color 0.2s;
+}
+.sol-signout:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  transform: none;
+  filter: none;
+}
+
+/* ── Main ────────────────────────────────────────────────── */
+.sol-main {
+  flex: 1;
+  width: min(680px, 100%);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Card principal ──────────────────────────────────────── */
+.sol-card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 2.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: solIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes solIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sol-title {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.sol-subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.93rem;
+  line-height: 1.65;
+}
+
+/* CTA button */
+.sol-cta {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+/* ── Form ────────────────────────────────────────────────── */
+.sol-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: solIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sol-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.sol-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sol-input {
+  width: 100%;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.sol-input:focus {
+  outline: none;
+  border-color: var(--contrast);
+  box-shadow: 0 0 0 4px var(--contrast-soft);
+}
+
+.sol-input--search {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
+.sol-input--qty {
+  width: 120px;
+}
+
+/* ── Search wrap ─────────────────────────────────────────── */
+.sol-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sol-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.sol-clear {
+  position: absolute;
+  right: 0.7rem;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  padding: 0.25rem 0.4rem;
+  cursor: pointer;
+  min-height: unset;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+.sol-clear:hover { color: var(--text-primary); transform: none; filter: none; }
+
+/* ── Dropdown ────────────────────────────────────────────── */
+.sol-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--background-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem;
+  z-index: 200;
+  box-shadow: var(--shadow-card);
+  animation: solIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  overflow: hidden;
+}
+
+.sol-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sol-dropdown-item:hover {
+  background: var(--background-tertiary);
+}
+
+/* Imagen del producto en el dropdown */
+.sol-dd-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--background-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+}
+.sol-dd-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sol-dd-img-placeholder {
+  font-size: 1.4rem;
+}
+
+.sol-dd-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sol-dd-name {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Badge disponible / sin stock */
+.sol-badge {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+}
+.sol-badge--ok  { background: rgba(74, 158, 138, 0.18); color: #4a9e8a; border: 1px solid rgba(74,158,138,0.3); }
+.sol-badge--out { background: rgba(208, 96, 96, 0.15);  color: #d06060; border: 1px solid rgba(208,96,96,0.25); }
+
+/* Badge del producto seleccionado */
+.sol-selected-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--contrast);
+  background: var(--contrast-soft);
+  padding: 0.35rem 0.8rem;
+  border-radius: 8px;
+  margin-top: 0.25rem;
+}
+
+.sol-stock-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sol-stock-dot.available { background: #4a9e8a; }
+.sol-stock-dot.out       { background: #d06060; }
+
+/* ── Botones ─────────────────────────────────────────────── */
+.sol-btn-primary {
+  background: linear-gradient(135deg, var(--contrast), var(--contrast-hover));
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 14px;
+  padding: 0.85rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px var(--contrast-soft);
+  transition: transform 0.2s, filter 0.2s;
+}
+.sol-btn-primary:hover { filter: brightness(1.05); transform: translateY(-2px); }
+.sol-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.sol-btn-ghost {
+  background: var(--background-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 0.85rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background 0.2s;
+}
+.sol-btn-ghost:hover { background: var(--background-tertiary); transform: none; filter: none; }
+
+.sol-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+/* ── Historial ───────────────────────────────────────────── */
+.sol-history {
+  animation: solIn 0.5s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sol-history-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 0 0 0.85rem;
+  letter-spacing: 0.03em;
+}
+
+.sol-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sol-history-item {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: border-color 0.2s;
+}
+.sol-history-item:hover {
+  border-color: var(--border-strong);
+}
+
+.sol-history-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sol-history-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.sol-history-qty {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--surface-muted);
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+}
+
+.sol-history-date {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.sol-status-chip {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+}
+.sol-status--pending   { background: rgba(192,152,64,0.15);  color: var(--warning); }
+.sol-status--approved  { background: rgba(74,158,138,0.15);  color: var(--success); }
+.sol-status--rejected  { background: rgba(208,96,96,0.15);   color: var(--danger);  }
+.sol-status--completed { background: rgba(77,184,240,0.15);  color: var(--contrast);}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .sol-header { padding: 0 1rem; }
+  .sol-main   { padding: 1.5rem 1rem 3rem; }
+  .sol-card   { padding: 1.6rem 1.1rem; border-radius: 18px; }
+  .sol-title  { font-size: 1.4rem; }
+  .sol-form-actions { flex-direction: column-reverse; }
+  .sol-btn-primary,
+  .sol-btn-ghost { width: 100%; justify-content: center; }
+  .sol-history-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .sol-history-meta { flex-wrap: wrap; }
+}
