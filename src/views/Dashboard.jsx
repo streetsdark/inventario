@@ -12,21 +12,14 @@ import {
 import { Bar, Doughnut } from "react-chartjs-2";
 import { BsImages } from "react-icons/bs";
 import { FcDatabase, FcInspection } from "react-icons/fc";
-import {
-  addDoc,
-  collection,
-  doc,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
-
 import Modal from "../components/Modal";
 import ProductRequestsCard from "../components/ProductRequestsCard";
 import AnalyticsCard from "../components/AnalyticsCard";
 import StockAlertCard from "../components/StockAlertCard";
-import { auth, db } from "../firebase/config";
 import useRole from "../hooks/useRole";
 import useProducts from "../hooks/useProducts";
+import usePendingStock from "../hooks/usePendingStock";
+import { useAuthContext } from "../context/AuthContext";
 import "../css/dashboard.css";
 
 ChartJS.register(
@@ -45,22 +38,12 @@ const EMPTY_PENDING_FORM = {
   quantity: "",
   requestNote: "",
 };
-const PENDING_STATUS = "pendiente";
-
-const buildPendingNotification = ({ producto, cantidad, usuario, estado }) => {
-  if (estado !== PENDING_STATUS) {
-    return { sendNotification: false, title: "", message: "" };
-  }
-  return {
-    sendNotification: true,
-    title: "Nueva solicitud de material",
-    message: `${usuario} solicito ${cantidad} unidades de ${producto}`,
-  };
-};
 
 const Dashboard = () => {
   const { isSuperUser } = useRole();
   const { products } = useProducts();
+  const { submitPending } = usePendingStock();
+  const { user } = useAuthContext();
 
   const [showPendingForm, setShowPendingForm] = useState(false);
   const [showPendingList, setShowPendingList] = useState(false);
@@ -104,19 +87,10 @@ const Dashboard = () => {
     const description = pendingForm.description.trim();
     const quantity    = Number(pendingForm.quantity);
     const requestNote = pendingForm.requestNote.trim();
-    const currentUser =
-      auth.currentUser?.displayName ||
-      auth.currentUser?.email ||
-      "Usuario del sistema";
+    const currentUser = user?.displayName || user?.email || "Usuario del sistema";
 
     if (!sku || !description || !quantity || quantity <= 0) {
-      setModalConfig({
-        show: true,
-        text: "Completa codigo, nombre y cantidad para registrar unidades pendientes.",
-        type: "error",
-        showButton: true,
-        handleClick: null,
-      });
+      setModalConfig({ show: true, text: "Completa codigo, nombre y cantidad para registrar unidades pendientes.", type: "error", showButton: true, handleClick: null });
       return;
     }
 
@@ -127,60 +101,16 @@ const Dashboard = () => {
     });
 
     if (!product) {
-      setModalConfig({
-        show: true,
-        text: "No encontramos un producto que coincida con ese codigo y nombre.",
-        type: "error",
-        showButton: true,
-        handleClick: null,
-      });
+      setModalConfig({ show: true, text: "No encontramos un producto que coincida con ese codigo y nombre.", type: "error", showButton: true, handleClick: null });
       return;
     }
 
     try {
-      await updateDoc(doc(db, "products", product.id), {
-        pending: Number(product.pending || 0) + quantity,
-        pendingDescription: requestNote,
-      });
-
-      const notification = buildPendingNotification({
-        producto: product.description,
-        cantidad: quantity,
-        usuario:  currentUser,
-        estado:   PENDING_STATUS,
-      });
-
-      if (notification.sendNotification) {
-        await addDoc(collection(db, "notifications"), {
-          ...notification,
-          producto:  product.description,
-          cantidad:  quantity,
-          usuario:   currentUser,
-          estado:    PENDING_STATUS,
-          productId: product.id,
-          sku:       product.sku || "",
-          createdAt: serverTimestamp(),
-        });
-      }
-
-      setModalConfig({
-        show: true,
-        text: notification.sendNotification
-          ? `${notification.title}: ${notification.message}`
-          : `Se agregaron ${quantity} unidades pendientes a '${product.description}'.`,
-        type: "success",
-        showButton: true,
-        handleClick: null,
-      });
+      const { title, message } = await submitPending(product, quantity, requestNote, currentUser);
+      setModalConfig({ show: true, text: `${title}: ${message}`, type: "success", showButton: true, handleClick: null });
       resetPendingForm();
     } catch (error) {
-      setModalConfig({
-        show: true,
-        text: `No se pudo guardar la solicitud pendiente. ${error.message}`,
-        type: "error",
-        showButton: true,
-        handleClick: null,
-      });
+      setModalConfig({ show: true, text: `No se pudo guardar la solicitud pendiente. ${error.message}`, type: "error", showButton: true, handleClick: null });
     }
   };
 

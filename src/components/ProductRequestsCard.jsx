@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { BsXCircle, BsCheckCircle, BsImages, BsArrowRight, BsArrowReturnLeft } from "react-icons/bs";
-import useProductRequests from "../hooks/useProductRequests";
+import useProductRequestAdmin from "../hooks/useProductRequestAdmin";
 import { useNotificationSound } from "../hooks/useNotificationSound";
 import "../css/productRequests.css";
 
@@ -20,7 +20,7 @@ const formatRequestDate = (createdAt) => {
 
 const ProductRequestsCard = () => {
   const { loading, deleteRequest, approveRequest, getRequestsByStatus } =
-    useProductRequests();
+    useProductRequestAdmin();
   const { playNotificationSound } = useNotificationSound();
   const [expandedRequest, setExpandedRequest] = useState(null);
   const [showAll, setShowAll] = useState(false);

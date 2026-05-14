@@ -6,7 +6,7 @@ import { auth, db } from "../firebase/config";
 import useAuth from "../hooks/useAuth";
 import useProducts from "../hooks/useProducts";
 import useFreeRequest from "../hooks/useFreeRequest";
-import useProductRequests from "../hooks/useProductRequests";
+import useProductRequestCreate from "../hooks/useProductRequestCreate";
 import Modal from "../components/Modal";
 import { BsBoxArrowRight, BsClockHistory, BsSearch } from "react-icons/bs";
 import "../css/solicitar.css";
@@ -37,7 +37,7 @@ export default function Solicitar() {
 
   const { user } = useAuth();
   const { createFreeRequest } = useFreeRequest();
-  const { createRequest } = useProductRequests();
+  const { createRequest } = useProductRequestCreate();
   const navigate = useNavigate();
 
   /* ── Buscador ─────────────────────────────────────── */

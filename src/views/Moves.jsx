@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { BsDownload } from "react-icons/bs";
-import { collection, doc, runTransaction, updateDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase/config";
 import { validateMove } from "../utils/securityValidation";
 
 import useMoves from "../hooks/useMoves";
@@ -31,8 +29,8 @@ const Moves = () => {
     const [outputUserFilter, setOutputUserFilter] = useState('');
     const [selectedReturnMove, setSelectedReturnMove] = useState(null);
 
-    const { products = [], loading } = useProducts(query);
-    const { moves = [], loading: loadingMoves } = useMoves();
+    const { products = [], loading, clearPending } = useProducts(query);
+    const { moves = [], loading: loadingMoves, createMove } = useMoves();
     const { users = [] } = useUsers();
 
     const aliasMap = {};
@@ -104,61 +102,24 @@ const Moves = () => {
         }
 
         try {
-            const productRef = doc(db, "products", editProduct.id);
-            const moveRef = doc(collection(db, "moves"));
             const savedProductId = editProduct.id;
             const savedProductDescription = editProduct.description;
-            let currentPending = 0;
-            const returnMoveRef = selectedReturnMove ? doc(db, "moves", selectedReturnMove) : null;
 
-            await runTransaction(db, async (transaction) => {
-                const productSnapshot = await transaction.get(productRef);
-                if (!productSnapshot.exists()) throw new Error('not-found');
-
-                const currentProduct = productSnapshot.data();
-                currentPending = Number(currentProduct.pending || 0);
-                const liveStock = Number(currentProduct.stock || 0);
-                const nextStock = typeIn ? liveStock + parsedQuantity : liveStock - parsedQuantity;
-
-                if (nextStock < 0) throw new Error('negative-stock');
-
-                transaction.update(productRef, {
-                    stock: nextStock,
-                    totalIn: Number(currentProduct.totalIn || 0) + (typeIn ? parsedQuantity : 0),
-                    totalOut: Number(currentProduct.totalOut || 0) + (!typeIn ? parsedQuantity : 0),
-                    lastEntryDate: typeIn ? moveDate : currentProduct.lastEntryDate || '',
-                    lastExitDate: !typeIn ? moveDate : currentProduct.lastExitDate || '',
-                });
-
-                transaction.set(moveRef, {
-                    productId: productSnapshot.id,
-                    sku: currentProduct.sku || editProduct.sku || '',
-                    description: currentProduct.description || editProduct.description || '',
-                    unit: currentProduct.product_Unit || editProduct.product_Unit || '',
-                    quantity: parsedQuantity,
-                    type: typeIn ? 'in' : 'out',
-                    movementDate: moveDate,
-                    entryDate: typeIn ? moveDate : '',
-                    exitDate: !typeIn ? moveDate : '',
-                    recipientUser: typeIn ? '' : recipientUser.trim(),
-                    deliveryStatus: typeIn ? '' : outputStatus,
-                    createdAt: serverTimestamp(),
-                });
-
-                if (returnMoveRef) {
-                    transaction.update(returnMoveRef, {
-                        deliveryStatus: 'devuelto',
-                        returnDate: moveDate,
-                        returnQuantity: parsedQuantity,
-                    });
-                }
+            const { currentPending } = await createMove({
+                product: editProduct,
+                quantity: parsedQuantity,
+                typeIn,
+                moveDate,
+                recipientUser,
+                outputStatus,
+                returnMoveId: selectedReturnMove,
             });
 
             if (typeIn && currentPending > 0) {
                 resetMovementForm();
                 const handleRemovePending = async () => {
                     try {
-                        await updateDoc(doc(db, "products", savedProductId), { pending: 0 });
+                        await clearPending(savedProductId);
                         setTimeout(() => showModal(`El producto '${savedProductDescription}' se quito de unidades pendientes correctamente.`, 'success'), 0);
                     } catch (error) {
                         setTimeout(() => showModal(`La entrada se guardo, pero no se pudo quitar el pendiente. ${error.message}`, 'error'), 0);

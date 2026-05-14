@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BsXCircle, BsImages } from "react-icons/bs";
-import useProductRequests from "../hooks/useProductRequests";
+import useProductRequestCreate from "../hooks/useProductRequestCreate";
 import { useRateLimitedAction } from "../hooks/useRateLimitedAction";
 import "../css/requestProductModal.css";
 
@@ -9,7 +9,7 @@ const RequestProductModal = ({ product, isOpen, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const { createRequest } = useProductRequests();
+  const { createRequest } = useProductRequestCreate();
   const productImage = product?.imageUrl || product?.img_b64 || "";
 
   const { checkRateLimit, isBlocked, remaining } = useRateLimitedAction(

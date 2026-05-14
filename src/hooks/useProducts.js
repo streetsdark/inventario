@@ -7,6 +7,7 @@ import {
   onSnapshot,
   deleteDoc,
   doc,
+  updateDoc,
   query as fbQuery
 } from "firebase/firestore";
 
@@ -53,10 +54,13 @@ export default function useProducts(search) {
     return () => unsubscribe();
   }, [search]);
 
-  // 🗑️ DELETE
   const removeProduct = async (id) => {
     await deleteDoc(doc(db, "products", id));
   };
 
-  return { products, loading, removeProduct };
+  const clearPending = async (id) => {
+    await updateDoc(doc(db, "products", id), { pending: 0 });
+  };
+
+  return { products, loading, removeProduct, clearPending };
 }
