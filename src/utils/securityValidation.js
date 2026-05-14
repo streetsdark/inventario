@@ -10,14 +10,20 @@
  */
 export const sanitizeString = (input) => {
   if (typeof input !== 'string') return '';
-  
+
   return input
     .trim()
     // Remover scripts HTML
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    // Remover eventos inline
+    // Remover tags HTML peligrosas que pueden ejecutar JS
+    .replace(/<(img|svg|input|iframe|object|embed|link|meta|base|form)\b[^>]*>/gi, '')
+    // Remover eventos inline con comillas
     .replace(/on\w+\s*=\s*"[^"]*"/gi, '')
     .replace(/on\w+\s*=\s*'[^']*'/gi, '')
+    // Remover eventos inline sin comillas
+    .replace(/on\w+\s*=\s*[^\s>'"]+/gi, '')
+    // Remover protocolo javascript:
+    .replace(/javascript\s*:/gi, '')
     // Remover caracteres de control
     .replace(/[\x00-\x1F\x7F]/g, '')
     // Escapar caracteres especiales HTML
@@ -56,6 +62,8 @@ export const isValidNumber = (value) => {
  * @returns {boolean}
  */
 export const isValidSKU = (sku) => {
+  // Reject prototype pollution keys (__proto__, __defineGetter__, etc.)
+  if (/^__/.test(sku)) return false;
   const skuRegex = /^[a-zA-Z0-9_-]{1,50}$/;
   return skuRegex.test(sku);
 };
@@ -92,9 +100,18 @@ export const isValidQuantity = (quantity) => {
 export const isValidDate = (dateString) => {
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
   if (!dateRegex.test(dateString)) return false;
-  
-  const date = new Date(dateString);
-  return date instanceof Date && !isNaN(date);
+
+  const [year, month, day] = dateString.split('-').map(Number);
+  if (year < 1) return false;
+
+  // Use UTC to avoid timezone shifts that could change the date
+  const date = new Date(`${dateString}T00:00:00Z`);
+  if (isNaN(date.getTime())) return false;
+
+  // Verify parts match — catches rolled-over dates like Feb 30 → Mar 1
+  return date.getUTCFullYear() === year &&
+         date.getUTCMonth() + 1 === month &&
+         date.getUTCDate() === day;
 };
 
 /**
@@ -117,6 +134,10 @@ export const isValidLocation = (location) => {
  * @returns {object} { isValid: boolean, errors: [] }
  */
 export const validateProduct = (product) => {
+  if (!product || typeof product !== 'object') {
+    return { isValid: false, errors: ['Producto inválido o nulo.'] };
+  }
+
   const errors = [];
 
   if (!isValidSKU(product.sku)) {

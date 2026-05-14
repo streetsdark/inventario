@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { error as logError } from "../utils/logger";
 
 export default function useMoves() {
   const [moves, setMoves] = useState([]);
@@ -21,11 +22,10 @@ export default function useMoves() {
             ...doc.data(),
           }))
         );
-
         setLoading(false);
       },
-      (error) => {
-        console.error("useMoves error:", error);
+      (err) => {
+        logError("useMoves error:", err);
         setLoading(false);
       }
     );

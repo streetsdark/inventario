@@ -12,6 +12,8 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../firebase/config";
 import { logAuditEvent, AuditEventTypes, triggerWebhook } from "../utils/auditService";
+import { error as logError } from "../utils/logger";
+import { isValidQuantity } from "../utils/securityValidation";
 
 export default function useProductRequests() {
   const [requests, setRequests] = useState([]);
@@ -31,7 +33,7 @@ export default function useProductRequests() {
         setLoading(false);
       },
       (error) => {
-        console.error("Error fetching requests:", error);
+        logError("Error fetching requests:", error);
         setLoading(false);
       }
     );
@@ -45,6 +47,10 @@ export default function useProductRequests() {
       const currentUser = auth.currentUser;
       if (!currentUser) {
         throw new Error("Usuario no autenticado");
+      }
+
+      if (!isValidQuantity(quantity)) {
+        throw new Error("Cantidad inválida. Debe ser un número entero mayor a cero.");
       }
 
       // Obtener el producto desde Firestore para asegurar datos actualizados
@@ -103,7 +109,7 @@ export default function useProductRequests() {
 
       return { id: docRef.id, ...requestData };
     } catch (error) {
-      console.error("Error creating request:", error);
+      logError("Error creating request:", error);
       throw error;
     }
   };
@@ -121,7 +127,7 @@ export default function useProductRequests() {
         { action: "deleted_by_admin" }
       );
     } catch (error) {
-      console.error("Error deleting request:", error);
+      logError("Error deleting request:", error);
       throw error;
     }
   };
@@ -139,6 +145,10 @@ export default function useProductRequests() {
   // Aprobar solicitud: descuenta stock y crea movimiento de salida
   // moveType: 'definitiva' | 'pendiente'
   const approveRequest = async (requestId, productId, quantity, moveType = 'definitiva', requestData = {}) => {
+    if (!isValidQuantity(quantity)) {
+      throw new Error("Cantidad inválida. Debe ser un número entero mayor a cero.");
+    }
+
     const today = new Date().toISOString().slice(0, 10);
     const deliveryStatus = moveType === 'pendiente' ? 'pendiente por devolver' : 'entregado';
 
@@ -221,7 +231,7 @@ export default function useProductRequests() {
 
       return true;
     } catch (error) {
-      console.error("Error approving request:", error);
+      logError("Error approving request:", error);
       throw error;
     }
   };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BsSearch, BsPlusCircle } from "react-icons/bs";
 
 import ProfileCard from "../components/ProfileCard";
@@ -59,7 +59,7 @@ const Products = () => {
                     </button>
                 </div>
                 {isSuperUser && (
-                    <button className="add-product" onClick={() => setNewProduct(!newProduct)}>
+                    <button type="button" className="add-product" onClick={() => setNewProduct(!newProduct)}>
                         <BsPlusCircle size={22} style={{ marginRight: 5 }}/>
                         <b>Añadir producto</b>
                     </button>
@@ -68,7 +68,7 @@ const Products = () => {
 
             {
                 newProduct || editProduct.status
-                ? <FormProduct setNewProduct={setNewProduct} editProduct={editProduct} setEditProduct={setEditProduct} setQuery={setQuery}/>
+                ? <FormProduct setNewProduct={setNewProduct} editProduct={editProduct} setEditProduct={setEditProduct} setQuery={setQuery} isSuperUser={isSuperUser}/>
                 : <ListProducts query={query} stockFilter={stockFilter} setEditProduct={setEditProduct} isSuperUser={isSuperUser}/>
             }
         </div>

@@ -3,13 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 import useRole from "../hooks/useRole";
-import PrivateRoute from "../components/PrivateRoute";
 import Layout from "../components/Layout";
 import Loader from "../components/Loader";
 
 import Home from "../views/Home";
 import Login from "../views/Login";
-import Pricing from "../views/Pricing";
 import Dashboard from "../views/Dashboard";
 import Products from "../views/Products";
 import Moves from "../views/Moves";
@@ -17,6 +15,7 @@ import Profile from "../views/Profile";
 import SecurityTests from "../views/SecurityTests";
 import Error from "../views/E404";
 import Solicitar from "../views/Solicitar";
+import UserManagement from "../views/UserManagement";
 
 function getHomeRoute(role) {
   if (role === "superuser" || role === "admin") return "/dashboard";
@@ -48,7 +47,6 @@ export default function AppRouter() {
 
         {/* Public */}
         <Route path="/" element={<Home />} />
-        <Route path="/pricing" element={<Pricing />} />
 
         {/* Login: always visible immediately; redirect only when auth is ready */}
         <Route
@@ -104,6 +102,16 @@ export default function AppRouter() {
           element={
             <AuthRoute user={user} loading={loading} roleLoading={roleLoading} role={role}>
               <Layout><Profile /></Layout>
+            </AuthRoute>
+          }
+        />
+
+        {/* /users — superuser only */}
+        <Route
+          path="/users"
+          element={
+            <AuthRoute user={user} loading={loading} roleLoading={roleLoading} role={role} allowedRoles={["superuser"]}>
+              <Layout><UserManagement /></Layout>
             </AuthRoute>
           }
         />

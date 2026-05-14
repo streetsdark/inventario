@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 
 export default function Layout({ children }) {
+  const location = useLocation();
+  const page = location.pathname.replace("/", "") || "dashboard";
+
   const [mode, setMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
@@ -21,7 +25,7 @@ export default function Layout({ children }) {
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
-      <Sidebar page="dashboard" mode={mode} setMode={setMode} />
+      <Sidebar page={page} mode={mode} setMode={setMode} />
       <main style={{ flex: 1, width: "100%" }}>
         {children}
       </main>

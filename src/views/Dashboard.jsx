@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -16,15 +16,17 @@ import {
   addDoc,
   collection,
   doc,
-  onSnapshot,
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 
 import Modal from "../components/Modal";
 import ProductRequestsCard from "../components/ProductRequestsCard";
+import AnalyticsCard from "../components/AnalyticsCard";
+import StockAlertCard from "../components/StockAlertCard";
 import { auth, db } from "../firebase/config";
 import useRole from "../hooks/useRole";
+import useProducts from "../hooks/useProducts";
 import "../css/dashboard.css";
 
 ChartJS.register(
@@ -45,20 +47,10 @@ const EMPTY_PENDING_FORM = {
 };
 const PENDING_STATUS = "pendiente";
 
-const buildPendingNotification = ({
-  producto,
-  cantidad,
-  usuario,
-  estado,
-}) => {
+const buildPendingNotification = ({ producto, cantidad, usuario, estado }) => {
   if (estado !== PENDING_STATUS) {
-    return {
-      sendNotification: false,
-      title: "",
-      message: "",
-    };
+    return { sendNotification: false, title: "", message: "" };
   }
-
   return {
     sendNotification: true,
     title: "Nueva solicitud de material",
@@ -66,40 +58,10 @@ const buildPendingNotification = ({
   };
 };
 
-const buildDashboardData = (docs) => {
-  const newProducts = [];
-  const newLabels = [];
-  const newStocks = [];
-  const newPending = [];
-
-  docs.forEach((snapshotDoc) => {
-    const data = snapshotDoc.data();
-    const product = {
-      id: snapshotDoc.id,
-      data,
-    };
-
-    newProducts.push(product);
-    newLabels.push(data.description);
-    newStocks.push(parseInt(data.stock || 0));
-    newPending.push(parseInt(data.pending || 0));
-  });
-
-  return {
-    newProducts,
-    newLabels,
-    newStocks,
-    newPending,
-  };
-};
-
 const Dashboard = () => {
   const { isSuperUser } = useRole();
-  const [products, setProducts] = useState([]);
-  const [labels, setLabels] = useState([]);
-  const [stocks, setStocks] = useState([]);
-  // const [costs, setCosts] = useState([]);
-  const [pending, setPending] = useState([]);
+  const { products } = useProducts();
+
   const [showPendingForm, setShowPendingForm] = useState(false);
   const [showPendingList, setShowPendingList] = useState(false);
   const [selectedPendingMaterial, setSelectedPendingMaterial] = useState(null);
@@ -111,6 +73,7 @@ const Dashboard = () => {
     showButton: true,
     handleClick: null,
   });
+
   const colors = [
     "rgba(255, 99, 132, 1)",
     "rgba(54, 162, 235, 1)",
@@ -120,26 +83,13 @@ const Dashboard = () => {
     "rgba(255, 159, 64, 1)",
   ];
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "products"), (snapshot) => {
-      const { newProducts, newLabels, newStocks, newPending } =
-        buildDashboardData(snapshot.docs);
-
-      setProducts(newProducts);
-      setLabels(newLabels);
-      setStocks(newStocks);
-      setPending(newPending);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const labels  = products.map((p) => p.description);
+  const stocks  = products.map((p) => parseInt(p.stock   || 0));
+  const pending = products.map((p) => parseInt(p.pending || 0));
 
   const handlePendingChange = (e) => {
     const { name, value } = e.target;
-    setPendingForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setPendingForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const resetPendingForm = () => {
@@ -150,9 +100,9 @@ const Dashboard = () => {
   const handlePendingSubmit = async (e) => {
     e.preventDefault();
 
-    const sku = pendingForm.sku.trim();
+    const sku         = pendingForm.sku.trim();
     const description = pendingForm.description.trim();
-    const quantity = Number(pendingForm.quantity);
+    const quantity    = Number(pendingForm.quantity);
     const requestNote = pendingForm.requestNote.trim();
     const currentUser =
       auth.currentUser?.displayName ||
@@ -171,15 +121,9 @@ const Dashboard = () => {
     }
 
     const product = products.find((item) => {
-      const productSku = String(item.data.sku || "").trim().toLowerCase();
-      const productDescription = String(item.data.description || "")
-        .trim()
-        .toLowerCase();
-
-      return (
-        productSku === sku.toLowerCase() &&
-        productDescription === description.toLowerCase()
-      );
+      const itemSku  = String(item.sku         || "").trim().toLowerCase();
+      const itemDesc = String(item.description || "").trim().toLowerCase();
+      return itemSku === sku.toLowerCase() && itemDesc === description.toLowerCase();
     });
 
     if (!product) {
@@ -195,26 +139,26 @@ const Dashboard = () => {
 
     try {
       await updateDoc(doc(db, "products", product.id), {
-        pending: Number(product.data.pending || 0) + quantity,
+        pending: Number(product.pending || 0) + quantity,
         pendingDescription: requestNote,
       });
 
       const notification = buildPendingNotification({
-        producto: product.data.description,
+        producto: product.description,
         cantidad: quantity,
-        usuario: currentUser,
-        estado: PENDING_STATUS,
+        usuario:  currentUser,
+        estado:   PENDING_STATUS,
       });
 
       if (notification.sendNotification) {
         await addDoc(collection(db, "notifications"), {
           ...notification,
-          producto: product.data.description,
-          cantidad: quantity,
-          usuario: currentUser,
-          estado: PENDING_STATUS,
+          producto:  product.description,
+          cantidad:  quantity,
+          usuario:   currentUser,
+          estado:    PENDING_STATUS,
           productId: product.id,
-          sku: product.data.sku || "",
+          sku:       product.sku || "",
           createdAt: serverTimestamp(),
         });
       }
@@ -223,7 +167,7 @@ const Dashboard = () => {
         show: true,
         text: notification.sendNotification
           ? `${notification.title}: ${notification.message}`
-          : `Se agregaron ${quantity} unidades pendientes a '${product.data.description}'.`,
+          : `Se agregaron ${quantity} unidades pendientes a '${product.description}'.`,
         type: "success",
         showButton: true,
         handleClick: null,
@@ -240,65 +184,36 @@ const Dashboard = () => {
     }
   };
 
-  const totalPending = products.reduce((acc, product) => {
-    return acc + parseInt(product.data.pending || 0);
-  }, 0);
+  const totalPending = products.reduce(
+    (acc, p) => acc + parseInt(p.pending || 0),
+    0,
+  );
 
   const normalizedSku = pendingForm.sku.trim().toLowerCase();
   const pendingPreviewProduct = normalizedSku
-    ? products.find((product) => {
-        const productSku = String(product.data.sku || "").trim().toLowerCase();
-
-        return (
-          productSku === normalizedSku || productSku.startsWith(normalizedSku)
-        );
+    ? products.find((p) => {
+        const pSku = String(p.sku || "").trim().toLowerCase();
+        return pSku === normalizedSku || pSku.startsWith(normalizedSku);
       })
     : null;
 
   const pendingMaterials = products.filter(
-    (product) => Number(product.data.pending || 0) > 0,
+    (p) => Number(p.pending || 0) > 0,
   );
 
   const configStock = {
     labels,
-    datasets: [
-      {
-        data: stocks,
-        backgroundColor: colors,
-        borderWidth: 1,
-      },
-    ],
+    datasets: [{ data: stocks, backgroundColor: colors, borderWidth: 1 }],
   };
-
-  // const configCost = {
-  //   labels,
-  //   datasets: [
-  //     {
-  //       data: costs,
-  //       backgroundColor: colors,
-  //       borderWidth: 1,
-  //     },
-  //   ],
-  // };
 
   const configPending = {
     labels,
-    datasets: [
-      {
-        data: pending,
-        backgroundColor: colors,
-        borderWidth: 1,
-      },
-    ],
+    datasets: [{ data: pending, backgroundColor: colors, borderWidth: 1 }],
   };
 
   const configOptions = {
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
+    plugins: { legend: { display: false } },
   };
 
   return (
@@ -309,6 +224,7 @@ const Dashboard = () => {
           Control de stock, costes y movimientos en tiempo real
         </p>
       </div>
+
       <div className="container-cards">
         <div className="card">
           <FcDatabase size={50} />
@@ -317,32 +233,18 @@ const Dashboard = () => {
             <h3>Total de productos</h3>
           </div>
         </div>
-        {/* <div className="card">
-          <FcCalculator size={50} />
-          <div>
-            <h1>
-              ${" "}
-              {products.reduce(
-                (acc, p) =>
-                  acc + Number(p.data.stock || 0) * Number(p.data.cost || 0),
-                0,
-              )}
-            </h1>
-            <h3>Total de costo</h3>
-          </div>
-        </div> */}
         <button
           type="button"
           className={`card pending-card-button ${showPendingForm ? "active" : ""}`}
           onClick={() => isSuperUser && setShowPendingForm((prev) => !prev)}
           disabled={!isSuperUser}
-          style={{ opacity: isSuperUser ? 1 : 0.5, cursor: isSuperUser ? 'pointer' : 'not-allowed' }}
+          style={{ opacity: isSuperUser ? 1 : 0.5, cursor: isSuperUser ? "pointer" : "not-allowed" }}
         >
           <FcInspection size={50} />
           <div>
             <h1>{totalPending}</h1>
             <h3>Unidades pendientes</h3>
-            <p>{isSuperUser ? 'Haz clic para agregar piezas solicitadas' : '(Solo admin)'}</p>
+            <p>{isSuperUser ? "Haz clic para agregar piezas solicitadas" : "(Solo admin)"}</p>
           </div>
         </button>
       </div>
@@ -358,41 +260,12 @@ const Dashboard = () => {
           </div>
 
           <form className="pending-form-grid" onSubmit={handlePendingSubmit}>
-            <input
-              type="text"
-              name="sku"
-              placeholder="Codigo"
-              value={pendingForm.sku}
-              onChange={handlePendingChange}
-            />
-            <input
-              type="text"
-              name="description"
-              placeholder="Nombre"
-              value={pendingForm.description}
-              onChange={handlePendingChange}
-            />
-            <input
-              type="number"
-              name="quantity"
-              min="1"
-              placeholder="Cantidad"
-              value={pendingForm.quantity}
-              onChange={handlePendingChange}
-            />
-            <input
-              type="text"
-              name="requestNote"
-              placeholder="Descripcion opcional"
-              value={pendingForm.requestNote}
-              onChange={handlePendingChange}
-            />
+            <input type="text"   name="sku"         placeholder="Codigo"              value={pendingForm.sku}         onChange={handlePendingChange} />
+            <input type="text"   name="description" placeholder="Nombre"              value={pendingForm.description} onChange={handlePendingChange} />
+            <input type="number" name="quantity"    min="1" placeholder="Cantidad"    value={pendingForm.quantity}    onChange={handlePendingChange} />
+            <input type="text"   name="requestNote" placeholder="Descripcion opcional" value={pendingForm.requestNote} onChange={handlePendingChange} />
             <div className="pending-form-actions">
-              <button
-                type="button"
-                className="pending-secondary-btn"
-                onClick={resetPendingForm}
-              >
+              <button type="button" className="pending-secondary-btn" onClick={resetPendingForm}>
                 Cancelar
               </button>
               <button type="submit" className="pending-primary-btn">
@@ -404,10 +277,10 @@ const Dashboard = () => {
           {normalizedSku ? (
             <div className="pending-preview-card">
               <div className="pending-preview-image">
-                {pendingPreviewProduct?.data?.img_b64 ? (
+                {pendingPreviewProduct?.imageUrl ? (
                   <img
-                    src={pendingPreviewProduct.data.img_b64}
-                    alt={pendingPreviewProduct.data.description || "Producto"}
+                    src={pendingPreviewProduct.imageUrl}
+                    alt={pendingPreviewProduct.description || "Producto"}
                   />
                 ) : (
                   <div className="pending-preview-empty">
@@ -419,24 +292,11 @@ const Dashboard = () => {
                 {pendingPreviewProduct ? (
                   <>
                     <h3>Previsualizacion del producto</h3>
-                    <p>
-                      <b>Codigo:</b> {pendingPreviewProduct.data.sku}
-                    </p>
-                    <p>
-                      <b>Nombre:</b> {pendingPreviewProduct.data.description}
-                    </p>
-                    <p>
-                      <b>Stock:</b> {pendingPreviewProduct.data.stock}{" "}
-                      {pendingPreviewProduct.data.product_Unit}
-                    </p>
-                    <p>
-                      <b>Pendientes actuales:</b>{" "}
-                      {pendingPreviewProduct.data.pending || 0}
-                    </p>
-                    <p>
-                      <b>Descripcion actual:</b>{" "}
-                      {pendingPreviewProduct.data.pendingDescription || "-"}
-                    </p>
+                    <p><b>Codigo:</b> {pendingPreviewProduct.sku}</p>
+                    <p><b>Nombre:</b> {pendingPreviewProduct.description}</p>
+                    <p><b>Stock:</b> {pendingPreviewProduct.stock} {pendingPreviewProduct.product_Unit}</p>
+                    <p><b>Pendientes actuales:</b> {pendingPreviewProduct.pending || 0}</p>
+                    <p><b>Descripcion actual:</b> {pendingPreviewProduct.pendingDescription || "-"}</p>
                   </>
                 ) : (
                   <>
@@ -466,25 +326,11 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* <div className="card-chart">
-          <h2 style={{ marginBottom: "1rem" }}>Costo total por producto</h2>
-          <div className="container-chart">
-            <div style={{ width: "70%", marginRight: "10px" }}>
-              <Bar data={configCost} options={configOptions} />
-            </div>
-            <div style={{ width: "30%" }}>
-              <Doughnut data={configCost} options={configOptions} />
-            </div>
-          </div>
-        </div> */}
-
         <div
           className={`card-chart pending-chart-card ${showPendingList ? "active" : ""}`}
           onClick={() => setShowPendingList((prev) => !prev)}
         >
-          <h2 style={{ marginBottom: "1rem" }}>
-            Unidades pendientes por producto
-          </h2>
+          <h2 style={{ marginBottom: "1rem" }}>Unidades pendientes por producto</h2>
           <p className="pending-chart-hint">
             Haz clic para ver la lista de materiales solicitados
           </p>
@@ -498,6 +344,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
       {showPendingList ? (
         <div className="pending-list-panel">
           <div className="pending-list-header">
@@ -520,11 +367,8 @@ const Dashboard = () => {
                   onClick={() => setSelectedPendingMaterial(product)}
                 >
                   <div className="pending-list-media">
-                    {product.data.img_b64 ? (
-                      <img
-                        src={product.data.img_b64}
-                        alt={product.data.description || "Producto solicitado"}
-                      />
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.description || "Producto solicitado"} />
                     ) : (
                       <div className="pending-list-empty-image">
                         <BsImages size={34} />
@@ -532,21 +376,11 @@ const Dashboard = () => {
                     )}
                   </div>
                   <div className="pending-list-info">
-                    <h3>{product.data.description}</h3>
-                    <p>
-                      <b>Codigo:</b> {product.data.sku}
-                    </p>
-                    <p>
-                      <b>Solicitadas:</b> {product.data.pending}
-                    </p>
-                    <p>
-                      <b>Stock actual:</b> {product.data.stock}{" "}
-                      {product.data.product_Unit}
-                    </p>
-                    <p>
-                      <b>Descripcion:</b>{" "}
-                      {product.data.pendingDescription || "-"}
-                    </p>
+                    <h3>{product.description}</h3>
+                    <p><b>Codigo:</b> {product.sku}</p>
+                    <p><b>Solicitadas:</b> {product.pending}</p>
+                    <p><b>Stock actual:</b> {product.stock} {product.product_Unit}</p>
+                    <p><b>Descripcion:</b> {product.pendingDescription || "-"}</p>
                   </div>
                 </button>
               ))}
@@ -558,6 +392,7 @@ const Dashboard = () => {
           )}
         </div>
       ) : null}
+
       {selectedPendingMaterial ? (
         <div
           className="pending-detail-overlay"
@@ -575,13 +410,10 @@ const Dashboard = () => {
               Cerrar
             </button>
             <div className="pending-detail-image">
-              {selectedPendingMaterial.data.img_b64 ? (
+              {selectedPendingMaterial.imageUrl ? (
                 <img
-                  src={selectedPendingMaterial.data.img_b64}
-                  alt={
-                    selectedPendingMaterial.data.description ||
-                    "Material solicitado"
-                  }
+                  src={selectedPendingMaterial.imageUrl}
+                  alt={selectedPendingMaterial.description || "Material solicitado"}
                 />
               ) : (
                 <div className="pending-detail-empty">
@@ -591,30 +423,19 @@ const Dashboard = () => {
             </div>
             <div className="pending-detail-copy">
               <h3>Previsualizacion del material solicitado</h3>
-              <p>
-                <b>Codigo:</b> {selectedPendingMaterial.data.sku}
-              </p>
-              <p>
-                <b>Nombre:</b> {selectedPendingMaterial.data.description}
-              </p>
-              <p>
-                <b>Solicitadas:</b> {selectedPendingMaterial.data.pending}
-              </p>
-              <p>
-                <b>Stock actual:</b> {selectedPendingMaterial.data.stock}{" "}
-                {selectedPendingMaterial.data.product_Unit}
-              </p>
-              <p>
-                <b>Marca:</b> {selectedPendingMaterial.data.brand || "-"}
-              </p>
-              <p>
-                <b>Descripcion:</b>{" "}
-                {selectedPendingMaterial.data.pendingDescription || "-"}
-              </p>
+              <p><b>Codigo:</b> {selectedPendingMaterial.sku}</p>
+              <p><b>Nombre:</b> {selectedPendingMaterial.description}</p>
+              <p><b>Solicitadas:</b> {selectedPendingMaterial.pending}</p>
+              <p><b>Stock actual:</b> {selectedPendingMaterial.stock} {selectedPendingMaterial.product_Unit}</p>
+              <p><b>Marca:</b> {selectedPendingMaterial.brand || "-"}</p>
+              <p><b>Descripcion:</b> {selectedPendingMaterial.pendingDescription || "-"}</p>
             </div>
           </div>
         </div>
       ) : null}
+
+      {isSuperUser && <StockAlertCard />}
+      <AnalyticsCard />
       {isSuperUser && <ProductRequestsCard />}
       <Modal modalConfig={modalConfig} setModalConfig={setModalConfig} />
     </div>

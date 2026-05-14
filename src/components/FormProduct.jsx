@@ -1,25 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BsImages, BsCheck, BsX } from "react-icons/bs";
 
-// CON ESTO SUBO LAS IMAGENES A CLAUDINARY, ES IMPORTANTE PARA HACER SUBIDAS DE IMAGENES A LA APP
 import { uploadImage } from "../lib/cloudinary"
-
-//otra importacion para las imagenes
-
-// ✅ Firebase moderno
 import { db } from "../firebase/config";
 import { collection, addDoc, getDoc, doc, setDoc } from "firebase/firestore";
+import { validateProduct } from "../utils/securityValidation";
 
 import "../css/formProduct.css";
 import Modal from "./Modal";
 
-const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) => {
+const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isSuperUser = false }) => {
 
     const [modalConfig, setModalConfig] = useState({
         show: false,
         text: '',
         type: '',
-    showButton: true
+        showButton: true
     });
 
     const [product, setProduct] = useState({
@@ -35,6 +31,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
         product_Unit: '-',
         stock: 0,
         pending: 0,
+        stockMinimo: 0,
         location: '',
         imageUrl: ''
     });
@@ -62,54 +59,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
 
     }, [editProduct]);
 
-    // 💾 Guardar / actualizar
-    /*const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            if (!editProduct.status) {
-                // ➕ Crear
-                await addDoc(collection(db, "products"), product);
-
-                setModalConfig({
-                    show: true,
-                    text: 'El producto ha sido registrado exitosamente.',
-                    type: 'success',
-                    showButton: false
-                });
-
-                setTimeout(() => {
-                    setNewProduct(false);
-                    setQuery("");
-                }, 2000);
-
-            } else {
-                // ✏️ Actualizar
-                await setDoc(doc(db, "products", editProduct.id), product);
-
-                setModalConfig({
-                    show: true,
-                    text: 'El producto ha sido actualizado exitosamente.',
-                    type: 'success',
-                    showButton: false
-                });
-
-                setTimeout(() => {
-                    setEditProduct({ status: false, id: null });
-                    setQuery("");
-                }, 2000);
-            }
-
-        } catch (error) {
-            setModalConfig({
-                show: true,
-                text: `Error: ${error.message}`,
-                type: 'error',
-                showButton: true
-            });
-        }*/
-
-            const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
@@ -119,9 +69,21 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
                 cost: Number(product.cost),
                 stock: Number(product.stock),
                 pending: Number(product.pending),
+                stockMinimo: Number(product.stockMinimo || 0),
                 totalIn: Number(product.totalIn || 0),
                 totalOut: Number(product.totalOut || 0),
             };
+
+            const { isValid, errors } = validateProduct(cleanProduct);
+            if (!isValid) {
+                setModalConfig({
+                    show: true,
+                    text: errors.join(' '),
+                    type: 'error',
+                    showButton: true
+                });
+                return;
+            }
 
             if (!editProduct.status) {
                 await addDoc(collection(db, "products"), cleanProduct);
@@ -152,12 +114,9 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery }) =
                 showButton: true
             });
         }
-    
-    }
+    };
 
-    
-
-    // 🧠 Manejo de inputs
+    // Manejo de inputs
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -235,6 +194,8 @@ const handleImage = async (e) => {
         onChange={handleImage}
     />
 
+
+
 </div>
 
                     <div className="form-group">
@@ -274,6 +235,20 @@ const handleImage = async (e) => {
                     <div className="form-group">
                         <label>Pendiente:</label>
                         <input type="number" name="pending" value={product.pending} disabled />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Stock mínimo:</label>
+                        <input
+                            type="number"
+                            name="stockMinimo"
+                            value={product.stockMinimo ?? 0}
+                            onChange={handleChange}
+                            min="0"
+                            step="1"
+                            disabled={!isSuperUser}
+                            title={isSuperUser ? "Cantidad mínima que debe mantenerse en inventario" : "Solo el superusuario puede modificar el stock mínimo"}
+                        />
                     </div>
 
                 </div>

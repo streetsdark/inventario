@@ -28,6 +28,7 @@ const ProductRequestsCard = () => {
   const [message, setMessage] = useState({ type: "", text: "" });
   const [moveType, setMoveType] = useState("definitiva");
   const previousRequestCountRef = useRef(0);
+  const isFirstRender = useRef(true);
 
   const pendingRequests = getRequestsByStatus("pending");
   const displayedRequests = showAll
@@ -83,10 +84,13 @@ const ProductRequestsCard = () => {
   useEffect(() => {
     const currentRequestCount = pendingRequests.length;
 
-    if (
-      currentRequestCount > previousRequestCountRef.current &&
-      previousRequestCountRef.current > 0
-    ) {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      previousRequestCountRef.current = currentRequestCount;
+      return;
+    }
+
+    if (currentRequestCount > previousRequestCountRef.current) {
       playNotificationSound();
       setMessage({
         type: "success",

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { FcStatistics, FcPaid, FcMultipleInputs } from "react-icons/fc";
+import { useState, useRef, useEffect } from "react";
+import { FcStatistics, FcPaid, FcMultipleInputs, FcCollaboration, FcPrivacy } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import Switch from "react-switch";
 import { FaSun, FaMoon } from "react-icons/fa";
@@ -110,6 +110,30 @@ const Sidebar = ({ page, mode, setMode }) => {
           >
             <FcMultipleInputs size={28} />
             <p>Movimientos</p>
+          </Link>
+        )}
+
+        {isSuperUser && (
+          <Link
+            to="/users"
+            className={page === "users" ? "itemContainerA" : "itemContainer"}
+            title="Usuarios"
+            onClick={handleLinkClick}
+          >
+            <FcCollaboration size={28} />
+            <p>Usuarios</p>
+          </Link>
+        )}
+
+        {isSuperUser && (
+          <Link
+            to="/security-tests"
+            className={page === "security-tests" ? "itemContainerA" : "itemContainer"}
+            title="Pruebas de seguridad"
+            onClick={handleLinkClick}
+          >
+            <FcPrivacy size={28} />
+            <p>Seguridad</p>
           </Link>
         )}
       </div>

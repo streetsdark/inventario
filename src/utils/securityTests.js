@@ -480,6 +480,11 @@ function testLoginLimiterInstance() {
 // ============================================================
 
 export function runAllSecurityTests() {
+  // Reset module-level state so re-runs don't accumulate results
+  TestResults.passed = 0;
+  TestResults.failed = 0;
+  TestResults.tests  = [];
+
   console.clear();
   console.log('\n' + '█'.repeat(60));
   console.log('🔒 INICIANDO SUITE COMPLETA DE PRUEBAS DE SEGURIDAD');

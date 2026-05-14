@@ -1,0 +1,260 @@
+/* ── Analytics Card ───────────────────────────────────────── */
+.analytics-card {
+  margin: 1.5rem 0 0;
+  border-radius: 22px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
+  color: var(--text-primary);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.22s ease;
+}
+
+.analytics-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.analytics-card.open {
+  border-color: var(--contrast);
+  transform: none;
+}
+
+/* ── Trigger row (always visible, clickable) ──────────────── */
+.analytics-trigger {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.analytics-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.analytics-icon {
+  color: var(--contrast);
+  flex-shrink: 0;
+}
+
+.analytics-trigger h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.analytics-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0.2rem 0 0;
+}
+
+/* ── Mini KPIs (visible en estado cerrado) ────────────────── */
+.analytics-mini-kpis {
+  display: flex;
+  gap: 1.25rem;
+  flex-shrink: 0;
+}
+
+.mini-kpi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.mini-kpi-num {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--contrast);
+  line-height: 1;
+}
+
+.mini-kpi-label {
+  font-size: 0.62rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Chevron ──────────────────────────────────────────────── */
+.analytics-chevron {
+  font-size: 1.5rem;
+  color: var(--text-tertiary);
+  transition: transform 0.25s ease;
+  display: inline-block;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.analytics-chevron.up {
+  transform: rotate(-90deg);
+}
+
+/* ── Panel expandible ─────────────────────────────────────── */
+.analytics-panel {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  animation: analyticsOpen 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes analyticsOpen {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Period selector ──────────────────────────────────────── */
+.analytics-period {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding-top: 1.25rem;
+}
+
+.analytics-period-btn {
+  padding: 0.38rem 0.9rem;
+  border-radius: 99px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  min-height: unset;
+  box-shadow: none;
+  line-height: 1;
+}
+
+.analytics-period-btn:hover {
+  background: var(--contrast-soft);
+  color: var(--contrast);
+  border-color: var(--contrast);
+  transform: none;
+  filter: none;
+}
+
+.analytics-period-btn.active {
+  background: linear-gradient(135deg, var(--contrast), var(--contrast-hover));
+  color: var(--text-inverse);
+  border-color: transparent;
+  transform: none;
+  filter: none;
+}
+
+/* ── KPI row ──────────────────────────────────────────────── */
+.analytics-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+}
+
+.analytics-kpi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0.75rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  gap: 0.4rem;
+}
+
+.kpi-num {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--contrast);
+  line-height: 1;
+}
+
+.kpi-num.kpi-out { color: var(--danger);  }
+.kpi-num.kpi-in  { color: var(--success); }
+
+.mini-kpi-num.kpi-out { color: var(--danger);  }
+.mini-kpi-num.kpi-in  { color: var(--success); }
+
+.kpi-label {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ── Sections / charts ────────────────────────────────────── */
+.analytics-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.analytics-section-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.analytics-chart-full  { height: 220px; }
+.analytics-chart-horiz { height: 250px; }
+
+.analytics-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* ── Empty states ─────────────────────────────────────────── */
+.analytics-empty-full {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 14px;
+  border: 1px dashed var(--border-color);
+}
+
+.analytics-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px dashed var(--border-color);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .analytics-mini-kpis { display: none; }
+
+  .analytics-kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analytics-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .analytics-trigger { padding: 1rem 1.1rem; gap: 0.75rem; }
+  .analytics-panel   { padding: 0 1.1rem 1.25rem; }
+
+  .analytics-chart-full  { height: 180px; }
+  .analytics-chart-horiz { height: 200px; }
+}

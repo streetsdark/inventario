@@ -18,24 +18,35 @@ service cloud.firestore {
       return isAuth() && userRole() in ['admin', 'superuser'];
     }
 
+    function isSuperuser() {
+      return isAuth() && userRole() == 'superuser';
+    }
+
     // ── Perfiles de usuario ────────────────────────────────
-    // Cada usuario solo puede leer y escribir su propio documento
-    // (useRole lo necesita para leer/crear el rol en el primer login)
     match /users/{uid} {
-      allow read, write: if isAuth() && request.auth.uid == uid;
+      // Lectura propia o por superuser
+      allow read: if isAuth() && request.auth.uid == uid;
+      allow read: if isSuperuser();
+
+      // Primer login: el usuario crea su propio doc, solo con role='basic'
+      allow create: if isAuth() && request.auth.uid == uid
+        && request.resource.data.role == 'basic';
+
+      // El usuario actualiza su propio doc, pero NO puede cambiar el role
+      allow update: if isAuth() && request.auth.uid == uid
+        && request.resource.data.role == resource.data.role;
+
+      // Superuser puede crear y cambiar roles de cualquier usuario
+      allow create, update: if isSuperuser();
     }
 
     // ── Catálogo de productos ──────────────────────────────
-    // Cualquier usuario autenticado puede leer (necesario para el buscador)
-    // Solo admin/superuser pueden escribir
     match /products/{id} {
       allow read: if isAuth();
       allow write: if isPrivileged();
     }
 
     // ── Solicitudes de producto ────────────────────────────
-    // Cualquier usuario autenticado puede crear y leer las suyas propias
-    // Admin/superuser gestionan todas
     match /productRequests/{id} {
       allow create: if isAuth();
       allow read: if isAuth() && (
@@ -49,11 +60,20 @@ service cloud.firestore {
       allow read, write: if isPrivileged();
     }
 
-    // ── Cobertura temporal para colecciones secundarias ────
-    // (audit logs, webhooks, etc.) — válida hasta agosto 2026
-    // Reemplazar con reglas específicas antes de esa fecha
-    match /{document=**} {
-      allow read, write: if isAuth() && request.time < timestamp.date(2026, 8, 1);
+    // ── Logs de auditoría ──────────────────────────────────
+    // Cualquier usuario autenticado puede crear entradas (el sistema las genera)
+    // Solo superuser puede leerlas — nunca se borran ni editan
+    match /auditLogs/{id} {
+      allow create: if isAuth();
+      allow read: if isSuperuser();
+    }
+
+    // ── Notificaciones ─────────────────────────────────────
+    // Cualquier usuario autenticado puede crear notificaciones
+    // Solo admin/superuser pueden leerlas y gestionarlas
+    match /notifications/{id} {
+      allow create: if isAuth();
+      allow read, update, delete: if isPrivileged();
     }
   }
 }

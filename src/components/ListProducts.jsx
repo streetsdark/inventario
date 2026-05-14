@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { BsTrash, BsPencil, BsImages, BsCheckCircle, BsXCircle } from "react-icons/bs";
 
 import useProducts from "../hooks/useProducts";
@@ -20,19 +20,21 @@ const ListProducts = ({ query, stockFilter = "all", setEditProduct, isSuperUser 
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [selectedProductPreview, setSelectedProductPreview] = useState(null);
 
-  const getStockStatusClass = (stock) => {
+  const getStockStatusClass = (stock, stockMinimo) => {
     const stockValue = Number(stock || 0);
+    const minimo = Number(stockMinimo || 0);
 
     if (stockValue <= 0) return "is-out-of-stock";
-    if (stockValue <= 5) return "is-low-stock";
+    if (minimo > 0 ? stockValue <= minimo : stockValue <= 5) return "is-low-stock";
     return "is-in-stock";
   };
 
-  const getStockStatusLabel = (stock) => {
+  const getStockStatusLabel = (stock, stockMinimo) => {
     const stockValue = Number(stock || 0);
+    const minimo = Number(stockMinimo || 0);
 
     if (stockValue <= 0) return "Sin stock";
-    if (stockValue <= 5) return "Stock bajo";
+    if (minimo > 0 ? stockValue <= minimo : stockValue <= 5) return "Stock mínimo";
     return "Stock alto";
   };
 
@@ -101,13 +103,15 @@ const ListProducts = ({ query, stockFilter = "all", setEditProduct, isSuperUser 
 
   const filteredProducts = products.filter((product) => {
     const stockValue = Number(product.stock || 0);
+    const minimo = Number(product.stockMinimo || 0);
+    const threshold = minimo > 0 ? minimo : 5;
 
     if (stockFilter === "high") {
-      return stockValue > 5;
+      return stockValue > threshold;
     }
 
     if (stockFilter === "low") {
-      return stockValue > 0 && stockValue <= 5;
+      return stockValue > 0 && stockValue <= threshold;
     }
 
     if (stockFilter === "out") {
@@ -143,9 +147,9 @@ const ListProducts = ({ query, stockFilter = "all", setEditProduct, isSuperUser 
                   <div className="product-card-header">
                     <h3>{p.description}</h3>
                     <span
-                      className={`product-stock-badge ${getStockStatusClass(p.stock)}`}
+                      className={`product-stock-badge ${getStockStatusClass(p.stock, p.stockMinimo)}`}
                     >
-                      {getStockStatusLabel(p.stock)} · {p.stock} {p.product_Unit}
+                      {getStockStatusLabel(p.stock, p.stockMinimo)} · {p.stock} {p.product_Unit}
                     </span>
                   </div>
 
@@ -253,10 +257,11 @@ const ListProducts = ({ query, stockFilter = "all", setEditProduct, isSuperUser 
                 </div>
                 <span
                   className={`product-preview-stock ${getStockStatusClass(
-                    selectedProductPreview.stock
+                    selectedProductPreview.stock,
+                    selectedProductPreview.stockMinimo
                   )}`}
                 >
-                  {getStockStatusLabel(selectedProductPreview.stock)} ·{" "}
+                  {getStockStatusLabel(selectedProductPreview.stock, selectedProductPreview.stockMinimo)} ·{" "}
                   {selectedProductPreview.stock}{" "}
                   {selectedProductPreview.product_Unit}
                 </span>
@@ -279,6 +284,12 @@ const ListProducts = ({ query, stockFilter = "all", setEditProduct, isSuperUser 
                   <b>Pendiente</b>
                   <span>{selectedProductPreview.pending}</span>
                 </p>
+                {Number(selectedProductPreview.stockMinimo || 0) > 0 && (
+                  <p>
+                    <b>Stock mínimo</b>
+                    <span>{selectedProductPreview.stockMinimo}</span>
+                  </p>
+                )}
               </div>
 
               {isSuperUser ? (

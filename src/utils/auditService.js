@@ -65,7 +65,6 @@ export async function logAuditEvent(
       userName: currentUser?.displayName || "Unknown User",
       details,
       timestamp: serverTimestamp(),
-      ipAddress: await getClientIP(),
       userAgent: navigator.userAgent,
     };
 
@@ -82,56 +81,40 @@ export async function logAuditEvent(
 }
 
 /**
- * Obtiene la dirección IP del cliente (aproximada)
- */
-async function getClientIP() {
-  try {
-    const response = await fetch("https://api.ipify.org?format=json");
-    const data = await response.json();
-    return data.ip;
-  } catch (error) {
-    return "unknown";
-  }
-}
-
-/**
  * Detecta actividad sospechosa basada en patrones
  */
 async function checkForSuspiciousActivity(userId, eventType) {
-  try {
-    if (!userId) return;
+  // Evitar recursión: si ya estamos registrando actividad sospechosa, no volver a revisar
+  if (eventType === AuditEventTypes.SUSPICIOUS_ACTIVITY) return;
+  if (!userId) return;
 
-    // Ventana de tiempo: últimos 15 minutos
+  try {
     const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
 
-    // Contar eventos del usuario en los últimos 15 minutos
     const q = query(
       collection(db, "auditLogs"),
       where("userId", "==", userId),
-      where(
-        "timestamp",
-        ">=",
-        Timestamp.fromDate(fifteenMinutesAgo)
-      )
+      where("timestamp", ">=", Timestamp.fromDate(fifteenMinutesAgo))
     );
 
     const snapshot = await getDocs(q);
     const eventCount = snapshot.size;
 
-    // Si hay más de 50 eventos en 15 minutos, es sospechoso
     if (eventCount > 50) {
-      await logAuditEvent(
-        AuditEventTypes.SUSPICIOUS_ACTIVITY,
-        "user",
+      // Escribir directamente a Firestore sin pasar por logAuditEvent para evitar recursión
+      await addDoc(collection(db, "auditLogs"), {
+        eventType: AuditEventTypes.SUSPICIOUS_ACTIVITY,
+        resource: "user",
+        resourceId: userId,
         userId,
-        {
-          reason: "Excessive events",
-          eventCount,
-          window: "15 minutes",
-        }
-      );
+        userEmail: auth.currentUser?.email || "unknown",
+        userName: auth.currentUser?.displayName || "Unknown User",
+        details: { reason: "Excessive events", eventCount, window: "15 minutes" },
+        timestamp: serverTimestamp(),
+        ipAddress: "n/a",
+        userAgent: navigator.userAgent,
+      });
 
-      // Aquí podrías enviar notificación al admin
       console.warn(`⚠️ Actividad sospechosa detectada para usuario: ${userId}`);
     }
   } catch (error) {

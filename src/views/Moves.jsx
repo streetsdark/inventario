@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BsSearch, BsImages, BsCheck, BsX, BsDownload } from "react-icons/bs";
 import {
     collection,
@@ -8,10 +8,12 @@ import {
     serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { validateMove } from "../utils/securityValidation";
 
 import useMoves from "../hooks/useMoves";
 import useProducts from "../hooks/useProducts";
 import useRole from "../hooks/useRole";
+import useUsers from "../hooks/useUsers";
 import ProfileCard from "../components/ProfileCard";
 import "../css/moves.css";
 import Modal from "../components/Modal";
@@ -45,12 +47,17 @@ const Moves = () => {
     const [outputUserFilter, setOutputUserFilter] = useState('');
     const [selectedReturnMove, setSelectedReturnMove] = useState(null);
     
-    //const { products, loading } = useProducts(query);
-    //const { moves, loading: loadingMoves } = useMoves();
-    
-    //Esto es chat GPT
     const { products = [], loading } = useProducts(query);
     const { moves = [], loading: loadingMoves } = useMoves();
+    const { users = [] } = useUsers();
+
+    // mapa recipientUser (email o displayName) → alias
+    const aliasMap = {};
+    users.forEach((u) => {
+        if (!u.alias) return;
+        if (u.email)       aliasMap[u.email.toLowerCase()]       = u.alias;
+        if (u.displayName) aliasMap[u.displayName.toLowerCase()] = u.alias;
+    });
 
 
     const outputMoves = moves.filter((move) => move.type === 'out');
@@ -129,6 +136,21 @@ const Moves = () => {
                 showButton: true
             });
         } else {
+            const { isValid, errors } = validateMove({
+                quantity: parsedQuantity,
+                date: moveDate,
+                type: typeIn ? 'in' : 'out',
+            });
+            if (!isValid) {
+                setModalConfig({
+                    show: true,
+                    text: errors.join(' '),
+                    type: 'error',
+                    showButton: true
+                });
+                return;
+            }
+
             try {
                 const productRef = doc(db, "products", editProduct.id);
                 const moveRef = doc(collection(db, "moves"));
@@ -312,7 +334,7 @@ const Moves = () => {
             return;
         }
 
-        exportInventorySummary(filteredMoves, exportType);
+        exportInventorySummary(filteredMoves, exportType, users);
 
         setModalConfig({
             show: true,
@@ -411,18 +433,18 @@ const Moves = () => {
 
                     <form className="form-move" onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label htmlFor="">Código</label>
-                            <input type="text" value={editProduct.sku || ''} disabled/>
+                            <label htmlFor="move-sku">Código</label>
+                            <input id="move-sku" type="text" value={editProduct.sku || ''} disabled/>
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="">Descripción</label>
-                            <input type="text" value={editProduct.description || ''} disabled/>
+                            <label htmlFor="move-description">Descripción</label>
+                            <input id="move-description" type="text" value={editProduct.description || ''} disabled/>
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="">Stock actual</label>
-                            <input type="text" value={editProduct.stock ? `${editProduct.stock} ${editProduct.product_Unit}` : ''} disabled/>
+                            <label htmlFor="move-stock">Stock actual</label>
+                            <input id="move-stock" type="text" value={editProduct.stock ? `${editProduct.stock} ${editProduct.product_Unit}` : ''} disabled/>
                         </div>
 
                         <div className="form-group">
@@ -434,8 +456,8 @@ const Moves = () => {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="">Cantidad</label>
-                            <input type="number" min="0" value={quantity} onChange={(e) => setQuantity(e.target.value)}/>
+                            <label htmlFor="move-quantity">Cantidad</label>
+                            <input id="move-quantity" type="number" min="0" value={quantity} onChange={(e) => setQuantity(e.target.value)}/>
                         </div>
 
                         <div className="form-group">
@@ -477,14 +499,38 @@ const Moves = () => {
                         }
 
                         <div className="form-group">
-                            <label htmlFor="">Cantidad final</label>
-                            <input type="text" value={
+                            <label htmlFor="move-final-quantity">Cantidad final</label>
+                            <input id="move-final-quantity" type="text" value={
                                 editProduct.stock
                                 ? ( typeIn
                                     ? parseInt(editProduct.stock) + parseInt(quantity || 0)
                                     : parseInt(editProduct.stock) - parseInt(quantity || 0) ) + ' ' + (editProduct.product_Unit || '')
                                 : '' }  disabled/>
                         </div>
+
+                        {(() => {
+                            const minimo = Number(editProduct.stockMinimo || 0);
+                            const stockFinal = !typeIn && editProduct.stock
+                                ? parseInt(editProduct.stock) - parseInt(quantity || 0)
+                                : null;
+                            if (!typeIn && minimo > 0 && stockFinal !== null && stockFinal <= minimo) {
+                                return (
+                                    <div style={{
+                                        backgroundColor: 'rgba(194,148,58,0.15)',
+                                        border: '1px solid rgba(194,148,58,0.5)',
+                                        color: '#c2943a',
+                                        padding: '10px 14px',
+                                        borderRadius: '10px',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 600,
+                                        marginBottom: '0.5rem',
+                                    }}>
+                                        ⚠ Esta salida dejará el stock{stockFinal <= 0 ? " en cero" : ` en ${stockFinal}`}, {stockFinal <= 0 ? "por debajo" : "igual o por debajo"} del mínimo configurado ({minimo}).
+                                    </div>
+                                );
+                            }
+                            return null;
+                        })()}
 
                         <div className="container-button">
                             <button
@@ -586,6 +632,14 @@ const Moves = () => {
                                     <p><b>Fecha de salida:</b> {formatMoveDate(move)}</p>
                                     <p><b>Cantidad:</b> {move.quantity || 0} {move.unit || ''}</p>
                                     <p><b>Entregado a:</b> {move.recipientUser || '-'}</p>
+                                    {aliasMap[(move.recipientUser || '').toLowerCase()] && (
+                                        <p>
+                                            <b>Alias:</b>{' '}
+                                            <span style={{ color: 'var(--contrast)', fontWeight: 700 }}>
+                                                {aliasMap[(move.recipientUser || '').toLowerCase()]}
+                                            </span>
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="output-preview-side">
                                     <span className={`output-status-badge ${move.deliveryStatus === 'pendiente por devolver' ? 'is-pending' : move.deliveryStatus === 'devuelto' ? 'is-returned' : 'is-delivered'}`}>
