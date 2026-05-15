@@ -15,7 +15,13 @@ import { FcDatabase, FcInspection } from "react-icons/fc";
 import Modal from "../components/Modal";
 import ProductRequestsCard from "../components/ProductRequestsCard";
 import AnalyticsCard from "../components/AnalyticsCard";
+import ExportCard from "../components/ExportCard";
+import ScannerCard from "../components/ScannerCard";
+import QrLabelsCard from "../components/QrLabelsCard";
 import StockAlertCard from "../components/StockAlertCard";
+import WarehouseSwitcher from "../components/WarehouseSwitcher";
+import WarehouseManager from "../components/WarehouseManager";
+import BulkReassignCard from "../components/BulkReassignCard";
 import useRole from "../hooks/useRole";
 import useProducts from "../hooks/useProducts";
 import usePendingStock from "../hooks/usePendingStock";
@@ -148,11 +154,14 @@ const Dashboard = () => {
 
   return (
     <div className="content">
-      <div style={{ marginBottom: "2rem" }}>
-        <h1 style={{ fontSize: "1.8rem" }}>Dashboard de Almacen</h1>
-        <p style={{ opacity: 0.6 }}>
-          Control de stock, costes y movimientos en tiempo real
-        </p>
+      <div style={{ marginBottom: "2rem", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+        <div>
+          <h1 style={{ fontSize: "1.8rem" }}>Dashboard de Almacen</h1>
+          <p style={{ opacity: 0.6 }}>
+            Control de stock, costes y movimientos en tiempo real
+          </p>
+        </div>
+        <WarehouseSwitcher />
       </div>
 
       <div className="container-cards">
@@ -365,7 +374,12 @@ const Dashboard = () => {
       ) : null}
 
       {isSuperUser && <StockAlertCard />}
+      <ScannerCard />
+      {isSuperUser && <QrLabelsCard />}
       <AnalyticsCard />
+      {isSuperUser && <ExportCard />}
+      {isSuperUser && <WarehouseManager />}
+      {isSuperUser && <BulkReassignCard />}
       {isSuperUser && <ProductRequestsCard />}
       <Modal modalConfig={modalConfig} setModalConfig={setModalConfig} />
     </div>

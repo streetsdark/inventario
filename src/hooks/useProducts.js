@@ -1,6 +1,6 @@
 // src/hooks/useProducts.js
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { db } from "../firebase/config";
 import {
   collection,
@@ -10,8 +10,11 @@ import {
   updateDoc,
   query as fbQuery
 } from "firebase/firestore";
+import { useWarehouseContext } from "../context/WarehouseContext";
+import { filterByWarehouse } from "../utils/warehouseFilter";
 
 export default function useProducts(search) {
+  const { selectedId, defaultWarehouseId } = useWarehouseContext();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,5 +65,10 @@ export default function useProducts(search) {
     await updateDoc(doc(db, "products", id), { pending: 0 });
   };
 
-  return { products, loading, removeProduct, clearPending };
+  const visibleProducts = useMemo(
+    () => filterByWarehouse(products, selectedId, defaultWarehouseId),
+    [products, selectedId, defaultWarehouseId],
+  );
+
+  return { products: visibleProducts, loading, removeProduct, clearPending };
 }

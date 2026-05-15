@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   collection,
   doc,
@@ -10,8 +10,11 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { error as logError } from "../utils/logger";
+import { useWarehouseContext } from "../context/WarehouseContext";
+import { filterByWarehouse } from "../utils/warehouseFilter";
 
 export default function useMoves() {
+  const { selectedId, defaultWarehouseId } = useWarehouseContext();
   const [moves, setMoves] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -78,6 +81,7 @@ export default function useMoves() {
         exitDate: !typeIn ? moveDate : "",
         recipientUser: typeIn ? "" : recipientUser.trim(),
         deliveryStatus: typeIn ? "" : outputStatus,
+        warehouseId: currentProduct.warehouseId || product.warehouseId || "",
         createdAt: serverTimestamp(),
       });
 
@@ -93,5 +97,10 @@ export default function useMoves() {
     return { currentPending };
   };
 
-  return { moves, loading, createMove };
+  const visibleMoves = useMemo(
+    () => filterByWarehouse(moves, selectedId, defaultWarehouseId),
+    [moves, selectedId, defaultWarehouseId],
+  );
+
+  return { moves: visibleMoves, loading, createMove };
 }

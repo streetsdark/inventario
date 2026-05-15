@@ -1,0 +1,163 @@
+/* ── Export Card ──────────────────────────────────────────── */
+.export-card {
+  margin: 1.5rem 0 0;
+  border-radius: 22px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
+  color: var(--text-primary);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.22s ease;
+}
+
+.export-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.export-card.open {
+  border-color: var(--contrast);
+  transform: none;
+}
+
+.export-trigger {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.export-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.export-icon { color: var(--contrast); flex-shrink: 0; }
+
+.export-trigger h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.export-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0.2rem 0 0;
+}
+
+.export-chevron {
+  font-size: 1.5rem;
+  color: var(--text-tertiary);
+  transition: transform 0.25s ease;
+  display: inline-block;
+  line-height: 1;
+}
+.export-chevron.up { transform: rotate(-90deg); }
+
+.export-panel {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  border-top: 1px solid var(--border-color);
+  animation: exportOpen 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes exportOpen {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.export-group {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.export-group-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.export-group-hint {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+.export-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s, color 0.18s;
+  min-height: unset;
+  box-shadow: none;
+}
+
+.export-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--contrast);
+  background: rgba(77, 184, 240, 0.08);
+  color: var(--contrast);
+  filter: none;
+}
+
+.export-btn.csv:hover:not(:disabled) {
+  border-color: #2f9e6a;
+  color: #2f9e6a;
+  background: rgba(47, 158, 106, 0.08);
+}
+
+.export-btn.pdf:hover:not(:disabled) {
+  border-color: #c0392b;
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+}
+
+.export-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.export-error {
+  grid-column: 1 / -1;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  color: #c0392b;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 800px) {
+  .export-panel { grid-template-columns: 1fr; }
+}

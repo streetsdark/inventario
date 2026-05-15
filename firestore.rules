@@ -46,6 +46,28 @@ service cloud.firestore {
       allow write: if isPrivileged();
     }
 
+    // ── Almacenes ──────────────────────────────────────────
+    // Cualquier usuario autenticado puede ver los almacenes (los necesita
+    // para el selector global). Solo admin/superuser pueden gestionarlos.
+    // Validación adicional: nombre obligatorio (string 2-60 chars) en escrituras.
+    match /warehouses/{id} {
+      allow read: if isAuth();
+
+      allow create: if isPrivileged()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 60;
+
+      allow update: if isPrivileged()
+        && (!('name' in request.resource.data)
+            || (request.resource.data.name is string
+                && request.resource.data.name.size() >= 2
+                && request.resource.data.name.size() <= 60));
+
+      allow delete: if isPrivileged()
+        && resource.data.isDefault != true;
+    }
+
     // ── Solicitudes de producto ────────────────────────────
     match /productRequests/{id} {
       allow create: if isAuth();

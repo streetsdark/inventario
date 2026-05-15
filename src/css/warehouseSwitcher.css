@@ -1,0 +1,40 @@
+.warehouse-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: rgba(77, 184, 240, 0.06);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+}
+
+.warehouse-switcher-icon { color: var(--contrast); flex-shrink: 0; }
+
+.warehouse-switcher-label {
+  color: var(--text-tertiary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+}
+
+.warehouse-switcher-select {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  outline: none;
+  min-width: 120px;
+  max-width: 200px;
+}
+
+.warehouse-switcher-select:focus { color: var(--contrast); }
+
+.warehouse-switcher-select option {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}

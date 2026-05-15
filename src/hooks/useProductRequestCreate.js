@@ -21,6 +21,7 @@ export default function useProductRequestCreate() {
         productSku: productData.sku,
         productLocation: productFromDB.location || "No especificada",
         productImage: productFromDB.imageUrl || productData.imageUrl || productData.img_b64 || null,
+        warehouseId: productFromDB.warehouseId || productData.warehouseId || "",
         quantity: parseInt(quantity),
         requestedBy: currentUser.displayName || currentUser.email || "Usuario",
         userId: currentUser.uid,

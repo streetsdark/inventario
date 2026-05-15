@@ -5,11 +5,14 @@ import { uploadImage } from "../lib/cloudinary"
 import { db } from "../firebase/config";
 import { collection, addDoc, getDoc, doc, setDoc } from "firebase/firestore";
 import { validateProduct } from "../utils/securityValidation";
+import { useWarehouseContext } from "../context/WarehouseContext";
 
 import "../css/formProduct.css";
 import Modal from "./Modal";
 
 const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isSuperUser = false }) => {
+
+    const { selectedId, defaultWarehouseId } = useWarehouseContext();
 
     const [modalConfig, setModalConfig] = useState({
         show: false,
@@ -72,6 +75,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
                 stockMinimo: Number(product.stockMinimo || 0),
                 totalIn: Number(product.totalIn || 0),
                 totalOut: Number(product.totalOut || 0),
+                warehouseId: product.warehouseId || selectedId || defaultWarehouseId || "",
             };
 
             const { isValid, errors } = validateProduct(cleanProduct);
