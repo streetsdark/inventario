@@ -7,6 +7,7 @@ import Layout from "../components/Layout";
 import Loader from "../components/Loader";
 
 import Home from "../views/Home";
+import Landing from "../views/Landing";
 import Login from "../views/Login";
 import Dashboard from "../views/Dashboard";
 import Products from "../views/Products";
@@ -45,8 +46,18 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
 
-        {/* Public */}
-        <Route path="/" element={<Home />} />
+        {/* Public landing — usuarios logueados redirigen a su home según rol */}
+        <Route
+          path="/"
+          element={
+            authReady && user && role !== null
+              ? <Navigate to={getHomeRoute(role)} replace />
+              : <Landing />
+          }
+        />
+
+        {/* Intro animada original (Hierros Altadill brand) */}
+        <Route path="/intro" element={<Home />} />
 
         {/* Login: always visible immediately; redirect only when auth is ready */}
         <Route
