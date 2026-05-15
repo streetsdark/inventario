@@ -1,0 +1,220 @@
+.onb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 24, 41, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+  animation: onbFadeIn 0.25s ease;
+}
+
+@keyframes onbFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.onb-box {
+  background: var(--surface-elevated);
+  border: 1px solid var(--contrast);
+  border-radius: 22px;
+  padding: 2rem;
+  max-width: 540px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  animation: onbSlideUp 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes onbSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.onb-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.onb-header h2 {
+  font-size: 1.3rem;
+  margin: 0 0 0.3rem;
+  font-weight: 800;
+}
+
+.onb-header p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.onb-skip {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  min-height: unset;
+  box-shadow: none;
+  text-decoration: underline;
+  transition: color 0.18s;
+}
+
+.onb-skip:hover:not(:disabled) { color: var(--text-primary); }
+.onb-skip:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.onb-progress {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.onb-progress-step {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.22s;
+}
+
+.onb-progress-step.active {
+  border-color: var(--contrast);
+  color: var(--contrast);
+  background: rgba(77, 184, 240, 0.1);
+}
+
+.onb-progress-step.done {
+  background: var(--contrast);
+  color: var(--text-inverse);
+  border-color: var(--contrast);
+}
+
+.onb-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.onb-form h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+}
+
+.onb-form h3 svg { color: var(--contrast); }
+
+.onb-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  line-height: 1.55;
+}
+
+.onb-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--text-tertiary);
+}
+
+.onb-form input,
+.onb-form select {
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  min-height: unset;
+}
+
+.onb-form input:focus,
+.onb-form select:focus { border-color: var(--contrast); outline: none; }
+
+.onb-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.onb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: unset;
+  box-shadow: none;
+  transition: background 0.18s, transform 0.18s, color 0.18s;
+}
+
+.onb-btn.primary {
+  border-color: var(--contrast);
+  color: var(--contrast);
+  background: rgba(77, 184, 240, 0.08);
+  align-self: flex-end;
+}
+
+.onb-btn.primary:hover:not(:disabled) {
+  background: rgba(77, 184, 240, 0.18);
+  transform: translateY(-1px);
+  filter: none;
+}
+
+.onb-btn.ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.onb-btn.ghost:hover:not(:disabled) {
+  color: var(--contrast);
+  border-color: var(--contrast);
+  filter: none;
+}
+
+.onb-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.onb-error {
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  background: rgba(192, 57, 43, 0.08);
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  color: #c0392b;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}

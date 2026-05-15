@@ -25,6 +25,7 @@ import BulkReassignCard from "../components/BulkReassignCard";
 import SignupAccountForm from "../components/SignupAccountForm";
 import AccountMembersCard from "../components/AccountMembersCard";
 import LegacyMigrationCard from "../components/LegacyMigrationCard";
+import OnboardingWizard from "../components/OnboardingWizard";
 import useRole from "../hooks/useRole";
 import useProducts from "../hooks/useProducts";
 import usePendingStock from "../hooks/usePendingStock";
@@ -376,6 +377,7 @@ const Dashboard = () => {
         </div>
       ) : null}
 
+      <OnboardingWizard />
       <SignupAccountForm />
       <AccountMembersCard />
       {isSuperUser && <StockAlertCard />}
