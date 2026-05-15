@@ -22,6 +22,8 @@ export default function useProductRequestCreate() {
         productLocation: productFromDB.location || "No especificada",
         productImage: productFromDB.imageUrl || productData.imageUrl || productData.img_b64 || null,
         warehouseId: productFromDB.warehouseId || productData.warehouseId || "",
+        // Hereda el accountId del producto (creado por el dueño de la cuenta).
+        accountId: productFromDB.accountId || productData.accountId || "",
         quantity: parseInt(quantity),
         requestedBy: currentUser.displayName || currentUser.email || "Usuario",
         userId: currentUser.uid,

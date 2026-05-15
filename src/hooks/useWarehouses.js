@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   collection,
   onSnapshot,
@@ -12,10 +12,13 @@ import { db } from "../firebase/config";
 import { error as logError } from "../utils/logger";
 import { sanitizeString } from "../utils/securityValidation";
 import { isValidWarehouseName } from "../utils/warehouseFilter";
+import { filterByAccount, attachedAccountId } from "../utils/accountFilter";
+import { useAccountContext } from "../context/AccountContext";
 import useRole from "./useRole";
 
 export default function useWarehouses() {
   const { isAdmin, loading: roleLoading } = useRole();
+  const { accountId: currentAccountId } = useAccountContext();
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ensureDefaultDone, setEnsureDefaultDone] = useState(false);
@@ -34,6 +37,7 @@ export default function useWarehouses() {
             name: sanitizeString(data.name || ""),
             location: sanitizeString(data.location || ""),
             isDefault: !!data.isDefault,
+            accountId: typeof data.accountId === "string" ? data.accountId : "",
             createdAtMs,
           };
         });
@@ -63,6 +67,7 @@ export default function useWarehouses() {
           name: "Almacén Principal",
           location: "",
           isDefault: true,
+          accountId: currentAccountId || "",
           createdAt: serverTimestamp(),
         });
       } catch (err) {
@@ -71,7 +76,7 @@ export default function useWarehouses() {
         setEnsureDefaultDone(true);
       }
     })();
-  }, [loading, roleLoading, isAdmin, warehouses, ensureDefaultDone]);
+  }, [loading, roleLoading, isAdmin, warehouses, ensureDefaultDone, currentAccountId]);
 
   const createWarehouse = async ({ name, location = "" }) => {
     if (!isValidWarehouseName(name)) {
@@ -81,6 +86,7 @@ export default function useWarehouses() {
       name: name.trim(),
       location: typeof location === "string" ? location.trim().slice(0, 120) : "",
       isDefault: false,
+      accountId: attachedAccountId("", currentAccountId),
       createdAt: serverTimestamp(),
     });
   };
@@ -111,5 +117,18 @@ export default function useWarehouses() {
     await deleteDoc(doc(db, "warehouses", id));
   };
 
-  return { warehouses, loading, createWarehouse, updateWarehouse, deleteWarehouse };
+  // Aislamos lo que ve el resto de la app por la cuenta actual (los datos sin
+  // accountId del periodo pre-tenant caen bajo la cuenta del propio usuario).
+  const visibleWarehouses = useMemo(
+    () => filterByAccount(warehouses, currentAccountId, currentAccountId),
+    [warehouses, currentAccountId],
+  );
+
+  return {
+    warehouses: visibleWarehouses,
+    loading,
+    createWarehouse,
+    updateWarehouse,
+    deleteWarehouse,
+  };
 }

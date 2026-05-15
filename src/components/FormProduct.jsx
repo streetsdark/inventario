@@ -6,6 +6,8 @@ import { db } from "../firebase/config";
 import { collection, addDoc, getDoc, doc, setDoc } from "firebase/firestore";
 import { validateProduct } from "../utils/securityValidation";
 import { useWarehouseContext } from "../context/WarehouseContext";
+import { useAccountContext } from "../context/AccountContext";
+import { attachedAccountId } from "../utils/accountFilter";
 
 import "../css/formProduct.css";
 import Modal from "./Modal";
@@ -13,6 +15,7 @@ import Modal from "./Modal";
 const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isSuperUser = false }) => {
 
     const { selectedId, defaultWarehouseId } = useWarehouseContext();
+    const { accountId: currentAccountId } = useAccountContext();
 
     const [modalConfig, setModalConfig] = useState({
         show: false,
@@ -76,6 +79,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
                 totalIn: Number(product.totalIn || 0),
                 totalOut: Number(product.totalOut || 0),
                 warehouseId: product.warehouseId || selectedId || defaultWarehouseId || "",
+                accountId: attachedAccountId(product.accountId, currentAccountId),
             };
 
             const { isValid, errors } = validateProduct(cleanProduct);

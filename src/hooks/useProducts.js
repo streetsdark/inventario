@@ -11,10 +11,13 @@ import {
   query as fbQuery
 } from "firebase/firestore";
 import { useWarehouseContext } from "../context/WarehouseContext";
+import { useAccountContext } from "../context/AccountContext";
 import { filterByWarehouse } from "../utils/warehouseFilter";
+import { filterByAccount } from "../utils/accountFilter";
 
 export default function useProducts(search) {
   const { selectedId, defaultWarehouseId } = useWarehouseContext();
+  const { accountId: currentAccountId } = useAccountContext();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -65,10 +68,11 @@ export default function useProducts(search) {
     await updateDoc(doc(db, "products", id), { pending: 0 });
   };
 
-  const visibleProducts = useMemo(
-    () => filterByWarehouse(products, selectedId, defaultWarehouseId),
-    [products, selectedId, defaultWarehouseId],
-  );
+  // Aislamiento por cuenta primero, luego por almacén dentro de esa cuenta.
+  const visibleProducts = useMemo(() => {
+    const byAccount = filterByAccount(products, currentAccountId, currentAccountId);
+    return filterByWarehouse(byAccount, selectedId, defaultWarehouseId);
+  }, [products, currentAccountId, selectedId, defaultWarehouseId]);
 
   return { products: visibleProducts, loading, removeProduct, clearPending };
 }

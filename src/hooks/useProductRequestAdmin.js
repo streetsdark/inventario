@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   collection,
   deleteDoc,
@@ -11,8 +11,11 @@ import { auth, db } from "../firebase/config";
 import { logAuditEvent, AuditEventTypes, triggerWebhook } from "../utils/auditService";
 import { error as logError } from "../utils/logger";
 import { isValidQuantity } from "../utils/securityValidation";
+import { useAccountContext } from "../context/AccountContext";
+import { filterByAccount, attachedAccountId } from "../utils/accountFilter";
 
 export default function useProductRequestAdmin() {
+  const { accountId: currentAccountId } = useAccountContext();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,7 +34,13 @@ export default function useProductRequestAdmin() {
     return () => unsubscribe();
   }, []);
 
-  const getRequestsByStatus = (status) => requests.filter((req) => req.status === status);
+  // Visibles solo los de la cuenta actual (legacy sin accountId caen aquí también).
+  const visibleRequests = useMemo(
+    () => filterByAccount(requests, currentAccountId, currentAccountId),
+    [requests, currentAccountId],
+  );
+
+  const getRequestsByStatus = (status) => visibleRequests.filter((req) => req.status === status);
 
   const deleteRequest = async (requestId) => {
     try {
@@ -92,6 +101,8 @@ export default function useProductRequestAdmin() {
           entryDate: "",
           recipientUser: requestData.requestedBy || requestData.userEmail || "",
           deliveryStatus,
+          warehouseId: productSnapshotData.warehouseId || "",
+          accountId: attachedAccountId(productSnapshotData.accountId, currentAccountId),
           createdAt: serverTimestamp(),
           sourceRequestId: requestId,
         });
@@ -116,5 +127,5 @@ export default function useProductRequestAdmin() {
     }
   };
 
-  return { requests, loading, getRequestsByStatus, deleteRequest, approveRequest };
+  return { requests: visibleRequests, loading, getRequestsByStatus, deleteRequest, approveRequest };
 }

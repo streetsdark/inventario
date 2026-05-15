@@ -11,10 +11,13 @@ import {
 import { db } from "../firebase/config";
 import { error as logError } from "../utils/logger";
 import { useWarehouseContext } from "../context/WarehouseContext";
+import { useAccountContext } from "../context/AccountContext";
 import { filterByWarehouse } from "../utils/warehouseFilter";
+import { filterByAccount, attachedAccountId } from "../utils/accountFilter";
 
 export default function useMoves() {
   const { selectedId, defaultWarehouseId } = useWarehouseContext();
+  const { accountId: currentAccountId } = useAccountContext();
   const [moves, setMoves] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -82,6 +85,7 @@ export default function useMoves() {
         recipientUser: typeIn ? "" : recipientUser.trim(),
         deliveryStatus: typeIn ? "" : outputStatus,
         warehouseId: currentProduct.warehouseId || product.warehouseId || "",
+        accountId: attachedAccountId(currentProduct.accountId || product.accountId, currentAccountId),
         createdAt: serverTimestamp(),
       });
 
@@ -97,10 +101,10 @@ export default function useMoves() {
     return { currentPending };
   };
 
-  const visibleMoves = useMemo(
-    () => filterByWarehouse(moves, selectedId, defaultWarehouseId),
-    [moves, selectedId, defaultWarehouseId],
-  );
+  const visibleMoves = useMemo(() => {
+    const byAccount = filterByAccount(moves, currentAccountId, currentAccountId);
+    return filterByWarehouse(byAccount, selectedId, defaultWarehouseId);
+  }, [moves, currentAccountId, selectedId, defaultWarehouseId]);
 
   return { moves: visibleMoves, loading, createMove };
 }

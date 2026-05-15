@@ -4,6 +4,8 @@ import { writeBatch, doc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import useProducts from "../hooks/useProducts";
 import { useWarehouseContext } from "../context/WarehouseContext";
+import { useAccountContext } from "../context/AccountContext";
+import { attachedAccountId } from "../utils/accountFilter";
 import { logAuditEvent } from "../utils/auditService";
 import {
   filterCandidates,
@@ -17,6 +19,7 @@ import "../css/bulkReassignCard.css";
 export default function BulkReassignCard() {
   const { products, loading: productsLoading } = useProducts();
   const { warehouses, loading: warehousesLoading, selectedId: contextSelectedId } = useWarehouseContext();
+  const { accountId: currentAccountId } = useAccountContext();
 
   const [open, setOpen]                 = useState(false);
   const [originId, setOriginId]         = useState(UNASSIGNED);
@@ -83,10 +86,18 @@ export default function BulkReassignCard() {
     setInfo(null);
     try {
       const chunks = chunkIds(selectedIds);
+      // Mapa rápido id → producto para conocer su accountId actual.
+      const productMap = new Map(products.map((p) => [p.id, p]));
       for (const chunk of chunks) {
         const batch = writeBatch(db);
         chunk.forEach((id) => {
-          batch.update(doc(db, "products", id), { warehouseId: destinationId });
+          const p = productMap.get(id);
+          const patch = { warehouseId: destinationId };
+          // Si el producto legacy no tiene accountId aún, lo migramos al
+          // accountId del usuario actual. Si ya lo tiene, no se toca.
+          const aid = attachedAccountId(p?.accountId, currentAccountId);
+          if (aid && !p?.accountId) patch.accountId = aid;
+          batch.update(doc(db, "products", id), patch);
         });
         await batch.commit();
       }

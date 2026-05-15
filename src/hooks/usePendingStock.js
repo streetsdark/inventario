@@ -14,6 +14,7 @@ const buildNotification = (product, quantity, currentUser) => ({
   productId: product.id,
   sku: product.sku || "",
   warehouseId: product.warehouseId || "",
+  accountId: product.accountId || "",
 });
 
 export default function usePendingStock() {
