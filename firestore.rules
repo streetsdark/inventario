@@ -22,22 +22,100 @@ service cloud.firestore {
       return isAuth() && userRole() == 'superuser';
     }
 
+    // ── Helpers Account (multi-tenant Fase 1) ─────────────
+    function userAccountId() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountId
+        : null;
+    }
+
+    function userAccountRole() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountRole
+        : null;
+    }
+
+    function isAccountOwner(accountId) {
+      return isAuth() && userAccountId() == accountId && userAccountRole() == 'owner';
+    }
+
+    function isAccountAdmin(accountId) {
+      return isAuth() && userAccountId() == accountId
+        && (userAccountRole() == 'owner' || userAccountRole() == 'admin');
+    }
+
+    function isAccountMember(accountId) {
+      return isAuth() && userAccountId() == accountId;
+    }
+
     // ── Perfiles de usuario ────────────────────────────────
     match /users/{uid} {
-      // Lectura propia o por superuser
+      // Lectura: propia, superuser, o miembros de la misma cuenta
+      // (necesario para la lista de miembros de AccountMembersCard)
       allow read: if isAuth() && request.auth.uid == uid;
       allow read: if isSuperuser();
+      allow read: if isAuth() && resource.data.accountId != null
+        && resource.data.accountId == userAccountId();
 
-      // Primer login: el usuario crea su propio doc, solo con role='basic'
+      // Primer login: el usuario crea su propio doc con role='basic'
       allow create: if isAuth() && request.auth.uid == uid
         && request.resource.data.role == 'basic';
 
-      // El usuario actualiza su propio doc, pero NO puede cambiar el role
+      // Self-update: no puede cambiar role global
       allow update: if isAuth() && request.auth.uid == uid
         && request.resource.data.role == resource.data.role;
 
+      // Cross-update por owner/admin de la misma cuenta (para invitar /
+      // expulsar / cambiar rol de miembros). No puede tocar el role global.
+      allow update: if isAuth() && request.auth.uid != uid
+        && request.resource.data.role == resource.data.role
+        && (
+          // Caso invitar/expulsar: el actor administra la cuenta destino.
+          (request.resource.data.accountId != null
+            && isAccountAdmin(request.resource.data.accountId))
+          // Caso desvincular (accountId pasa a null): el actor administra la
+          // cuenta de origen.
+          || (request.resource.data.accountId == null
+            && resource.data.accountId != null
+            && isAccountAdmin(resource.data.accountId))
+        );
+
       // Superuser puede crear y cambiar roles de cualquier usuario
       allow create, update: if isSuperuser();
+    }
+
+    // ── Cuentas (multi-tenant Fase 1) ──────────────────────
+    // En esta fase NO se endurecen las colecciones de datos. Solo se
+    // habilita la gestión de Accounts y miembros. Endurecimiento global en
+    // Fase 4.
+    match /accounts/{id} {
+      // Lectura: miembros de esa cuenta o superuser.
+      allow read: if isAuth() && (
+        isAccountMember(id) || isSuperuser()
+      );
+
+      // Crear cuenta nueva: el actor se asigna como owner. Validación inline.
+      allow create: if isAuth()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.slug is string
+        && request.resource.data.slug.size() >= 3
+        && request.resource.data.slug.size() <= 40
+        && (request.resource.data.plan in ['free', 'starter', 'pro', 'business'])
+        && (request.resource.data.status in ['active', 'suspended', 'trial']);
+
+      // Update: solo owner/admin de esa cuenta. Inmutables: slug, createdAt.
+      // ownerId solo lo cambia el owner actual (transferencia).
+      allow update: if isAuth() && isAccountAdmin(id)
+        && request.resource.data.slug == resource.data.slug
+        && request.resource.data.createdAt == resource.data.createdAt
+        && (request.resource.data.ownerId == resource.data.ownerId
+            || isAccountOwner(id));
+
+      // Delete: solo owner.
+      allow delete: if isAuth() && isAccountOwner(id);
     }
 
     // ── Catálogo de productos ──────────────────────────────

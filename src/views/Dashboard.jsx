@@ -22,6 +22,8 @@ import StockAlertCard from "../components/StockAlertCard";
 import WarehouseSwitcher from "../components/WarehouseSwitcher";
 import WarehouseManager from "../components/WarehouseManager";
 import BulkReassignCard from "../components/BulkReassignCard";
+import SignupAccountForm from "../components/SignupAccountForm";
+import AccountMembersCard from "../components/AccountMembersCard";
 import useRole from "../hooks/useRole";
 import useProducts from "../hooks/useProducts";
 import usePendingStock from "../hooks/usePendingStock";
@@ -373,6 +375,8 @@ const Dashboard = () => {
         </div>
       ) : null}
 
+      <SignupAccountForm />
+      <AccountMembersCard />
       {isSuperUser && <StockAlertCard />}
       <ScannerCard />
       {isSuperUser && <QrLabelsCard />}

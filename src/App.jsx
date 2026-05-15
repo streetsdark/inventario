@@ -1,4 +1,5 @@
 import { AuthProvider } from './context/AuthContext';
+import { AccountProvider } from './context/AccountContext';
 import { WarehouseProvider } from './context/WarehouseContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import Router from './routes/Router';
@@ -8,9 +9,11 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <WarehouseProvider>
-          <Router />
-        </WarehouseProvider>
+        <AccountProvider>
+          <WarehouseProvider>
+            <Router />
+          </WarehouseProvider>
+        </AccountProvider>
       </AuthProvider>
     </ErrorBoundary>
   );
