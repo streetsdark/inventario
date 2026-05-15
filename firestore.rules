@@ -118,62 +118,117 @@ service cloud.firestore {
       allow delete: if isAuth() && isAccountOwner(id);
     }
 
+    // ── Helpers de aislamiento por cuenta (Fase 4) ─────────
+    // Documento pertenece al usuario actual si tiene su accountId o si es
+    // legacy (sin accountId) — los legacy se asumen propios para evitar
+    // pérdida de visibilidad mientras se migran con LegacyMigrationCard.
+    function docInUserAccount() {
+      return resource.data.accountId == userAccountId()
+        || resource.data.accountId == null
+        || resource.data.accountId == '';
+    }
+
+    // Patch válido: accountId nuevo es el del usuario, O se mantiene igual,
+    // O se está migrando legacy (de '' / null a un valor real).
+    function patchAccountIdValid() {
+      return request.resource.data.accountId == userAccountId()
+        || request.resource.data.accountId == resource.data.accountId
+        || resource.data.accountId == null
+        || resource.data.accountId == '';
+    }
+
     // ── Catálogo de productos ──────────────────────────────
     match /products/{id} {
-      allow read: if isAuth();
-      allow write: if isPrivileged();
+      allow read: if isSuperuser()
+        || (isAuth() && docInUserAccount());
+
+      allow create: if isPrivileged()
+        && request.resource.data.accountId == userAccountId();
+
+      allow update: if isPrivileged()
+        && docInUserAccount()
+        && patchAccountIdValid();
+
+      allow delete: if isPrivileged() && docInUserAccount();
     }
 
     // ── Almacenes ──────────────────────────────────────────
-    // Cualquier usuario autenticado puede ver los almacenes (los necesita
-    // para el selector global). Solo admin/superuser pueden gestionarlos.
-    // Validación adicional: nombre obligatorio (string 2-60 chars) en escrituras.
+    // Lectura abierta a la cuenta para que el selector global funcione.
+    // Validación de nombre se mantiene.
     match /warehouses/{id} {
-      allow read: if isAuth();
+      allow read: if isSuperuser()
+        || (isAuth() && docInUserAccount());
 
       allow create: if isPrivileged()
+        && request.resource.data.accountId == userAccountId()
         && request.resource.data.name is string
         && request.resource.data.name.size() >= 2
         && request.resource.data.name.size() <= 60;
 
       allow update: if isPrivileged()
+        && docInUserAccount()
+        && patchAccountIdValid()
         && (!('name' in request.resource.data)
             || (request.resource.data.name is string
                 && request.resource.data.name.size() >= 2
                 && request.resource.data.name.size() <= 60));
 
       allow delete: if isPrivileged()
+        && docInUserAccount()
         && resource.data.isDefault != true;
-    }
-
-    // ── Solicitudes de producto ────────────────────────────
-    match /productRequests/{id} {
-      allow create: if isAuth();
-      allow read: if isAuth() && (
-        resource.data.userId == request.auth.uid || isPrivileged()
-      );
-      allow update, delete: if isPrivileged();
     }
 
     // ── Movimientos ────────────────────────────────────────
     match /moves/{id} {
-      allow read, write: if isPrivileged();
+      allow read: if isSuperuser()
+        || (isAuth() && docInUserAccount());
+
+      allow create: if isPrivileged()
+        && request.resource.data.accountId == userAccountId();
+
+      allow update: if isPrivileged()
+        && docInUserAccount()
+        && patchAccountIdValid();
+
+      allow delete: if isPrivileged() && docInUserAccount();
+    }
+
+    // ── Solicitudes de producto ────────────────────────────
+    // Read: propio creador O privileged de la misma cuenta.
+    match /productRequests/{id} {
+      allow create: if isAuth()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.accountId == userAccountId();
+
+      allow read: if isSuperuser()
+        || (isAuth() && resource.data.userId == request.auth.uid && docInUserAccount())
+        || (isPrivileged() && docInUserAccount());
+
+      allow update: if isPrivileged()
+        && docInUserAccount()
+        && patchAccountIdValid();
+
+      allow delete: if isPrivileged() && docInUserAccount();
     }
 
     // ── Logs de auditoría ──────────────────────────────────
-    // Cualquier usuario autenticado puede crear entradas (el sistema las genera)
-    // Solo superuser puede leerlas — nunca se borran ni editan
+    // Cualquier auth crea (el sistema escribe automáticamente). Solo
+    // superuser lee. Nunca se borran/editan. Sin aislamiento por cuenta
+    // (los logs son globales para soporte).
     match /auditLogs/{id} {
       allow create: if isAuth();
       allow read: if isSuperuser();
     }
 
     // ── Notificaciones ─────────────────────────────────────
-    // Cualquier usuario autenticado puede crear notificaciones
-    // Solo admin/superuser pueden leerlas y gestionarlas
     match /notifications/{id} {
-      allow create: if isAuth();
-      allow read, update, delete: if isPrivileged();
+      allow create: if isAuth()
+        && request.resource.data.accountId == userAccountId();
+
+      allow read: if isSuperuser()
+        || (isPrivileged() && docInUserAccount());
+
+      allow update, delete: if isPrivileged() && docInUserAccount();
     }
   }
 }
