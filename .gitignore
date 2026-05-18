@@ -52,3 +52,9 @@ dist-ssr
 local_storage/
 data/
 temp_uploads/
+
+# Playwright (E2E tests)
+test-results/
+playwright-report/
+playwright/.cache/
+blob-report/

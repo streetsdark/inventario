@@ -143,15 +143,34 @@ Reportar vulnerabilidades: **soporte@altadill.com**
 
 ## 🧪 Testing
 
+### Unit + componentes (Vitest)
 ```bash
-npm run test:run    # ejecuta toda la suite (~250 tests)
+npm run test:run    # ejecuta toda la suite (~320 tests)
+npm run test        # modo watch
 ```
 
-Cobertura actual:
-- ✅ Utils puros (sanitización, filtros, helpers)
+Cobertura:
+- ✅ Utils puros (sanitización, filtros, helpers de export/QR/scan)
 - ✅ Hooks de datos (mocks de Firestore)
 - ✅ Servicios (export, scan, qr, migraciones)
-- ⚠️ Componentes y vistas (cobertura parcial — próximo paso)
+- ✅ Componentes críticos (CookieBanner, Modal, SignupAccountForm,
+  WarehouseSwitcher, ListProducts, ExportCard, OnboardingWizard,
+  AccountSettingsCard, Landing)
+
+### E2E smoke (Playwright)
+```bash
+npm run e2e:install  # primera vez: descarga Chromium (~120 MB)
+npm run e2e          # ejecuta la suite (lanza dev server auto)
+npm run e2e:ui       # UI interactiva para depurar
+npm run e2e:report   # ver reporte HTML del último run
+```
+
+Cobertura E2E:
+- ✅ Landing carga, navega, FAQ se expande
+- ✅ Páginas legales (/terms, /privacy, /cookies) renderizan
+- ✅ Login muestra formulario sin sesión
+- ✅ Cookie banner aparece, acepta, persiste y links a /cookies
+- ✅ 404 amable + rutas protegidas redirigen a /login
 
 ---
 
