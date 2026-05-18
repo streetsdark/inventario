@@ -1,0 +1,115 @@
+.legal-root {
+  background: linear-gradient(180deg, #0b1829 0%, #0f2238 100%);
+  color: #e8f4fd;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.legal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(77, 184, 240, 0.15);
+  background: rgba(11, 24, 41, 0.92);
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.legal-logo {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #4db8f0;
+  text-decoration: none;
+}
+
+.legal-header nav a {
+  color: #8fb3cc;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(77, 184, 240, 0.4);
+  transition: color 0.18s, background 0.18s;
+}
+
+.legal-header nav a:hover {
+  color: #4db8f0;
+  background: rgba(77, 184, 240, 0.08);
+}
+
+.legal-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.legal-main h1 {
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.legal-meta {
+  color: #6a8aa3;
+  font-size: 0.85rem;
+  margin: 0 0 2rem;
+}
+
+.legal-main section {
+  margin-bottom: 2rem;
+}
+
+.legal-main h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+  color: #4db8f0;
+}
+
+.legal-main h3 {
+  font-size: 0.98rem;
+  font-weight: 700;
+  margin: 1rem 0 0.4rem;
+  color: #e8f4fd;
+}
+
+.legal-main p,
+.legal-main li {
+  line-height: 1.65;
+  color: #c5d8e6;
+  font-size: 0.95rem;
+}
+
+.legal-main ul {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.legal-main li {
+  margin-bottom: 0.4rem;
+}
+
+.legal-main b {
+  color: #e8f4fd;
+}
+
+.legal-footer {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-top: 1px solid rgba(77, 184, 240, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 0.85rem;
+}
+
+.legal-footer a {
+  color: #8fb3cc;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+
+.legal-footer a:hover { color: #e8f4fd; }

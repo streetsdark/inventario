@@ -26,6 +26,7 @@ import SignupAccountForm from "../components/SignupAccountForm";
 import AccountMembersCard from "../components/AccountMembersCard";
 import LegacyMigrationCard from "../components/LegacyMigrationCard";
 import OnboardingWizard from "../components/OnboardingWizard";
+import AccountSettingsCard from "../components/AccountSettingsCard";
 import useRole from "../hooks/useRole";
 import useProducts from "../hooks/useProducts";
 import usePendingStock from "../hooks/usePendingStock";
@@ -388,6 +389,7 @@ const Dashboard = () => {
       {isSuperUser && <WarehouseManager />}
       {isSuperUser && <BulkReassignCard />}
       {isSuperUser && <LegacyMigrationCard />}
+      <AccountSettingsCard />
       {isSuperUser && <ProductRequestsCard />}
       <Modal modalConfig={modalConfig} setModalConfig={setModalConfig} />
     </div>

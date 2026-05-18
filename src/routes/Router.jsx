@@ -9,6 +9,9 @@ import Loader from "../components/Loader";
 import Home from "../views/Home";
 import Landing from "../views/Landing";
 import Login from "../views/Login";
+import Terms from "../views/Terms";
+import Privacy from "../views/Privacy";
+import Cookies from "../views/Cookies";
 import Dashboard from "../views/Dashboard";
 import Products from "../views/Products";
 import Moves from "../views/Moves";
@@ -58,6 +61,11 @@ export default function AppRouter() {
 
         {/* Intro animada original (Hierros Altadill brand) */}
         <Route path="/intro" element={<Home />} />
+
+        {/* Páginas legales públicas */}
+        <Route path="/terms"   element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/cookies" element={<Cookies />} />
 
         {/* Login: always visible immediately; redirect only when auth is ready */}
         <Route
