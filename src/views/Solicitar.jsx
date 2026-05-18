@@ -7,9 +7,15 @@ import useAuth from "../hooks/useAuth";
 import useProducts from "../hooks/useProducts";
 import useFreeRequest from "../hooks/useFreeRequest";
 import useProductRequestCreate from "../hooks/useProductRequestCreate";
+import { useAccountContext } from "../context/AccountContext";
+import { error as logError } from "../utils/logger";
 import Modal from "../components/Modal";
 import { BsBoxArrowRight, BsClockHistory, BsSearch } from "react-icons/bs";
 import "../css/solicitar.css";
+
+const MAX_DROPDOWN_RESULTS = 6;
+const MIN_SEARCH_LENGTH = 2;
+const MY_REQUESTS_LIMIT = 30;
 
 // Sincroniza el tema (dark/light) desde localStorage al html raíz
 function useThemeSync() {
@@ -36,6 +42,7 @@ export default function Solicitar() {
   useThemeSync();
 
   const { user } = useAuth();
+  const { accountId } = useAccountContext();
   const { createFreeRequest } = useFreeRequest();
   const { createRequest } = useProductRequestCreate();
   const navigate = useNavigate();
@@ -50,9 +57,9 @@ export default function Solicitar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const searchTerm = description.length >= 2 ? description : "";
+  const searchTerm = description.length >= MIN_SEARCH_LENGTH ? description : "";
   const { products } = useProducts(searchTerm);
-  const results = searchTerm && !selectedProduct ? products.slice(0, 6) : [];
+  const results = searchTerm && !selectedProduct ? products.slice(0, MAX_DROPDOWN_RESULTS) : [];
 
   useEffect(() => {
     setDropdownOpen(results.length > 0 && formOpen);
@@ -68,21 +75,24 @@ export default function Solicitar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  /* ── Mis solicitudes ──────────────────────────────── */
+  /* ── Mis solicitudes (filtradas por accountId actual) ── */
   const [myRequests, setMyRequests] = useState([]);
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user?.uid || !accountId) { setMyRequests([]); return; }
     const q = query(
       collection(db, "productRequests"),
       where("userId", "==", user.uid),
+      where("accountId", "==", accountId),
       orderBy("createdAt", "desc"),
-      limit(30)
+      limit(MY_REQUESTS_LIMIT)
     );
-    const unsub = onSnapshot(q, (snap) => {
-      setMyRequests(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-    });
+    const unsub = onSnapshot(
+      q,
+      (snap) => setMyRequests(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (err) => logError("Solicitar: myRequests subscribe", err),
+    );
     return unsub;
-  }, [user?.uid]);
+  }, [user?.uid, accountId]);
 
   /* ── Handlers ─────────────────────────────────────── */
   const displayName = user?.displayName || user?.email?.split("@")[0] || "Usuario";
@@ -122,8 +132,8 @@ export default function Solicitar() {
       setModal({ show: true, text: "¡Solicitud enviada! El equipo administrativo la gestionará pronto.", type: "success", showButton: true });
       resetForm();
     } catch (err) {
-      console.error(err);
-      setModal({ show: true, text: "No se pudo enviar la solicitud. Inténtalo de nuevo.", type: "error", showButton: true });
+      logError("Solicitar: handleSubmit", err);
+      setModal({ show: true, text: err?.message || "No se pudo enviar la solicitud. Inténtalo de nuevo.", type: "error", showButton: true });
     } finally {
       setSubmitting(false);
     }

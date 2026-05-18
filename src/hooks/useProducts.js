@@ -14,6 +14,7 @@ import { useWarehouseContext } from "../context/WarehouseContext";
 import { useAccountContext } from "../context/AccountContext";
 import { filterByWarehouse } from "../utils/warehouseFilter";
 import { filterByAccount } from "../utils/accountFilter";
+import { error as logError } from "../utils/logger";
 
 export default function useProducts(search) {
   const { selectedId, defaultWarehouseId } = useWarehouseContext();
@@ -52,7 +53,7 @@ export default function useProducts(search) {
     setLoading(false);
   },
   (error) => {
-    console.error("useProducts error:", error);
+    logError("useProducts:", error);
     setLoading(false);
   }
 );

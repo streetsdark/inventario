@@ -124,6 +124,9 @@ export default function OnboardingWizard() {
     if (!Number.isFinite(stockNum) || stockNum < 0) { setError("Stock inválido."); return; }
     if (!description || description.trim().length < 2) { setError("Descripción muy corta."); return; }
 
+    // Defensa en profundidad: las rules ya lo exigen, pero validamos antes.
+    if (!accountId) { setError("Tu cuenta aún no está lista. Recarga la página."); return; }
+
     setBusy(true);
     try {
       const wId = defaultWarehouseId || warehouses[0]?.id || "";

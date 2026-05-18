@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 
 import { auth } from "../firebase/config";
+import { error as logError } from "../utils/logger";
 import Modal from "../components/Modal";
 import '../css/profile.css';
 
@@ -51,7 +52,7 @@ const Profile = () => {
         navigate(0);
       }, 1500);
     } catch (error) {
-      console.log(error);
+      logError("Profile: signOut", error);
       setModalConfig({
         show: true,
         text: 'No se pudo cerrar la sesion.',
@@ -75,7 +76,7 @@ const Profile = () => {
         showButton: true,
       });
     } catch (error) {
-      console.log(error);
+      logError("Profile: validateEmail", error);
       setModalConfig({
         show: true,
         text: 'No se pudo enviar el correo de verificacion.',
@@ -109,7 +110,7 @@ const Profile = () => {
         showButton: true,
       });
     } catch (error) {
-      console.log(error);
+      logError("Profile: updatePerfil", error);
       setModalConfig({
         show: true,
         text: 'No se pudo actualizar el perfil.',

@@ -6,6 +6,9 @@ import "../css/listProduct.css";
 import Modal from "./Modal";
 import RequestProductModal from "./RequestProductModal";
 
+// Umbral por defecto cuando el producto no tiene stockMinimo declarado.
+const DEFAULT_LOW_STOCK_THRESHOLD = 5;
+
 const ListProducts = ({ query, stockFilter = "all", setEditProduct, isSuperUser = false }) => {
   const { products, loading, removeProduct } = useProducts(query);
   const [modalConfig, setModalConfig] = useState({
@@ -25,7 +28,7 @@ const ListProducts = ({ query, stockFilter = "all", setEditProduct, isSuperUser 
     const minimo = Number(stockMinimo || 0);
 
     if (stockValue <= 0) return "is-out-of-stock";
-    if (minimo > 0 ? stockValue <= minimo : stockValue <= 5) return "is-low-stock";
+    if (minimo > 0 ? stockValue <= minimo : stockValue <= DEFAULT_LOW_STOCK_THRESHOLD) return "is-low-stock";
     return "is-in-stock";
   };
 
@@ -34,7 +37,7 @@ const ListProducts = ({ query, stockFilter = "all", setEditProduct, isSuperUser 
     const minimo = Number(stockMinimo || 0);
 
     if (stockValue <= 0) return "Sin stock";
-    if (minimo > 0 ? stockValue <= minimo : stockValue <= 5) return "Stock mínimo";
+    if (minimo > 0 ? stockValue <= minimo : stockValue <= DEFAULT_LOW_STOCK_THRESHOLD) return "Stock mínimo";
     return "Stock alto";
   };
 

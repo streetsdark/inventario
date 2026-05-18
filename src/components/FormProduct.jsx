@@ -8,6 +8,7 @@ import { validateProduct } from "../utils/securityValidation";
 import { useWarehouseContext } from "../context/WarehouseContext";
 import { useAccountContext } from "../context/AccountContext";
 import { attachedAccountId } from "../utils/accountFilter";
+import { error as logError } from "../utils/logger";
 
 import "../css/formProduct.css";
 import Modal from "./Modal";
@@ -16,6 +17,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
 
     const { selectedId, defaultWarehouseId } = useWarehouseContext();
     const { accountId: currentAccountId } = useAccountContext();
+    const [submitting, setSubmitting] = useState(false);
 
     const [modalConfig, setModalConfig] = useState({
         show: false,
@@ -52,10 +54,10 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
                 if (docSnap.exists()) {
                     setProduct(docSnap.data());
                 } else {
-                    console.log("No se encontró el item seleccionado");
+                    logError("FormProduct: item no encontrado", { id: editProduct.id });
                 }
             } catch (error) {
-                console.log(`Error: ${error}`);
+                logError("FormProduct: getData", error);
             }
         }
 
@@ -67,6 +69,22 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (submitting) return;
+
+        // Defensa en profundidad: las rules ya lo exigen, pero validamos en
+        // cliente para evitar el round-trip si falta accountId.
+        const resolvedAccountId = attachedAccountId(product.accountId, currentAccountId);
+        if (!resolvedAccountId) {
+            setModalConfig({
+                show: true,
+                text: 'Tu usuario no está asociado a ninguna cuenta. Pide al administrador que te invite o crea una desde el Dashboard.',
+                type: 'error',
+                showButton: true,
+            });
+            return;
+        }
+
+        setSubmitting(true);
 
         try {
             const cleanProduct = {
@@ -79,7 +97,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
                 totalIn: Number(product.totalIn || 0),
                 totalOut: Number(product.totalOut || 0),
                 warehouseId: product.warehouseId || selectedId || defaultWarehouseId || "",
-                accountId: attachedAccountId(product.accountId, currentAccountId),
+                accountId: resolvedAccountId,
             };
 
             const { isValid, errors } = validateProduct(cleanProduct);
@@ -90,6 +108,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
                     type: 'error',
                     showButton: true
                 });
+                setSubmitting(false);
                 return;
             }
 
@@ -110,11 +129,12 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
                 setNewProduct(false);
                 setEditProduct({ status: false, id: null });
                 setQuery("");
+                setSubmitting(false);
             }, 1500);
 
         } catch (error) {
-            console.error(error);
-
+            logError("FormProduct: handleSubmit", error);
+            setSubmitting(false);
             setModalConfig({
                 show: true,
                 text: error.message,
@@ -163,7 +183,7 @@ const handleImage = async (e) => {
 }));
 
     } catch (error) {
-        console.error("Error subiendo imagen:", error);
+        logError("FormProduct: subir imagen", error);
 
         setModalConfig({
             show: true,
@@ -312,13 +332,15 @@ const handleImage = async (e) => {
             </div>
 
             <div className="container-button">
-                <button type="button" onClick={handleCancel} style={{ backgroundColor: 'red' }}>
+                <button type="button" onClick={handleCancel} disabled={submitting} style={{ backgroundColor: 'red', opacity: submitting ? 0.6 : 1 }}>
                     <BsX size={22} color="#fff" /> Cancelar
                 </button>
 
-                <button>
+                <button type="submit" disabled={submitting} style={{ opacity: submitting ? 0.6 : 1, cursor: submitting ? 'wait' : 'pointer' }}>
                     <BsCheck size={22} />
-                    {editProduct.status ? "Actualizar datos" : "Crear producto"}
+                    {submitting
+                        ? (editProduct.status ? "Actualizando..." : "Creando...")
+                        : (editProduct.status ? "Actualizar datos" : "Crear producto")}
                 </button>
             </div>
 
