@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import "../css/cookieBanner.css";
 
 const STORAGE_KEY = "altadill.cookieConsent";
@@ -48,7 +47,7 @@ export default function CookieBanner() {
           Usamos cookies estrictamente necesarias para que la app funcione
           (auth, preferencias). Las funcionales (imágenes externas) son
           opcionales. Sin analytics ni marketing.{" "}
-          <Link to="/cookies">Más info</Link>.
+          <a href="/cookies">Más info</a>.
         </p>
         <div className="cookie-banner-actions">
           <button type="button" className="cookie-btn ghost" onClick={() => decide(false)}>
