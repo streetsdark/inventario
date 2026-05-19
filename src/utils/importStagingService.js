@@ -146,6 +146,12 @@ export function buildProductFromStaging(stagingRow, mapping, currentAccountId) {
     totalIn:       0,
     totalOut:      0,
     imageUrl:      "",
+    // Dimensiones por defecto (FormProduct espera {size, unit})
+    width:     { size: 0, unit: "-" },
+    height:    { size: 0, unit: "-" },
+    weight:    { size: 0, unit: "-" },
+    thickness: { size: 0, unit: "-" },
+    color:     "",
     // Conservamos referencia al staging para auditar
     importSourceId: stagingRow.id || null,
     accountId:     currentAccountId,

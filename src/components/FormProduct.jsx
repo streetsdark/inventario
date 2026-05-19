@@ -298,19 +298,21 @@ const handleImage = async (e) => {
                         <input type="text" name="color" value={product.color} onChange={handleChange} required />
                     </div>
 
-                    {["height", "width", "thickness", "weight"].map((field) => (
+                    {["height", "width", "thickness", "weight"].map((field) => {
+                        const dim = product[field] || { size: 0, unit: "-" };
+                        return (
                         <div className="form-group" key={field}>
                             <label>{field}:</label>
                             <input
                                 type="number"
                                 name={field}
-                                value={product[field].size}
+                                value={dim.size ?? 0}
                                 onChange={handleChange}
                                 required
                             />
                             <select
                                 name={field}
-                                value={product[field].unit}
+                                value={dim.unit ?? "-"}
                                 onChange={handleChange}
                             >
                                 <option value="-">-</option>
@@ -326,7 +328,8 @@ const handleImage = async (e) => {
                                 )}
                             </select>
                         </div>
-                    ))}
+                        );
+                    })}
 
                 </div>
             </div>
