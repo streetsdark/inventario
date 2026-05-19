@@ -6,7 +6,14 @@ import { isValidWarehouseName } from "../utils/warehouseFilter";
 import "../css/warehouseManager.css";
 
 export default function WarehouseManager() {
-  const { warehouses, loading, createWarehouse, updateWarehouse, deleteWarehouse } = useWarehouseContext();
+  const {
+    warehouses,
+    loading,
+    createWarehouse,
+    updateWarehouse,
+    deleteWarehouse,
+    deleteWarehouseWithReassign,
+  } = useWarehouseContext();
 
   const [open, setOpen]         = useState(false);
   const [name, setName]         = useState("");
@@ -16,6 +23,10 @@ export default function WarehouseManager() {
   const [editLoc, setEditLoc]     = useState("");
   const [error, setError]       = useState(null);
   const [busy, setBusy]         = useState(false);
+
+  // Modal de reasignación cuando se borra el almacén default
+  const [reassignFor, setReassignFor]       = useState(null); // { id, name } del que se va a borrar
+  const [chosenNewDefault, setChosenNewDefault] = useState("");
 
   const startEdit = (w) => {
     setEditingId(w.id);
@@ -71,10 +82,22 @@ export default function WarehouseManager() {
 
   const handleDelete = async (w) => {
     setError(null);
-    if (w.isDefault) {
-      setError("No se puede eliminar el almacén por defecto.");
+
+    // Caso 1: es el default y no hay otros → no se puede borrar (sería quedarse sin almacén)
+    if (w.isDefault && warehouses.length <= 1) {
+      setError("No puedes borrar el único almacén. Crea otro antes.");
       return;
     }
+
+    // Caso 2: es el default y hay otros → modal de reasignación
+    if (w.isDefault) {
+      const others = warehouses.filter((x) => x.id !== w.id);
+      setReassignFor({ id: w.id, name: w.name });
+      setChosenNewDefault(others[0]?.id || "");
+      return;
+    }
+
+    // Caso 3: no es default → confirm normal
     if (!window.confirm(`¿Eliminar el almacén "${w.name}"? Los productos seguirán existiendo pero sin almacén asignado.`)) {
       return;
     }
@@ -87,6 +110,30 @@ export default function WarehouseManager() {
     } finally {
       setBusy(false);
     }
+  };
+
+  const confirmReassignDelete = async () => {
+    if (!reassignFor || !chosenNewDefault) return;
+    setError(null);
+    setBusy(true);
+    try {
+      await deleteWarehouseWithReassign(reassignFor.id, chosenNewDefault);
+      logAuditEvent("WAREHOUSE_DELETED", "warehouse", reassignFor.id, {
+        name: reassignFor.name,
+        promotedDefaultId: chosenNewDefault,
+      });
+      setReassignFor(null);
+      setChosenNewDefault("");
+    } catch (err) {
+      setError(err?.message || "No se pudo borrar el almacén default");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const cancelReassign = () => {
+    setReassignFor(null);
+    setChosenNewDefault("");
   };
 
   const handleSetDefault = async (w) => {
@@ -191,11 +238,15 @@ export default function WarehouseManager() {
                       <button type="button" className="warehouse-btn icon ghost" onClick={() => startEdit(w)} disabled={busy} title="Editar">
                         <BsPencil size={13} />
                       </button>
-                      {!w.isDefault && (
-                        <button type="button" className="warehouse-btn icon danger" onClick={() => handleDelete(w)} disabled={busy} title="Eliminar">
-                          <BsTrash size={13} />
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        className="warehouse-btn icon danger"
+                        onClick={() => handleDelete(w)}
+                        disabled={busy}
+                        title={w.isDefault ? "Eliminar (te pedirá elegir un nuevo default)" : "Eliminar"}
+                      >
+                        <BsTrash size={13} />
+                      </button>
                     </div>
                   </>
                 )}
@@ -205,6 +256,49 @@ export default function WarehouseManager() {
               <li className="warehouse-empty">No hay almacenes todavía.</li>
             )}
           </ul>
+
+          {/* Modal asistido para borrar el almacén por defecto */}
+          {reassignFor && (
+            <div className="warehouse-reassign-overlay" onClick={() => !busy && cancelReassign()}>
+              <div className="warehouse-reassign-box" onClick={(e) => e.stopPropagation()}>
+                <h3>Borrar "{reassignFor.name}"</h3>
+                <p>
+                  Este almacén está marcado como <b>por defecto</b>. Antes de
+                  borrarlo, elige cuál de los demás pasará a serlo:
+                </p>
+                <select
+                  value={chosenNewDefault}
+                  onChange={(e) => setChosenNewDefault(e.target.value)}
+                  disabled={busy}
+                  className="warehouse-reassign-select"
+                >
+                  {warehouses
+                    .filter((w) => w.id !== reassignFor.id)
+                    .map((w) => (
+                      <option key={w.id} value={w.id}>{w.name}</option>
+                    ))}
+                </select>
+                <p className="warehouse-reassign-note">
+                  Los productos sin almacén asignado quedarán bajo el nuevo
+                  default. Los productos que estaban en este almacén perderán
+                  su <code>warehouseId</code>.
+                </p>
+                <div className="warehouse-reassign-actions">
+                  <button type="button" className="warehouse-btn" onClick={cancelReassign} disabled={busy}>
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="warehouse-btn danger"
+                    onClick={confirmReassignDelete}
+                    disabled={busy || !chosenNewDefault}
+                  >
+                    {busy ? "Borrando..." : "Promover y borrar"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -7,6 +7,7 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { error as logError } from "../utils/logger";
@@ -117,6 +118,38 @@ export default function useWarehouses() {
     await deleteDoc(doc(db, "warehouses", id));
   };
 
+  /**
+   * Borra el almacén por defecto promoviendo otro como default ANTES.
+   * Necesario porque las reglas Firestore protegen contra borrar isDefault=true.
+   *
+   * Flujo:
+   *  1. Batch atómico: marca newDefaultId como default y desmarca el viejo.
+   *  2. Borra el viejo (que ya no es default → la regla lo permite).
+   *
+   * Si el paso 2 falla, queda al menos un default válido (inconsistencia
+   * recuperable: el viejo sigue existiendo, el nuevo es default).
+   */
+  const deleteWarehouseWithReassign = async (oldId, newDefaultId) => {
+    if (!oldId || typeof oldId !== "string") throw new Error("ID inválido");
+    if (!newDefaultId || typeof newDefaultId !== "string") {
+      throw new Error("Debes elegir qué almacén pasa a ser el nuevo default");
+    }
+    if (oldId === newDefaultId) {
+      throw new Error("El nuevo default no puede ser el mismo que vas a borrar");
+    }
+    const newDefault = warehouses.find((w) => w.id === newDefaultId);
+    if (!newDefault) throw new Error("El almacén destino no existe");
+
+    // 1) Promover y desmarcar (atómico)
+    const batch = writeBatch(db);
+    batch.update(doc(db, "warehouses", newDefaultId), { isDefault: true });
+    batch.update(doc(db, "warehouses", oldId),       { isDefault: false });
+    await batch.commit();
+
+    // 2) Ahora el viejo NO es default → la regla permite borrarlo
+    await deleteDoc(doc(db, "warehouses", oldId));
+  };
+
   // Aislamos lo que ve el resto de la app por la cuenta actual (los datos sin
   // accountId del periodo pre-tenant caen bajo la cuenta del propio usuario).
   const visibleWarehouses = useMemo(
@@ -130,5 +163,6 @@ export default function useWarehouses() {
     createWarehouse,
     updateWarehouse,
     deleteWarehouse,
+    deleteWarehouseWithReassign,
   };
 }

@@ -21,13 +21,15 @@ describe("Landing page", () => {
   });
 
   it("muestra los 3 planes con precios", () => {
-    renderWithRouter(<Landing />);
-    expect(screen.getByText("Starter")).toBeInTheDocument();
-    expect(screen.getByText("Pro")).toBeInTheDocument();
-    expect(screen.getByText("Business")).toBeInTheDocument();
-    expect(screen.getByText("29")).toBeInTheDocument();
-    expect(screen.getByText("79")).toBeInTheDocument();
-    expect(screen.getByText("149")).toBeInTheDocument();
+    const { container } = renderWithRouter(<Landing />);
+    expect(screen.getByRole("heading", { name: "Starter" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Pro" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Business" })).toBeInTheDocument();
+    // Verifica directamente el HTML renderizado (los precios están en spans
+    // hermanos del €, lo que confunde a getByText)
+    expect(container.innerHTML).toMatch(/landing-plan-amount[^>]*>29</);
+    expect(container.innerHTML).toMatch(/landing-plan-amount[^>]*>79</);
+    expect(container.innerHTML).toMatch(/landing-plan-amount[^>]*>149</);
   });
 
   it("Pro está marcado como featured (badge 'Más popular')", () => {

@@ -7,7 +7,14 @@ const STORAGE_KEY = "altadill.selectedWarehouseId";
 const WarehouseContext = createContext(null);
 
 export function WarehouseProvider({ children }) {
-  const { warehouses, loading, createWarehouse, updateWarehouse, deleteWarehouse } = useWarehouses();
+  const {
+    warehouses,
+    loading,
+    createWarehouse,
+    updateWarehouse,
+    deleteWarehouse,
+    deleteWarehouseWithReassign,
+  } = useWarehouses();
 
   const [selectedId, setSelectedIdState] = useState(() => {
     try {
@@ -63,8 +70,9 @@ export function WarehouseProvider({ children }) {
       createWarehouse,
       updateWarehouse,
       deleteWarehouse,
+      deleteWarehouseWithReassign,
     }),
-    [warehouses, loading, selectedId, selectedWarehouse, defaultWarehouse, createWarehouse, updateWarehouse, deleteWarehouse],
+    [warehouses, loading, selectedId, selectedWarehouse, defaultWarehouse, createWarehouse, updateWarehouse, deleteWarehouse, deleteWarehouseWithReassign],
   );
 
   return <WarehouseContext.Provider value={value}>{children}</WarehouseContext.Provider>;
@@ -86,5 +94,6 @@ export function useWarehouseContext() {
     createWarehouse: async () => {},
     updateWarehouse: async () => {},
     deleteWarehouse: async () => {},
+    deleteWarehouseWithReassign: async () => {},
   };
 }
