@@ -8,6 +8,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db, auth } from "../firebase/config";
+import { log, warn, error as logError } from "./logger";
 
 /**
  * Sistema de Auditoría y Webhooks
@@ -75,8 +76,8 @@ export async function logAuditEvent(
     await checkForSuspiciousActivity(currentUser?.uid, eventType);
 
     return docRef.id;
-  } catch (error) {
-    console.error("Error logging audit event:", error);
+  } catch (err) {
+    logError("auditService: logAuditEvent", err);
   }
 }
 
@@ -115,10 +116,10 @@ async function checkForSuspiciousActivity(userId, eventType) {
         userAgent: navigator.userAgent,
       });
 
-      console.warn(`⚠️ Actividad sospechosa detectada para usuario: ${userId}`);
+      warn(`⚠️ Actividad sospechosa detectada para usuario: ${userId}`);
     }
-  } catch (error) {
-    console.error("Error checking suspicious activity:", error);
+  } catch (err) {
+    logError("auditService: checkForSuspiciousActivity", err);
   }
 }
 
@@ -164,8 +165,8 @@ export async function getAuditEvents(filters = {}) {
       id: doc.id,
       ...doc.data(),
     }));
-  } catch (error) {
-    console.error("Error fetching audit events:", error);
+  } catch (err) {
+    logError("auditService: getAuditEvents", err);
     return [];
   }
 }
@@ -203,8 +204,8 @@ export async function getAuditStatistics(days = 7) {
     });
 
     return stats;
-  } catch (error) {
-    console.error("Error getting audit statistics:", error);
+  } catch (err) {
+    logError("auditService: getAuditStatistics", err);
     return null;
   }
 }
@@ -217,9 +218,7 @@ export async function triggerWebhook(eventType, data) {
   try {
     // Ejemplo: Notificar al admin si hay solicitudes
     if (eventType === AuditEventTypes.REQUEST_CREATED) {
-      console.log(
-        `🔔 Nueva solicitud: ${data.productName} por ${data.requestedBy}`
-      );
+      log(`🔔 Nueva solicitud: ${data.productName} por ${data.requestedBy}`);
       // Aquí podrías:
       // - Enviar email
       // - Enviar notificación push
@@ -228,15 +227,15 @@ export async function triggerWebhook(eventType, data) {
 
     // Ejemplo: Alertar si hay actividad sospechosa
     if (eventType === AuditEventTypes.SUSPICIOUS_ACTIVITY) {
-      console.warn(`🚨 Actividad sospechosa: ${JSON.stringify(data)}`);
+      warn(`🚨 Actividad sospechosa: ${JSON.stringify(data)}`);
       // Aquí podrías: Bloquear usuario, enviar alerta, etc.
     }
 
     // Ejemplo: Registrar eliminación de productos
     if (eventType === AuditEventTypes.PRODUCT_DELETED) {
-      console.log(`⚠️ Producto eliminado: ${data.productName}`);
+      log(`⚠️ Producto eliminado: ${data.productName}`);
     }
-  } catch (error) {
-    console.error("Error triggering webhook:", error);
+  } catch (err) {
+    logError("auditService: triggerWebhook", err);
   }
 }
