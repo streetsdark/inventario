@@ -44,6 +44,10 @@ export default function StagingReviewCard() {
   const [info, setInfo]       = useState(null);
   const [editingCells, setEditingCells] = useState({});  // { rowId: [cells] }
   const [columnNames, setColumnNames] = useState([]); // nombres editables persistidos en localStorage
+  // Columnas virtuales insertadas entre originales: [{ id, afterIndex, name }]
+  const [insertedColumns, setInsertedColumns] = useState([]);
+  // Valores de columnas virtuales: { rowId: { virtualId: value } }
+  const [extraValues, setExtraValues] = useState({});
 
   // Subscribe a /importStaging filtrado por accountId
   useEffect(() => {
@@ -106,6 +110,92 @@ export default function StagingReviewCard() {
   };
 
   const getColName = (i) => columnNames[i] || headerRow?.[i] || `Col ${i + 1}`;
+
+  /* ── Columnas virtuales insertadas ──────────────────────── */
+
+  const insertedKey  = accountId ? `altadill.importInsertedCols.${accountId}`  : null;
+  const extraValsKey = accountId ? `altadill.importExtraValues.${accountId}` : null;
+
+  // Carga inicial de columnas virtuales + sus valores desde localStorage
+  useEffect(() => {
+    if (!insertedKey) return;
+    try {
+      const raw = localStorage.getItem(insertedKey);
+      if (raw) setInsertedColumns(JSON.parse(raw) || []);
+    } catch { /* ignore */ }
+    try {
+      const raw = localStorage.getItem(extraValsKey);
+      if (raw) setExtraValues(JSON.parse(raw) || {});
+    } catch { /* ignore */ }
+  }, [insertedKey, extraValsKey]);
+
+  const persistInserted = (next) => {
+    try { if (insertedKey) localStorage.setItem(insertedKey, JSON.stringify(next)); } catch { /* ignore */ }
+  };
+  const persistExtras = (next) => {
+    try { if (extraValsKey) localStorage.setItem(extraValsKey, JSON.stringify(next)); } catch { /* ignore */ }
+  };
+
+  // Lista de columnas a renderizar (mezcla originales con virtuales según afterIndex)
+  // Resultado: [{ type:'original', index:N } | { type:'virtual', virtualId, name }]
+  const displayColumns = useMemo(() => {
+    const out = [];
+    // Inserciones antes de la primera columna (afterIndex = -1)
+    insertedColumns
+      .filter((c) => c.afterIndex === -1)
+      .forEach((c) => out.push({ type: "virtual", virtualId: c.id, name: c.name }));
+    for (let i = 0; i < columnCount; i++) {
+      out.push({ type: "original", index: i });
+      insertedColumns
+        .filter((c) => c.afterIndex === i)
+        .forEach((c) => out.push({ type: "virtual", virtualId: c.id, name: c.name }));
+    }
+    return out;
+  }, [columnCount, insertedColumns]);
+
+  const insertColumnAfter = (afterIndex) => {
+    const name = window.prompt(
+      "Nombre de la nueva columna (puedes renombrarla luego):",
+      "NUEVA",
+    );
+    if (!name) return;
+    const id = `virt_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+    const next = [...insertedColumns, { id, afterIndex, name: name.trim().slice(0, 60) }];
+    setInsertedColumns(next);
+    persistInserted(next);
+  };
+
+  const renameVirtualColumn = (virtualId, name) => {
+    const next = insertedColumns.map((c) =>
+      c.id === virtualId ? { ...c, name: name.slice(0, 60) } : c,
+    );
+    setInsertedColumns(next);
+    persistInserted(next);
+  };
+
+  const removeVirtualColumn = (virtualId) => {
+    if (!window.confirm("¿Eliminar esta columna virtual y todos sus valores?")) return;
+    const next = insertedColumns.filter((c) => c.id !== virtualId);
+    setInsertedColumns(next);
+    persistInserted(next);
+    // Limpia los valores de esa columna en todas las filas
+    const nextValues = {};
+    for (const [rowId, vals] of Object.entries(extraValues)) {
+      const { [virtualId]: _omit, ...rest } = vals;
+      if (Object.keys(rest).length > 0) nextValues[rowId] = rest;
+    }
+    setExtraValues(nextValues);
+    persistExtras(nextValues);
+  };
+
+  const updateExtraCell = (rowId, virtualId, value) => {
+    const nextRow = { ...(extraValues[rowId] || {}), [virtualId]: value };
+    const next = { ...extraValues, [rowId]: nextRow };
+    setExtraValues(next);
+    persistExtras(next);
+  };
+
+  const getExtraCell = (rowId, virtualId) => extraValues[rowId]?.[virtualId] ?? "";
 
   const counts = useMemo(() => ({
     pending:   rows.filter((r) => r.status === "pending").length,
@@ -304,19 +394,66 @@ export default function StagingReviewCard() {
                 <table className="staging-table">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      {Array.from({ length: columnCount }).map((_, i) => (
-                        <th key={i}>
-                          <input
-                            type="text"
-                            value={columnNames[i] ?? ""}
-                            onChange={(e) => renameColumn(i, e.target.value)}
-                            className="staging-col-header-input"
-                            placeholder={`Col ${i + 1}`}
-                            title="Renombra la columna (se guarda automáticamente)"
-                          />
-                        </th>
-                      ))}
+                      <th>
+                        #
+                        {/* Botón "+" antes de la primera columna */}
+                        <button
+                          type="button"
+                          className="staging-add-col-btn"
+                          onClick={() => insertColumnAfter(-1)}
+                          title="Insertar columna antes"
+                        >+</button>
+                      </th>
+                      {displayColumns.map((col, i) =>
+                        col.type === "original" ? (
+                          <th key={`o-${col.index}`}>
+                            <div className="staging-header-cell">
+                              <input
+                                type="text"
+                                value={columnNames[col.index] ?? ""}
+                                onChange={(e) => renameColumn(col.index, e.target.value)}
+                                className="staging-col-header-input"
+                                placeholder={`Col ${col.index + 1}`}
+                                title="Renombra la columna"
+                              />
+                              <button
+                                type="button"
+                                className="staging-add-col-btn"
+                                onClick={() => insertColumnAfter(col.index)}
+                                title="Insertar columna a la derecha"
+                              >+</button>
+                            </div>
+                          </th>
+                        ) : (
+                          <th key={`v-${col.virtualId}`} className="staging-virtual-col">
+                            <div className="staging-header-cell">
+                              <input
+                                type="text"
+                                value={col.name}
+                                onChange={(e) => renameVirtualColumn(col.virtualId, e.target.value)}
+                                className="staging-col-header-input staging-col-header-virtual"
+                                placeholder="Nombre"
+                              />
+                              <button
+                                type="button"
+                                className="staging-remove-col-btn"
+                                onClick={() => removeVirtualColumn(col.virtualId)}
+                                title="Eliminar columna virtual"
+                              >×</button>
+                              <button
+                                type="button"
+                                className="staging-add-col-btn"
+                                onClick={() => {
+                                  // Inserta a la derecha de esta virtual = misma afterIndex que la actual
+                                  const current = insertedColumns.find((c) => c.id === col.virtualId);
+                                  insertColumnAfter(current?.afterIndex ?? -1);
+                                }}
+                                title="Insertar columna a la derecha"
+                              >+</button>
+                            </div>
+                          </th>
+                        )
+                      )}
                       <th>Estado</th>
                       <th>Acciones</th>
                     </tr>
@@ -325,21 +462,38 @@ export default function StagingReviewCard() {
                     {filteredRows.map((row) => (
                       <tr key={row.id} className={`staging-row staging-row-${row.status}`}>
                         <td className="staging-row-num">{(row.rowIndex ?? 0) + 1}</td>
-                        {Array.from({ length: columnCount }).map((_, i) => (
-                          <td key={i}>
-                            {row.status === "pending" ? (
-                              <input
-                                type="text"
-                                value={sanitizeString(String(getCellsFor(row)[i] ?? ""))}
-                                onChange={(e) => updateCell(row.id, i, e.target.value)}
-                                className="staging-cell-input"
-                                disabled={busyId === row.id}
-                              />
-                            ) : (
-                              <span>{sanitizeString(String(row.cells?.[i] ?? ""))}</span>
-                            )}
-                          </td>
-                        ))}
+                        {displayColumns.map((col) =>
+                          col.type === "original" ? (
+                            <td key={`o-${col.index}`}>
+                              {row.status === "pending" ? (
+                                <input
+                                  type="text"
+                                  value={sanitizeString(String(getCellsFor(row)[col.index] ?? ""))}
+                                  onChange={(e) => updateCell(row.id, col.index, e.target.value)}
+                                  className="staging-cell-input"
+                                  disabled={busyId === row.id}
+                                />
+                              ) : (
+                                <span>{sanitizeString(String(row.cells?.[col.index] ?? ""))}</span>
+                              )}
+                            </td>
+                          ) : (
+                            <td key={`v-${col.virtualId}`} className="staging-virtual-col">
+                              {row.status === "pending" ? (
+                                <input
+                                  type="text"
+                                  value={getExtraCell(row.id, col.virtualId)}
+                                  onChange={(e) => updateExtraCell(row.id, col.virtualId, e.target.value)}
+                                  className="staging-cell-input"
+                                  disabled={busyId === row.id}
+                                  placeholder="—"
+                                />
+                              ) : (
+                                <span>{sanitizeString(getExtraCell(row.id, col.virtualId))}</span>
+                              )}
+                            </td>
+                          )
+                        )}
                         <td>
                           <span className={`staging-status staging-status-${row.status}`}>
                             {row.status}
