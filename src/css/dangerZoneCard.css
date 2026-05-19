@@ -140,20 +140,47 @@
   background: var(--surface-elevated);
   border: 3px solid #c0392b;
   border-radius: 18px;
-  padding: 1.5rem;
+  padding: 0; /* el padding lo dan los hijos para poder sticky el footer */
   max-width: 560px;
   width: 100%;
-  max-height: 88vh;
-  overflow-y: auto;
+  max-height: 85vh;
+  overflow-y: auto; /* scroll en el propio modal — necesario para sticky bottom */
   box-shadow: 0 16px 50px rgba(192, 57, 43, 0.4);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   animation: dangerOpen 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
   word-wrap: break-word;
 }
 
 .danger-box * { min-width: 0; }
+
+/* Contenido del modal: padding y scroll propios para dejar fijos los botones abajo */
+.danger-box > h3,
+.danger-box > p,
+.danger-box > input,
+.danger-box > .danger-counts,
+.danger-box > .danger-progress,
+.danger-box > .danger-warning-strong,
+.danger-box > .danger-error,
+.danger-box > .danger-phrase {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  flex-shrink: 0;
+}
+
+.danger-box > h3:first-of-type { margin-top: 1.5rem; }
+
+/* Acciones siempre visibles en el fondo del modal */
+.danger-box .danger-actions {
+  position: sticky;
+  bottom: 0;
+  background: var(--surface-elevated);
+  padding: 1rem 1.5rem 1.25rem;
+  margin-top: auto;
+  border-top: 1px solid rgba(192, 57, 43, 0.2);
+  z-index: 2;
+  flex-shrink: 0;
+}
 
 .danger-box h3 {
   margin: 0;
