@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -95,24 +95,23 @@ const Dashboard = () => {
     e.preventDefault();
 
     const sku         = pendingForm.sku.trim();
-    const description = pendingForm.description.trim();
     const quantity    = Number(pendingForm.quantity);
     const requestNote = pendingForm.requestNote.trim();
     const currentUser = user?.displayName || user?.email || "Usuario del sistema";
 
-    if (!sku || !description || !quantity || quantity <= 0) {
-      setModalConfig({ show: true, text: "Completa codigo, nombre y cantidad para registrar unidades pendientes.", type: "error", showButton: true, handleClick: null });
+    if (!sku || !quantity || quantity <= 0) {
+      setModalConfig({ show: true, text: "Indica el código del producto y la cantidad pendiente.", type: "error", showButton: true, handleClick: null });
       return;
     }
 
-    const product = products.find((item) => {
-      const itemSku  = String(item.sku         || "").trim().toLowerCase();
-      const itemDesc = String(item.description || "").trim().toLowerCase();
-      return itemSku === sku.toLowerCase() && itemDesc === description.toLowerCase();
-    });
+    // Buscamos solo por SKU (exacto, case-insensitive). Más permisivo que
+    // exigir nombre exacto y suficientemente seguro porque el SKU es único.
+    const product = products.find((item) =>
+      String(item.sku || "").trim().toLowerCase() === sku.toLowerCase(),
+    );
 
     if (!product) {
-      setModalConfig({ show: true, text: "No encontramos un producto que coincida con ese codigo y nombre.", type: "error", showButton: true, handleClick: null });
+      setModalConfig({ show: true, text: "No encontramos ningún producto con ese código.", type: "error", showButton: true, handleClick: null });
       return;
     }
 
@@ -137,6 +136,22 @@ const Dashboard = () => {
         return pSku === normalizedSku || pSku.startsWith(normalizedSku);
       })
     : null;
+
+  // Autocompleta el nombre cuando se identifica el producto por SKU.
+  // El usuario solo necesita escribir SKU + cantidad.
+  useEffect(() => {
+    if (pendingPreviewProduct && pendingPreviewProduct.description) {
+      setPendingForm((prev) =>
+        prev.description === pendingPreviewProduct.description
+          ? prev
+          : { ...prev, description: pendingPreviewProduct.description },
+      );
+    } else if (!pendingPreviewProduct && pendingForm.description) {
+      // Si el usuario borra el SKU, limpiamos también el nombre auto-rellenado.
+      setPendingForm((prev) => ({ ...prev, description: "" }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingPreviewProduct?.id]);
 
   const pendingMaterials = products.filter(
     (p) => Number(p.pending || 0) > 0,
@@ -198,21 +213,52 @@ const Dashboard = () => {
           <div className="pending-form-copy">
             <h2>Registrar unidades pendientes</h2>
             <p>
-              Agrega las piezas solicitadas usando el codigo y el nombre exactos
-              del producto.
+              Escribe el código del producto y la cantidad. El resto se rellena
+              automáticamente.
             </p>
           </div>
 
           <form className="pending-form-grid" onSubmit={handlePendingSubmit}>
-            <input type="text"   name="sku"         placeholder="Codigo"              value={pendingForm.sku}         onChange={handlePendingChange} />
-            <input type="text"   name="description" placeholder="Nombre"              value={pendingForm.description} onChange={handlePendingChange} />
-            <input type="number" name="quantity"    min="1" placeholder="Cantidad"    value={pendingForm.quantity}    onChange={handlePendingChange} />
-            <input type="text"   name="requestNote" placeholder="Descripcion opcional" value={pendingForm.requestNote} onChange={handlePendingChange} />
+            <input
+              type="text"
+              name="sku"
+              placeholder="Código"
+              value={pendingForm.sku}
+              onChange={handlePendingChange}
+              autoFocus
+              required
+            />
+            <input
+              type="text"
+              name="description"
+              placeholder="Nombre (auto)"
+              value={pendingForm.description}
+              onChange={handlePendingChange}
+              readOnly={!!pendingPreviewProduct}
+              style={pendingPreviewProduct ? { background: "rgba(77,184,240,0.08)", cursor: "default" } : undefined}
+              title={pendingPreviewProduct ? "Auto-rellenado desde el producto" : "Selecciona un código válido"}
+            />
+            <input
+              type="number"
+              name="quantity"
+              min="1"
+              placeholder="Cantidad"
+              value={pendingForm.quantity}
+              onChange={handlePendingChange}
+              required
+            />
+            <input
+              type="text"
+              name="requestNote"
+              placeholder="Descripción opcional"
+              value={pendingForm.requestNote}
+              onChange={handlePendingChange}
+            />
             <div className="pending-form-actions">
               <button type="button" className="pending-secondary-btn" onClick={resetPendingForm}>
                 Cancelar
               </button>
-              <button type="submit" className="pending-primary-btn">
+              <button type="submit" className="pending-primary-btn" disabled={!pendingPreviewProduct || !pendingForm.quantity}>
                 Agregar pendiente
               </button>
             </div>
