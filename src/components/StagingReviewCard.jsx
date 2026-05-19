@@ -4,7 +4,7 @@ import {
 } from "react-icons/bs";
 import {
   collection, query, where, onSnapshot, addDoc, doc, updateDoc, deleteDoc,
-  serverTimestamp,
+  serverTimestamp, writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { useAccountContext } from "../context/AccountContext";
@@ -48,6 +48,8 @@ export default function StagingReviewCard() {
   const [insertedColumns, setInsertedColumns] = useState([]);
   // Valores de columnas virtuales: { rowId: { virtualId: value } }
   const [extraValues, setExtraValues] = useState({});
+  // Progreso del bulk import: null | { current, total, errors }
+  const [bulkProgress, setBulkProgress] = useState(null);
 
   // Subscribe a /importStaging filtrado por accountId
   useEffect(() => {
@@ -304,6 +306,93 @@ export default function StagingReviewCard() {
     }
   };
 
+  /* ── Bulk import (todas las pendientes a la vez) ─────────── */
+
+  const importAllPending = async () => {
+    setError(null); setInfo(null);
+
+    if (!isMappingComplete(mapping)) {
+      setError("Mapea al menos la columna 'Descripción' arriba antes de importar.");
+      return;
+    }
+    const targetWarehouseId = selectedWarehouseId || defaultWarehouseId || warehouses[0]?.id || "";
+    if (!targetWarehouseId) {
+      setError("Necesitas tener al menos un almacén creado.");
+      return;
+    }
+
+    const pendingRows = rows.filter((r) => r.status === "pending");
+    if (pendingRows.length === 0) {
+      setError("No hay filas pendientes para importar.");
+      return;
+    }
+
+    if (!window.confirm(
+      `¿Importar ${pendingRows.length} producto${pendingRows.length === 1 ? "" : "s"} al catálogo?\n\n` +
+      `Los productos creados quedarán en el almacén actual y se marcarán las filas como 'imported'.`
+    )) return;
+
+    setBulkProgress({ current: 0, total: pendingRows.length, errors: 0 });
+
+    try {
+      // Firestore batch máx 500 ops. Cada fila = 1 set + 1 update = 2 ops.
+      // Usamos chunks de 200 filas = 400 ops por batch.
+      const CHUNK_SIZE = 200;
+      let processed = 0;
+      let errorCount = 0;
+
+      for (let i = 0; i < pendingRows.length; i += CHUNK_SIZE) {
+        const slice = pendingRows.slice(i, i + CHUNK_SIZE);
+        const batch = writeBatch(db);
+
+        for (const row of slice) {
+          try {
+            const cells = getCellsFor(row);
+            const product = buildProductFromStaging(
+              { ...row, cells },
+              mapping,
+              accountId,
+            );
+            product.warehouseId = targetWarehouseId;
+
+            const productRef = doc(collection(db, "products"));
+            batch.set(productRef, { ...product, createdAt: serverTimestamp() });
+            batch.update(doc(db, "importStaging", row.id), {
+              status: "imported",
+              importedProductId: productRef.id,
+              importedAt: serverTimestamp(),
+            });
+          } catch (err) {
+            errorCount++;
+            logError("bulk import row " + row.id, err);
+          }
+        }
+
+        await batch.commit();
+        processed += slice.length;
+        setBulkProgress({ current: processed, total: pendingRows.length, errors: errorCount });
+      }
+
+      await logAuditEvent("STAGING_BULK_IMPORTED", "import", "bulk", {
+        count: processed - errorCount,
+        errors: errorCount,
+        total: pendingRows.length,
+        warehouseId: targetWarehouseId,
+      });
+
+      const okCount = processed - errorCount;
+      setInfo(
+        `✅ ${okCount} producto${okCount === 1 ? "" : "s"} importado${okCount === 1 ? "" : "s"} al catálogo` +
+        (errorCount > 0 ? ` (${errorCount} con errores — revisa consola)` : "")
+      );
+    } catch (err) {
+      setError(err?.message || "Error durante el bulk import");
+    } finally {
+      // Mantengo el progreso visible 2s y luego lo limpio
+      setTimeout(() => setBulkProgress(null), 2000);
+    }
+  };
+
   /* ── Render ──────────────────────────────────────────────── */
 
   if (!accountId) return null;
@@ -385,6 +474,41 @@ export default function StagingReviewCard() {
                   </button>
                 ))}
               </div>
+
+              {/* Bulk import — todas las pendientes a la vez */}
+              {counts.pending > 0 && (
+                <div className="staging-bulk-row">
+                  <button
+                    type="button"
+                    className="staging-bulk-btn"
+                    onClick={importAllPending}
+                    disabled={!!bulkProgress || !isMappingComplete(mapping)}
+                    title={!isMappingComplete(mapping) ? "Mapea 'Descripción' primero" : ""}
+                  >
+                    <BsUpload size={14} /> Importar TODAS las pendientes ({counts.pending})
+                  </button>
+                  {!isMappingComplete(mapping) && (
+                    <span className="staging-bulk-hint">
+                      ⚠ Mapea al menos "Descripción" arriba para habilitar
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {bulkProgress && (
+                <div className="staging-bulk-progress">
+                  <div className="staging-bulk-bar">
+                    <div
+                      className="staging-bulk-bar-fill"
+                      style={{ width: `${(bulkProgress.current / Math.max(bulkProgress.total, 1)) * 100}%` }}
+                    />
+                  </div>
+                  <p>
+                    Importando... <b>{bulkProgress.current}</b> / {bulkProgress.total}
+                    {bulkProgress.errors > 0 && <span className="staging-bulk-errors"> · {bulkProgress.errors} errores</span>}
+                  </p>
+                </div>
+              )}
 
               {error && <div className="staging-error"><BsXCircle size={14} /> {error}</div>}
               {info && <div className="staging-info">{info}</div>}
