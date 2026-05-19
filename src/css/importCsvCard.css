@@ -1,0 +1,170 @@
+.import-card {
+  margin: 1.5rem 0 0;
+  border-radius: 22px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+.import-card.open { border-color: var(--contrast); }
+
+.import-trigger {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.import-trigger-left { display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 0; }
+.import-icon { color: var(--contrast); flex-shrink: 0; }
+
+.import-trigger h2 { font-size: 1.1rem; font-weight: 800; margin: 0; }
+.import-subtitle   { font-size: 0.82rem; color: var(--text-secondary); margin: 0.2rem 0 0; }
+
+.import-chevron { font-size: 1.5rem; color: var(--text-tertiary); transition: transform 0.25s ease; }
+.import-chevron.up { transform: rotate(-90deg); }
+
+.import-panel {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.import-hint {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.import-hint small { color: var(--text-tertiary); }
+
+.import-file-input {
+  padding: 0.6rem;
+  border: 1px dashed var(--contrast);
+  border-radius: 10px;
+  background: rgba(77, 184, 240, 0.04);
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.import-error,
+.import-info {
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.import-error { background: rgba(192, 57, 43, 0.08); border: 1px solid rgba(192, 57, 43, 0.35); color: #c0392b; }
+.import-info  { background: rgba(47, 158, 106, 0.08); border: 1px solid rgba(47, 158, 106, 0.35); color: #2f9e6a; }
+
+.import-preview {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.import-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+}
+
+.import-preview-header b { color: var(--contrast); }
+
+.import-header-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.import-preview-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.import-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.import-preview-table th,
+.import-preview-table td {
+  padding: 0.45rem 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.import-preview-table thead th {
+  background: rgba(77, 184, 240, 0.08);
+  color: var(--contrast);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.import-row-num {
+  color: var(--text-tertiary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+}
+
+.import-preview-note {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  margin: 0.3rem 0 0;
+  text-align: center;
+}
+
+.import-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.import-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: unset;
+  box-shadow: none;
+}
+
+.import-btn.primary { border-color: var(--contrast); color: var(--contrast); background: rgba(77, 184, 240, 0.08); }
+.import-btn.primary:hover:not(:disabled) { background: rgba(77, 184, 240, 0.18); }
+.import-btn.ghost { color: var(--text-secondary); }
+.import-btn:disabled { opacity: 0.45; cursor: not-allowed; }

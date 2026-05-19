@@ -228,6 +228,27 @@ service cloud.firestore {
       allow read: if isSuperuser();
     }
 
+    // ── Import staging (revisión de filas CSV antes de importar) ────
+    // Solo privileged de la cuenta o superuser. Validación inline.
+    match /importStaging/{id} {
+      allow read: if isSuperuser()
+        || (isAuth() && docInUserAccount());
+
+      allow create: if isSuperuser()
+        || (isPrivileged()
+            && request.resource.data.accountId == userAccountId()
+            && request.resource.data.status in ['pending', 'imported', 'discarded']);
+
+      allow update: if isSuperuser()
+        || (isPrivileged()
+            && docInUserAccount()
+            && patchAccountIdValid()
+            && request.resource.data.status in ['pending', 'imported', 'discarded']);
+
+      allow delete: if isSuperuser()
+        || (isPrivileged() && docInUserAccount());
+    }
+
     // ── Notificaciones ─────────────────────────────────────
     match /notifications/{id} {
       allow create: if isSuperuser()

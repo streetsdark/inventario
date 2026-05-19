@@ -28,6 +28,8 @@ import LegacyMigrationCard from "../components/LegacyMigrationCard";
 import OnboardingWizard from "../components/OnboardingWizard";
 import AccountSettingsCard from "../components/AccountSettingsCard";
 import DangerZoneCard from "../components/DangerZoneCard";
+import ImportCsvCard from "../components/ImportCsvCard";
+import StagingReviewCard from "../components/StagingReviewCard";
 import useRole from "../hooks/useRole";
 import useProducts from "../hooks/useProducts";
 import usePendingStock from "../hooks/usePendingStock";
@@ -436,6 +438,8 @@ const Dashboard = () => {
       {isSuperUser && <WarehouseManager />}
       {isSuperUser && <BulkReassignCard />}
       {isSuperUser && <LegacyMigrationCard />}
+      {isSuperUser && <ImportCsvCard />}
+      {isSuperUser && <StagingReviewCard />}
       <AccountSettingsCard />
       {isSuperUser && <ProductRequestsCard />}
       {isSuperUser && <DangerZoneCard />}
