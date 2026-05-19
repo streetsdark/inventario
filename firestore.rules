@@ -82,6 +82,11 @@ service cloud.firestore {
 
       // Superuser puede crear y cambiar roles de cualquier usuario
       allow create, update: if isSuperuser();
+
+      // Delete: solo superuser (modo soporte / wipe de la app).
+      // Ningún usuario puede borrar su propio doc desde la app —
+      // para eso existe el GDPR delete que pasa por cascade controlado.
+      allow delete: if isSuperuser();
     }
 
     // ── Cuentas (multi-tenant Fase 1) ──────────────────────
@@ -114,8 +119,9 @@ service cloud.firestore {
         && (request.resource.data.ownerId == resource.data.ownerId
             || isAccountOwner(id));
 
-      // Delete: solo owner.
-      allow delete: if isAuth() && isAccountOwner(id);
+      // Delete: owner de la cuenta o superuser (modo soporte / wipe).
+      allow delete: if isSuperuser()
+        || (isAuth() && isAccountOwner(id));
     }
 
     // ── Helpers de aislamiento por cuenta (Fase 4) ─────────
