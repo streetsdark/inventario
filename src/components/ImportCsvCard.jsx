@@ -155,6 +155,13 @@ export default function ImportCsvCard() {
 
       {open && (
         <div className="import-panel">
+          {!accountId && (
+            <div className="import-error">
+              <BsXCircle size={14} /> Necesitas tener una cuenta creada antes
+              de importar. Crea una desde la card "Crea tu cuenta" arriba.
+            </div>
+          )}
+
           <p className="import-hint">
             Los datos del CSV se guardan en un área de staging. Tus productos
             actuales NO se tocan. Después decides qué filas importar.
