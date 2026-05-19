@@ -138,18 +138,20 @@ service cloud.firestore {
     }
 
     // ── Catálogo de productos ──────────────────────────────
+    // El superuser global tiene bypass total (rol de soporte). Toda acción
+    // suya queda en auditLogs.
     match /products/{id} {
       allow read: if isSuperuser()
         || (isAuth() && docInUserAccount());
 
-      allow create: if isPrivileged()
-        && request.resource.data.accountId == userAccountId();
+      allow create: if isSuperuser()
+        || (isPrivileged() && request.resource.data.accountId == userAccountId());
 
-      allow update: if isPrivileged()
-        && docInUserAccount()
-        && patchAccountIdValid();
+      allow update: if isSuperuser()
+        || (isPrivileged() && docInUserAccount() && patchAccountIdValid());
 
-      allow delete: if isPrivileged() && docInUserAccount();
+      allow delete: if isSuperuser()
+        || (isPrivileged() && docInUserAccount());
     }
 
     // ── Almacenes ──────────────────────────────────────────
@@ -159,23 +161,28 @@ service cloud.firestore {
       allow read: if isSuperuser()
         || (isAuth() && docInUserAccount());
 
-      allow create: if isPrivileged()
-        && request.resource.data.accountId == userAccountId()
-        && request.resource.data.name is string
-        && request.resource.data.name.size() >= 2
-        && request.resource.data.name.size() <= 60;
+      allow create: if isSuperuser()
+        || (isPrivileged()
+            && request.resource.data.accountId == userAccountId()
+            && request.resource.data.name is string
+            && request.resource.data.name.size() >= 2
+            && request.resource.data.name.size() <= 60);
 
-      allow update: if isPrivileged()
-        && docInUserAccount()
-        && patchAccountIdValid()
-        && (!('name' in request.resource.data)
-            || (request.resource.data.name is string
-                && request.resource.data.name.size() >= 2
-                && request.resource.data.name.size() <= 60));
+      allow update: if isSuperuser()
+        || (isPrivileged()
+            && docInUserAccount()
+            && patchAccountIdValid()
+            && (!('name' in request.resource.data)
+                || (request.resource.data.name is string
+                    && request.resource.data.name.size() >= 2
+                    && request.resource.data.name.size() <= 60)));
 
-      allow delete: if isPrivileged()
-        && docInUserAccount()
-        && resource.data.isDefault != true;
+      // Superuser puede borrar el default (modo soporte).
+      // El resto debe usar el flujo asistido que promueve otro primero.
+      allow delete: if isSuperuser()
+        || (isPrivileged()
+            && docInUserAccount()
+            && resource.data.isDefault != true);
     }
 
     // ── Movimientos ────────────────────────────────────────
@@ -183,32 +190,33 @@ service cloud.firestore {
       allow read: if isSuperuser()
         || (isAuth() && docInUserAccount());
 
-      allow create: if isPrivileged()
-        && request.resource.data.accountId == userAccountId();
+      allow create: if isSuperuser()
+        || (isPrivileged() && request.resource.data.accountId == userAccountId());
 
-      allow update: if isPrivileged()
-        && docInUserAccount()
-        && patchAccountIdValid();
+      allow update: if isSuperuser()
+        || (isPrivileged() && docInUserAccount() && patchAccountIdValid());
 
-      allow delete: if isPrivileged() && docInUserAccount();
+      allow delete: if isSuperuser()
+        || (isPrivileged() && docInUserAccount());
     }
 
     // ── Solicitudes de producto ────────────────────────────
-    // Read: propio creador O privileged de la misma cuenta.
+    // Read: propio creador O privileged de la misma cuenta O superuser.
     match /productRequests/{id} {
-      allow create: if isAuth()
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.accountId == userAccountId();
+      allow create: if isSuperuser()
+        || (isAuth()
+            && request.resource.data.userId == request.auth.uid
+            && request.resource.data.accountId == userAccountId());
 
       allow read: if isSuperuser()
         || (isAuth() && resource.data.userId == request.auth.uid && docInUserAccount())
         || (isPrivileged() && docInUserAccount());
 
-      allow update: if isPrivileged()
-        && docInUserAccount()
-        && patchAccountIdValid();
+      allow update: if isSuperuser()
+        || (isPrivileged() && docInUserAccount() && patchAccountIdValid());
 
-      allow delete: if isPrivileged() && docInUserAccount();
+      allow delete: if isSuperuser()
+        || (isPrivileged() && docInUserAccount());
     }
 
     // ── Logs de auditoría ──────────────────────────────────
@@ -222,13 +230,14 @@ service cloud.firestore {
 
     // ── Notificaciones ─────────────────────────────────────
     match /notifications/{id} {
-      allow create: if isAuth()
-        && request.resource.data.accountId == userAccountId();
+      allow create: if isSuperuser()
+        || (isAuth() && request.resource.data.accountId == userAccountId());
 
       allow read: if isSuperuser()
         || (isPrivileged() && docInUserAccount());
 
-      allow update, delete: if isPrivileged() && docInUserAccount();
+      allow update, delete: if isSuperuser()
+        || (isPrivileged() && docInUserAccount());
     }
   }
 }
