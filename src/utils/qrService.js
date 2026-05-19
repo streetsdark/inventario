@@ -38,10 +38,27 @@ export async function generateQrDataUrl(payload, { width = 320 } = {}) {
   });
 }
 
+/**
+ * Convierte un data URL (data:image/png;base64,XXX) en Blob sin usar fetch.
+ * Necesario porque la CSP de la app no permite fetch a esquemas data:.
+ */
+export function dataUrlToBlob(dataUrl) {
+  if (typeof dataUrl !== "string" || !dataUrl.startsWith("data:")) {
+    throw new Error("dataUrl inválido");
+  }
+  const [meta, base64] = dataUrl.split(",");
+  const mimeMatch = meta.match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], { type: mime });
+}
+
 /** Descarga el QR como PNG. */
 export async function downloadQrPng(payload, filename) {
   const dataUrl = await generateQrDataUrl(payload, { width: 512 });
-  const blob = await (await fetch(dataUrl)).blob();
+  const blob = dataUrlToBlob(dataUrl);
   downloadBlob(blob, `${safeFileName(filename, `qr_${Date.now()}`)}.png`);
 }
 
