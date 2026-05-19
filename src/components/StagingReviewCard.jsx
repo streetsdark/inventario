@@ -43,6 +43,7 @@ export default function StagingReviewCard() {
   const [error, setError]     = useState(null);
   const [info, setInfo]       = useState(null);
   const [editingCells, setEditingCells] = useState({});  // { rowId: [cells] }
+  const [columnNames, setColumnNames] = useState([]); // nombres editables persistidos en localStorage
 
   // Subscribe a /importStaging filtrado por accountId
   useEffect(() => {
@@ -73,6 +74,38 @@ export default function StagingReviewCard() {
   const columnCount = useMemo(() => {
     return rows.reduce((max, r) => Math.max(max, (r.cells || []).length), 0);
   }, [rows]);
+
+  // Key de localStorage por cuenta — los nombres custom son por cuenta
+  const storageKey = accountId ? `altadill.importCols.${accountId}` : null;
+
+  // Carga inicial: localStorage > headerRow del CSV > "Col N"
+  useEffect(() => {
+    if (!storageKey || columnCount === 0) return;
+    let saved = null;
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) saved = JSON.parse(raw);
+    } catch { /* ignore */ }
+
+    const next = Array.from({ length: columnCount }, (_, i) => {
+      if (Array.isArray(saved) && saved[i]) return String(saved[i]);
+      if (headerRow?.[i])                    return String(headerRow[i]);
+      return `Col ${i + 1}`;
+    });
+    setColumnNames(next);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey, columnCount, headerRow?.length]);
+
+  const renameColumn = (idx, value) => {
+    setColumnNames((prev) => {
+      const next = [...prev];
+      next[idx] = value;
+      try { if (storageKey) localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+  };
+
+  const getColName = (i) => columnNames[i] || headerRow?.[i] || `Col ${i + 1}`;
 
   const counts = useMemo(() => ({
     pending:   rows.filter((r) => r.status === "pending").length,
@@ -237,7 +270,7 @@ export default function StagingReviewCard() {
                         <option value="">— Ninguna —</option>
                         {Array.from({ length: columnCount }).map((_, i) => (
                           <option key={i} value={i}>
-                            Col {i + 1}{headerRow?.[i] ? ` (${headerRow[i].slice(0, 20)})` : ""}
+                            {getColName(i)}
                           </option>
                         ))}
                       </select>
@@ -273,7 +306,16 @@ export default function StagingReviewCard() {
                     <tr>
                       <th>#</th>
                       {Array.from({ length: columnCount }).map((_, i) => (
-                        <th key={i}>{headerRow?.[i] || `Col ${i + 1}`}</th>
+                        <th key={i}>
+                          <input
+                            type="text"
+                            value={columnNames[i] ?? ""}
+                            onChange={(e) => renameColumn(i, e.target.value)}
+                            className="staging-col-header-input"
+                            placeholder={`Col ${i + 1}`}
+                            title="Renombra la columna (se guarda automáticamente)"
+                          />
+                        </th>
                       ))}
                       <th>Estado</th>
                       <th>Acciones</th>
