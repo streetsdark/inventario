@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { auth } from "../firebase/config";
+import { warn as logWarn } from "../utils/logger";
 
 /**
  * Hook para aplicar Rate Limiting a acciones específicas
@@ -61,8 +62,8 @@ export function useRateLimitedAction(
       setRemaining(0);
       setResetTime(timeToReset);
 
-      console.warn(
-        `⚠️ Rate limit alcanzado para "${action}". Reintenta en ${Math.ceil((timeToReset - now) / 1000)} segundos.`
+      logWarn(
+        `Rate limit alcanzado para "${action}". Reintenta en ${Math.ceil((timeToReset - now) / 1000)} segundos.`
       );
 
       return {

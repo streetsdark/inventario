@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -13,28 +13,34 @@ import { Bar, Doughnut } from "react-chartjs-2";
 import { BsImages } from "react-icons/bs";
 import { FcDatabase, FcInspection } from "react-icons/fc";
 import Modal from "../components/Modal";
-import ProductRequestsCard from "../components/ProductRequestsCard";
-import AnalyticsCard from "../components/AnalyticsCard";
-import ExportCard from "../components/ExportCard";
-import ScannerCard from "../components/ScannerCard";
-import QrLabelsCard from "../components/QrLabelsCard";
 import StockAlertCard from "../components/StockAlertCard";
 import WarehouseSwitcher from "../components/WarehouseSwitcher";
-import WarehouseManager from "../components/WarehouseManager";
-import BulkReassignCard from "../components/BulkReassignCard";
 import SignupAccountForm from "../components/SignupAccountForm";
 import AccountMembersCard from "../components/AccountMembersCard";
-import LegacyMigrationCard from "../components/LegacyMigrationCard";
 import OnboardingWizard from "../components/OnboardingWizard";
 import AccountSettingsCard from "../components/AccountSettingsCard";
-import DangerZoneCard from "../components/DangerZoneCard";
-import ImportCsvCard from "../components/ImportCsvCard";
-import StagingReviewCard from "../components/StagingReviewCard";
 import useRole from "../hooks/useRole";
 import useProducts from "../hooks/useProducts";
 import usePendingStock from "../hooks/usePendingStock";
 import { useAuthContext } from "../context/AuthContext";
 import "../css/dashboard.css";
+
+// Lazy load — cards pesadas (con Chart.js, jsPDF, html5-qrcode, QRCode, papaparse, etc.)
+// Cada una solo se descarga cuando se renderiza (es decir, casi siempre las verá
+// el admin pero el usuario básico no carga su código).
+const ProductRequestsCard  = lazy(() => import("../components/ProductRequestsCard"));
+const AnalyticsCard        = lazy(() => import("../components/AnalyticsCard"));
+const ExportCard           = lazy(() => import("../components/ExportCard"));
+const ScannerCard          = lazy(() => import("../components/ScannerCard"));
+const QrLabelsCard         = lazy(() => import("../components/QrLabelsCard"));
+const WarehouseManager     = lazy(() => import("../components/WarehouseManager"));
+const BulkReassignCard     = lazy(() => import("../components/BulkReassignCard"));
+const LegacyMigrationCard  = lazy(() => import("../components/LegacyMigrationCard"));
+const DangerZoneCard       = lazy(() => import("../components/DangerZoneCard"));
+const ImportCsvCard        = lazy(() => import("../components/ImportCsvCard"));
+const StagingReviewCard    = lazy(() => import("../components/StagingReviewCard"));
+
+const CardFallback = () => <div className="dashboard-card-fallback">Cargando…</div>;
 
 ChartJS.register(
   ArcElement,
@@ -431,18 +437,23 @@ const Dashboard = () => {
       <SignupAccountForm />
       <AccountMembersCard />
       {isSuperUser && <StockAlertCard />}
-      <ScannerCard />
-      {isSuperUser && <QrLabelsCard />}
-      <AnalyticsCard />
-      {isSuperUser && <ExportCard />}
-      {isSuperUser && <WarehouseManager />}
-      {isSuperUser && <BulkReassignCard />}
-      {isSuperUser && <LegacyMigrationCard />}
-      {isSuperUser && <ImportCsvCard />}
-      {isSuperUser && <StagingReviewCard />}
-      <AccountSettingsCard />
-      {isSuperUser && <ProductRequestsCard />}
-      {isSuperUser && <DangerZoneCard />}
+
+      {/* Cards lazy-loaded: cada chunk se descarga solo al renderizar */}
+      <Suspense fallback={<CardFallback />}>
+        <ScannerCard />
+        {isSuperUser && <QrLabelsCard />}
+        <AnalyticsCard />
+        {isSuperUser && <ExportCard />}
+        {isSuperUser && <WarehouseManager />}
+        {isSuperUser && <BulkReassignCard />}
+        {isSuperUser && <LegacyMigrationCard />}
+        {isSuperUser && <ImportCsvCard />}
+        {isSuperUser && <StagingReviewCard />}
+        <AccountSettingsCard />
+        {isSuperUser && <ProductRequestsCard />}
+        {isSuperUser && <DangerZoneCard />}
+      </Suspense>
+
       <Modal modalConfig={modalConfig} setModalConfig={setModalConfig} />
     </div>
   );

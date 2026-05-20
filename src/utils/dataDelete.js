@@ -4,7 +4,9 @@
  * Sin dependencias de Firebase/React → testeable al 100%.
  */
 
-export const DELETE_BATCH_LIMIT = 500;
+// Retrocompat: constante delegada en batchService.
+export { FIRESTORE_OPS_LIMIT as DELETE_BATCH_LIMIT } from "./batchService";
+
 export const DELETE_COLLECTIONS = Object.freeze([
   "products",
   "moves",
@@ -13,16 +15,8 @@ export const DELETE_COLLECTIONS = Object.freeze([
   "notifications",
 ]);
 
-/**
- * Particiona ids en chunks que respetan el batch limit de Firestore.
- */
-export function chunkForDelete(ids, size = DELETE_BATCH_LIMIT) {
-  if (!Array.isArray(ids)) return [];
-  if (size <= 0) throw new Error("size debe ser > 0");
-  const out = [];
-  for (let i = 0; i < ids.length; i += size) out.push(ids.slice(i, i + size));
-  return out;
-}
+// Retrocompat: chunkForDelete ahora delega en batchService.chunkArray.
+export { chunkArray as chunkForDelete } from "./batchService";
 
 /**
  * Comprueba si el nombre escrito por el usuario coincide exactamente con el

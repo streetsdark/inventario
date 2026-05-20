@@ -110,8 +110,16 @@ export function buildStagingDocs({ rows, importId, accountId, fileName, headerRo
  * listo para escribir en /products.
  *
  * mapping ejemplo: { sku: 2, description: 1, location: 3, brand: 4, stock: 5 }
+ *
+ * options.extraValues: objeto { virtualId: value } con los valores que el
+ *   usuario haya introducido en columnas virtuales del staging.
+ * options.insertedColumns: [{ id, name, afterIndex }] con metadata de las
+ *   columnas virtuales para asociar nombre↔valor.
+ *
+ * Estos extra values se guardan en el producto como `customFields: { name: value }`
+ * para conservar toda la información introducida por el usuario.
  */
-export function buildProductFromStaging(stagingRow, mapping, currentAccountId) {
+export function buildProductFromStaging(stagingRow, mapping, currentAccountId, options = {}) {
   if (!stagingRow || !Array.isArray(stagingRow.cells)) {
     throw new Error("Fila inválida");
   }
@@ -133,6 +141,21 @@ export function buildProductFromStaging(stagingRow, mapping, currentAccountId) {
     return match ? Number(match[0]) : 0;
   };
 
+  // Mapa de columnas virtuales → { nombre limpio: valor } como customFields.
+  // Solo guardamos las que tienen valor no vacío para no inflar el doc.
+  const customFields = {};
+  const extraValues = options.extraValues || {};
+  const insertedColumns = Array.isArray(options.insertedColumns) ? options.insertedColumns : [];
+  for (const col of insertedColumns) {
+    const raw = extraValues[col.id];
+    const val = typeof raw === "string" ? raw.trim() : "";
+    if (val && col.name) {
+      // Sanitizamos clave: solo alfanum + espacios → camelCase corto (máx 40)
+      const cleanKey = col.name.trim().slice(0, 40);
+      if (cleanKey) customFields[cleanKey] = val.slice(0, 500);
+    }
+  }
+
   return {
     sku:           getCell(mapping.sku).slice(0, 50)         || "",
     description:   getCell(mapping.description).slice(0, 500) || "Sin nombre",
@@ -152,11 +175,43 @@ export function buildProductFromStaging(stagingRow, mapping, currentAccountId) {
     weight:    { size: 0, unit: "-" },
     thickness: { size: 0, unit: "-" },
     color:     "",
+    // Columnas virtuales del staging guardadas como customFields.
+    // Solo se incluye el objeto si tiene al menos una entrada.
+    ...(Object.keys(customFields).length > 0 ? { customFields } : {}),
     // Conservamos referencia al staging para auditar
     importSourceId: stagingRow.id || null,
     accountId:     currentAccountId,
     // El warehouseId se setea en el cliente desde el contexto al guardar
   };
+}
+
+/**
+ * Valida que el mapeo NO solo esté completo en estructura, sino que la
+ * columna mapeada a 'description' contenga datos reales (no esté toda
+ * en blanco). Devuelve { ok, reason }.
+ *
+ * sampleSize: cuántas filas muestreamos para la validación (default 20).
+ */
+export function isMappingValid(mapping, rows, sampleSize = 20) {
+  if (!isMappingComplete(mapping)) {
+    return { ok: false, reason: "Mapea al menos la columna 'Descripción' para poder importar." };
+  }
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return { ok: false, reason: "No hay filas para validar el mapeo." };
+  }
+  const descIdx = mapping.description;
+  const sample = rows.slice(0, sampleSize);
+  const withData = sample.filter((r) => {
+    const cell = r?.cells?.[descIdx];
+    return typeof cell === "string" && cell.trim().length > 0;
+  });
+  if (withData.length === 0) {
+    return {
+      ok: false,
+      reason: "La columna mapeada a 'Descripción' está vacía en las filas muestreadas. Revisa el mapeo.",
+    };
+  }
+  return { ok: true };
 }
 
 /**

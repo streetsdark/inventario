@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import runAllSecurityTests from '../utils/securityTests';
 import runAdvancedTests    from '../utils/advancedTests';
+import { error as logError } from '../utils/logger';
 import '../css/securityTestPanel.css';
 
 // ── Category color map ──────────────────────────────────────
@@ -145,7 +146,7 @@ const SecurityTestPanel = () => {
       }
       setActiveTab(mode === 'all' ? 'all' : mode);
     } catch (err) {
-      console.error('Error running tests:', err);
+      logError("SecurityTestPanel: runTests", err);
     } finally {
       setLoading(null);
     }

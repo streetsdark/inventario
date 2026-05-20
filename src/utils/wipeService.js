@@ -12,7 +12,8 @@
  *  - NO borra usuarios de Firebase Auth (eso requiere Admin SDK desde server).
  */
 
-export const WIPE_BATCH_LIMIT = 500;
+// Retrocompat: constante delegada en batchService.
+export { FIRESTORE_OPS_LIMIT as WIPE_BATCH_LIMIT } from "./batchService";
 
 // Colecciones de datos de negocio que se borran sí o sí
 export const DATA_COLLECTIONS = Object.freeze([
@@ -32,16 +33,8 @@ export const META_COLLECTIONS = Object.freeze([
 // Mayúsculas obligatorias — anti-confirmación accidental.
 export const WIPE_CONFIRMATION_PHRASE = "BORRAR TODO";
 
-/**
- * Particiona ids en chunks dentro del límite de Firestore batch.
- */
-export function chunkForWipe(ids, size = WIPE_BATCH_LIMIT) {
-  if (!Array.isArray(ids)) return [];
-  if (size <= 0) throw new Error("size debe ser > 0");
-  const out = [];
-  for (let i = 0; i < ids.length; i += size) out.push(ids.slice(i, i + size));
-  return out;
-}
+// Retrocompat: chunkForWipe ahora delega en batchService.chunkArray.
+export { chunkArray as chunkForWipe } from "./batchService";
 
 /**
  * Valida que el texto escrito coincide EXACTAMENTE con la frase de

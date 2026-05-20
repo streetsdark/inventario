@@ -10,7 +10,8 @@
  * sin mocks complejos y dejarlos en una utilidad reutilizable.
  */
 
-export const FIRESTORE_BATCH_LIMIT = 500;
+// Retrocompat: re-exporta el límite duro desde batchService.
+export { FIRESTORE_OPS_LIMIT as FIRESTORE_BATCH_LIMIT } from "./batchService";
 export const UNASSIGNED = "__unassigned__";
 
 /**
@@ -29,16 +30,8 @@ export function filterCandidates(products, originId) {
   return products.filter((p) => p?.warehouseId === originId);
 }
 
-/** Particiona ids en chunks de tamaño máximo chunkSize. */
-export function chunkIds(ids, chunkSize = FIRESTORE_BATCH_LIMIT) {
-  if (!Array.isArray(ids) || ids.length === 0) return [];
-  if (chunkSize <= 0) throw new Error("chunkSize debe ser > 0");
-  const out = [];
-  for (let i = 0; i < ids.length; i += chunkSize) {
-    out.push(ids.slice(i, i + chunkSize));
-  }
-  return out;
-}
+/** Particiona ids en chunks. Wrapper retrocompatible sobre batchService.chunkArray. */
+export { chunkArray as chunkIds } from "./batchService";
 
 /**
  * Valida los parámetros antes de lanzar la operación batch.

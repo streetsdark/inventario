@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BsTrash, BsPencil, BsImages, BsCheckCircle, BsXCircle } from "react-icons/bs";
 
 import useProducts from "../hooks/useProducts";
+import { error as logError } from "../utils/logger";
 import "../css/listProduct.css";
 import Modal from "./Modal";
 import RequestProductModal from "./RequestProductModal";
@@ -85,7 +86,7 @@ const ListProducts = ({ query, stockFilter = "all", setEditProduct, isSuperUser 
           showButton: true,
         });
       } catch (error) {
-        console.error(error);
+        logError("ListProducts", error);
         setModalConfig({
           show: true,
           text: "Error al eliminar el producto.",

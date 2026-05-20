@@ -16,7 +16,9 @@ import { sanitizeString } from "../utils/securityValidation";
 import {
   buildProductFromStaging,
   isMappingComplete,
+  isMappingValid,
 } from "../utils/importStagingService";
+import { FIRESTORE_DOUBLE_OP_BATCH_SIZE, chunkArray } from "../utils/batchService";
 import "../css/stagingReviewCard.css";
 
 // Etiquetas comunes que ayudan al usuario a mapear sus columnas
@@ -238,6 +240,10 @@ export default function StagingReviewCard() {
         { ...row, cells },
         mapping,
         accountId,
+        {
+          extraValues: extraValues[row.id] || {},
+          insertedColumns,
+        },
       );
       product.warehouseId = targetWarehouseId;
 
@@ -311,8 +317,10 @@ export default function StagingReviewCard() {
   const importAllPending = async () => {
     setError(null); setInfo(null);
 
-    if (!isMappingComplete(mapping)) {
-      setError("Mapea al menos la columna 'Descripción' arriba antes de importar.");
+    const pendingForValidation = rows.filter((r) => r.status === "pending");
+    const validation = isMappingValid(mapping, pendingForValidation);
+    if (!validation.ok) {
+      setError(validation.reason);
       return;
     }
     const targetWarehouseId = selectedWarehouseId || defaultWarehouseId || warehouses[0]?.id || "";
@@ -335,14 +343,12 @@ export default function StagingReviewCard() {
     setBulkProgress({ current: 0, total: pendingRows.length, errors: 0 });
 
     try {
-      // Firestore batch máx 500 ops. Cada fila = 1 set + 1 update = 2 ops.
-      // Usamos chunks de 200 filas = 400 ops por batch.
-      const CHUNK_SIZE = 200;
+      // Cada fila = 1 set producto + 1 update staging = 2 ops por fila.
+      // Usamos el tamaño double-op (200 filas = 400 ops, margen al límite 500).
       let processed = 0;
       let errorCount = 0;
 
-      for (let i = 0; i < pendingRows.length; i += CHUNK_SIZE) {
-        const slice = pendingRows.slice(i, i + CHUNK_SIZE);
+      for (const slice of chunkArray(pendingRows, FIRESTORE_DOUBLE_OP_BATCH_SIZE)) {
         const batch = writeBatch(db);
 
         for (const row of slice) {
@@ -352,6 +358,10 @@ export default function StagingReviewCard() {
               { ...row, cells },
               mapping,
               accountId,
+              {
+                extraValues: extraValues[row.id] || {},
+                insertedColumns,
+              },
             );
             product.warehouseId = targetWarehouseId;
 

@@ -5,6 +5,7 @@ import { db } from "../firebase/config";
 import { useAccountContext } from "../context/AccountContext";
 import { useAuthContext } from "../context/AuthContext";
 import { logAuditEvent } from "../utils/auditService";
+import { FIRESTORE_SINGLE_OP_BATCH_SIZE, chunkArray } from "../utils/batchService";
 import {
   parseCsvText,
   validateFile,
@@ -111,10 +112,8 @@ export default function ImportCsvCard() {
         headerRow: parsed.headerRow,
       });
 
-      // Firestore batch limit es 500 — partimos si es necesario
-      const CHUNK_SIZE = 400;
-      for (let i = 0; i < docs.length; i += CHUNK_SIZE) {
-        const chunk = docs.slice(i, i + CHUNK_SIZE);
+      // Una op (set) por doc → usamos el chunk size single-op (500).
+      for (const chunk of chunkArray(docs, FIRESTORE_SINGLE_OP_BATCH_SIZE)) {
         const batch = writeBatch(db);
         chunk.forEach((d) => {
           const ref = doc(collection(db, "importStaging"));

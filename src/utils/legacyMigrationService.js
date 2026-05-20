@@ -13,7 +13,8 @@ export const MIGRATION_COLLECTIONS = Object.freeze([
   "notifications",
 ]);
 
-export const MIGRATION_BATCH_LIMIT = 500;
+// Retrocompat: re-exporta desde batchService.
+export { FIRESTORE_OPS_LIMIT as MIGRATION_BATCH_LIMIT } from "./batchService";
 
 /**
  * Devuelve los IDs de los documentos que NO tienen un accountId asignado.
@@ -30,16 +31,8 @@ export function findLegacyIds(docs) {
     .filter((id) => typeof id === "string" && id.length > 0);
 }
 
-/**
- * Particiona ids en chunks que respetan el límite de Firestore batch.
- */
-export function chunkForBatch(ids, size = MIGRATION_BATCH_LIMIT) {
-  if (!Array.isArray(ids)) return [];
-  if (size <= 0) throw new Error("size debe ser > 0");
-  const out = [];
-  for (let i = 0; i < ids.length; i += size) out.push(ids.slice(i, i + size));
-  return out;
-}
+// Retrocompat: chunkForBatch ahora delega en batchService.chunkArray.
+export { chunkArray as chunkForBatch } from "./batchService";
 
 /**
  * Valida los parámetros antes de ejecutar la migración.

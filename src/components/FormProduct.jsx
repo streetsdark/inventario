@@ -84,6 +84,19 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
             return;
         }
 
+        // Validación adicional: warehouseId obligatorio. Si no hay default y el
+        // usuario no eligió uno, no podemos crear el producto huérfano.
+        const resolvedWarehouseId = product.warehouseId || selectedId || defaultWarehouseId || "";
+        if (!resolvedWarehouseId) {
+            setModalConfig({
+                show: true,
+                text: 'No tienes ningún almacén seleccionado. Crea uno en la card "Almacenes" del Dashboard antes de añadir productos.',
+                type: 'error',
+                showButton: true,
+            });
+            return;
+        }
+
         setSubmitting(true);
 
         try {
@@ -96,7 +109,7 @@ const FormProduct = ({ setNewProduct, editProduct, setEditProduct, setQuery, isS
                 stockMinimo: Number(product.stockMinimo || 0),
                 totalIn: Number(product.totalIn || 0),
                 totalOut: Number(product.totalOut || 0),
-                warehouseId: product.warehouseId || selectedId || defaultWarehouseId || "",
+                warehouseId: resolvedWarehouseId,
                 accountId: resolvedAccountId,
             };
 

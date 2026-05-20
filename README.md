@@ -16,9 +16,11 @@ multi-almacén, analíticas interactivas, auditoría completa y export GDPR.
 - 🏢 **Multi-almacén** — selector global + reasignación masiva entre almacenes
 - 👥 **Multi-tenant** — aislamiento real a nivel de base de datos por `accountId`
 - 📤 **Exportación CSV/PDF** — movimientos y stock listos para Excel y contabilidad
+- 📥 **Importación CSV con staging** — revisa fila por fila antes de cargar al catálogo, con columnas virtuales editables
 - 🛡️ **Auditoría completa** — cada acción sensible queda registrada
 - 🔐 **GDPR** — export JSON de tus datos + borrar cuenta con triple confirmación
 - 🎯 **Onboarding wizard** — 3 pasos guiados para nuevos owners
+- 🔥 **Zona de peligro** — wipe completo de la app con triple confirmación (solo superuser)
 
 ---
 
@@ -171,6 +173,64 @@ Cobertura E2E:
 - ✅ Login muestra formulario sin sesión
 - ✅ Cookie banner aparece, acepta, persiste y links a /cookies
 - ✅ 404 amable + rutas protegidas redirigen a /login
+
+---
+
+## 📥 Importación CSV
+
+Flujo no destructivo para cargar inventarios desde archivos CSV.
+
+### Características
+- **Staging area**: los datos se guardan en `/importStaging` separados de
+  `/products`. Nada se añade al catálogo real hasta que el admin lo apruebe.
+- **Editable celda por celda** antes de importar (corregir typos, ajustar valores).
+- **Columnas virtuales insertables** entre cualquier par de columnas del CSV
+  (útil para añadir info que no estaba en el origen).
+- **Mapeo de columnas → campos de producto** (SKU, Descripción, Ubicación,
+  Marca, Stock, Unidad).
+- **Validación de mapeo con sample** — avisa si la columna mapeada a
+  "Descripción" está vacía antes de importar.
+- **Bulk import por batches** de 200 filas con barra de progreso en tiempo
+  real.
+
+### Flujo
+1. **Card "Importar CSV"** (admin): seleccionas archivo (.csv, máx 5 MB,
+   máx 1000 filas). Autodetect de separador `;` / `,` / `\t` / `|`.
+2. **Card "Revisar import (staging)"**: ves la tabla completa, renombras
+   cabeceras, insertas columnas virtuales, mapeas tus campos, editas celdas.
+3. Por fila: ✅ importar como producto · ❌ descartar.
+4. **Bulk**: botón "Importar TODAS las pendientes (N)" lanza todo en batches.
+
+### Modelo de datos
+```
+/importStaging/{id}
+  ├─ importId         (agrupa filas de la misma carga)
+  ├─ accountId        (aislamiento multi-tenant)
+  ├─ fileName
+  ├─ rowIndex         (orden original en el CSV)
+  ├─ cells[]          (array de strings tal cual)
+  ├─ headerRow[] | null
+  ├─ status           ("pending" | "imported" | "discarded")
+  ├─ importedProductId  (si status=imported, ref al producto creado)
+  └─ createdAt
+```
+
+### Persistencia local
+Para evitar sobrecargar Firestore, estos datos viven solo en localStorage
+del navegador (clave por `accountId`):
+- Nombres custom de columnas originales
+- Columnas virtuales insertadas + sus valores
+- Mapeo de columnas configurado
+
+Si cambias de dispositivo, se reinician (es solo metadata de revisión).
+
+### Seguridad
+- Solo `superuser` ve las cards de import.
+- Reglas Firestore: write solo si `accountId == userAccountId()`.
+- writeBatch atómico por chunk: si falla a la mitad, las filas anteriores
+  ya están a salvo y las que faltan quedan en `pending` para reintentar.
+- Audit log: `IMPORT_STAGED` al subir CSV, `STAGING_ROW_IMPORTED` por fila
+  individual, `STAGING_BULK_IMPORTED` al final del bulk.
 
 ---
 

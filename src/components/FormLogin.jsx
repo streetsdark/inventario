@@ -11,6 +11,7 @@ import {
   GoogleAuthProvider,
   sendPasswordResetEmail,
 } from "firebase/auth";
+import { error as logError } from "../utils/logger";
 
 import '../css/login.css';
 import Modal from './Modal';
@@ -100,7 +101,7 @@ const FormLogin = () => {
       await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
       navigate('/dashboard');
     } catch (error) {
-      console.log(error);
+      logError("FormLogin", error);
       showModal(getAuthErrorMessage(error), 'error');
     } finally {
       setIsSubmitting(false);
@@ -117,7 +118,7 @@ const FormLogin = () => {
       await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
       navigate('/dashboard');
     } catch (error) {
-      console.log(error);
+      logError("FormLogin", error);
       showModal(getAuthErrorMessage(error), 'error');
     } finally {
       setIsSubmitting(false);
@@ -133,7 +134,7 @@ const FormLogin = () => {
       await signInWithPopup(auth, provider);
       navigate('/dashboard');
     } catch (error) {
-      console.log(error);
+      logError("FormLogin", error);
       showModal(getAuthErrorMessage(error), 'error');
     } finally {
       setIsSubmitting(false);
@@ -167,7 +168,7 @@ const FormLogin = () => {
       await sendPasswordResetEmail(auth, trimmedEmail);
       showModal('Te enviamos un correo para restablecer la contrasena.', 'success');
     } catch (error) {
-      console.log(error);
+      logError("FormLogin", error);
       showModal(getAuthErrorMessage(error), 'error');
     }
   };

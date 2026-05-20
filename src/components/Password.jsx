@@ -7,6 +7,7 @@ import {
   reauthenticateWithCredential,
   updatePassword
 } from "firebase/auth";
+import { error as logError } from "../utils/logger";
 
 import "../css/modal.css";
 
@@ -62,7 +63,7 @@ const Password = ({ showPassword, setShowPassword }) => {
             }));
 
         } catch (error) {
-            console.log(error);
+            logError("Password", error);
 
             if (error.code === "auth/wrong-password") {
                 setData(prev => ({

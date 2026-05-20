@@ -6,6 +6,7 @@ import { signOut } from "firebase/auth";
 
 import { auth } from "../firebase/config";
 import useUser from "../hooks/useAuth";
+import { error as logError } from "../utils/logger";
 import Modal from "./Modal";
 import Password from './Password';
 import "../css/profileCard.css";
@@ -55,7 +56,7 @@ const ProfileCard = () => {
         navigate(0);
       }, 1500);
     } catch (error) {
-      console.log(error);
+      logError("ProfileCard", error);
       setModalConfig({
         show: true,
         text: 'No se pudo cerrar la sesion.',
